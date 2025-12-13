@@ -34,7 +34,7 @@ public class AllDetailsRequest {
     return weights;
   }
 
-  public void setWeights() {
+  public void setWeights(Integer weights) {
     this.weights = weights;
   }
 
