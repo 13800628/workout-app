@@ -7,7 +7,7 @@
 
 
 import { useState, useEffect } from "react";
-import { data } from "react-router-dom";
+//import { data } from "react-router-dom";
 
 
 
@@ -67,6 +67,9 @@ export default function Workout() {
             reps: Number(formData.reps),
             sets: Number(formData.sets),
             weights: Number(formData.weights),
+            
+            // workoutIdだとworkoutのidのため、userIdの依存にしないと不意になエラーが発生するかも
+            userId: Number(workoutId),
           }),
           });
           const data = await res.json();

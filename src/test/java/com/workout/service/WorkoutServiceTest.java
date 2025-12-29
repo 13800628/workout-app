@@ -10,19 +10,16 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.workout.controller.AllDetailsRequest;
-import com.workout.model.User;
 import com.workout.model.Workout;
-import com.workout.service.WorkoutService;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
 
@@ -148,13 +145,13 @@ class WorkoutServiceTest {
 
     when(workoutRepository.findById(id)).thenReturn(Optional.of(workout));
     when(workoutRepository.save(any(Workout.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
+ 
     Workout result = workoutService.updateAllDetails(id, request);
 
-    assertEquals("after", request.getName());
-    assertEquals(10, request.getReps());
-    assertEquals(10, request.getSets());
-    assertEquals(100, request.getWeights());
+    assertEquals("after", result.getName());
+    assertEquals(10, result.getReps());
+    assertEquals(10, result.getSets());
+    assertEquals(100, result.getWeights());
 
     verify(workoutRepository).findById(id);
     verify(workoutRepository).save(workout);
