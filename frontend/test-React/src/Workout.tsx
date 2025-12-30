@@ -8,6 +8,7 @@
 
 import { useState, useEffect } from "react";
 //import { data } from "react-router-dom";
+//import { data } from "react-router-dom";
 
 
 
@@ -38,7 +39,7 @@ export default function Workout() {
   const workoutUrl =
   (import.meta.env?.VITE_API_URL ?? "http://localhost:8080") + "/api/workouts";
 
-  useEffect(() => {
+  /**useEffect(() => {
   if (!workoutId) return;
 
   const fetchWorkout = async () => {
@@ -52,7 +53,7 @@ export default function Workout() {
   };
 
   fetchWorkout();
-}, [workoutId]);
+}, [workoutId]);**/
     
     // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
     const handleCreateWorkout = async () => {
@@ -306,13 +307,28 @@ export default function Workout() {
           <button onClick={AllHandleController}>一つ一つ更新</button>
         </div>
         <h3>記録</h3>
-       
-
-         <p><span className="font-semibold">ID:</span> {workout?.id}</p>
-            <p><span className="font-semibold">種目名:</span> {workout?.name}</p>
-            <p><span className="font-semibold">回数:</span> {workout?.reps}</p>
-            <p><span className="font-semibold">セット数:</span> {workout?.sets}</p>
-            <p><span className="font-semibold">重量:</span> {workout?.weights} Kg</p>
+        {Array.isArray(workout) ? (
+          workout.map((item) => (
+            <div key={item.id} style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}>
+              <p><span className="font-semibold">ID:</span>{item.id}</p>
+              <p><span className="font-semibold">種目名:</span>{item.name}</p>
+              <p><span className="font-semibold">回数:</span>{item.reps}</p>
+              <p><span className="font-semibold">セット数:</span>{item.sets}</p>
+              <p><span className="font-semibold">重量:</span>{item.weights}</p>
+              </div>
+          ))
+        ) : (
+          workout && (
+            <div style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}>
+              <p><span className="font-semibold">ID:</span> {workout.id}</p>
+              <p><span className="font-semibold">種目名:</span> {workout.name}</p>
+              <p><span className="font-semibold">回数:</span> {workout.reps}</p>
+              <p><span className="font-semibold">セット数:</span> {workout.sets}</p>
+              <p><span className="font-semibold">重量:</span> {workout.weights} Kg</p>
+            </div>
+            )
+          )
+        }
       </div>
     );
   }
