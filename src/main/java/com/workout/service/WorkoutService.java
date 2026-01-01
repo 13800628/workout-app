@@ -42,6 +42,7 @@ public class WorkoutService {
   }
   
   // booleanか引数なしかは今後検討(仮)
+  @Transactional
   public boolean deletedWorkout(Long id) {
     if (workoutRepository.existsById(id)) {
       workoutRepository.deleteById(id);

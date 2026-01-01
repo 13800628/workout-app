@@ -6,7 +6,7 @@
 
 
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 //import { data } from "react-router-dom";
 //import { data } from "react-router-dom";
 
@@ -24,7 +24,7 @@ type Workout ={
 
 
 export default function Workout() {
-  const [workout, setWorkout] = useState<Workout | null>(null);
+  const [workout, setWorkout] = useState<Workout | Workout[] |null>(null);
   const [error, setError] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
@@ -84,7 +84,7 @@ export default function Workout() {
 
     /**
      * handleSetWorkoutName, handleSetWorkoutReps,, handleSetWorkoutSets
-     */
+     
     const handleSetWorkoutName = async () => {
       if (!workout || !workoutId) return;
       try {
@@ -159,61 +159,75 @@ export default function Workout() {
     } catch (err) {
       console.error("エラーが発生しました: ", err);
     }
-   } 
-   // /{id}/setsUserIdをエンドポイントに受け取るhandleSetWorkoutUserIdを実装
+   };
 
-   const AllHandleController = async () => {
+   const handleSetWorkoutUserId = async () => {
+    if (!workout || !workoutId) return;
+    try {
+      const res = await fetch(`${workoutUrl}/${workoutId}/setUSerId`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: Number(workoutId),
+        }),
+      });
+      const data = await res.json();
+      setWorkout(data);
+    } catch (err) {
+      console.error("エラーが発生しました: ", err);
+    }
+   }*/
+
+   const handleDeleteWorkout = async (id: number) => {
+    if (!window.confirm("本当に削除しますか？")) return;
+
+    try {
+    const res = await fetch(`${workoutUrl}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      alert("削除に成功しました");
+      // 削除に成功したら、画面上のリストからそのデータを消す
+      // workoutが配列の場合の処理
+      if (Array.isArray(workout)) {
+        setWorkout(workout.filter((item) => item.id !== id));
+      } else {
+        setWorkout(null);
+      }
+    } else {
+      console.error("削除失敗: ステータス", res.status);
+      alert("削除に失敗しました（データが存在しない可能性があります）");
+    }
+  } catch (err) {
+    console.error("通信エラー:", err);
+  }
+};
+
+   /**const AllHandleController = async () => {
     await handleSetWorkoutName();
     await handleSetWorkoutReps();
     await handleSetWorkoutSets();
     await handleSetWorkoutWeights();
+    await handleSetWorkoutUserId();
     // handleSetWorkoutUserIdの追加
-    //console.log(data);
 
-   };
-
-  /** const formatResult = (data: Workout | Workout[] | number): string => {
-    if (Array.isArray(data)) {
-      return data
-        .map(
-          (u) =>
-            `ID: ${u.id}\n種目名: ${u.name}\n回数: ${u.reps}\nセット数: ${u.sets}\n重量: ${u.weights} Kg`
-        )
-        .join("\n\n");
-    }
-    if (
-      typeof data === "object" &&
-      data !== null &&
-      "id" in data &&
-      "name" in data &&
-      "reps" in data &&
-      "sets" in data &&
-      "weights" in data
-    ) {
-      return `
-┌───────────────┐
- ID: ${data.id}
- 種目名: ${data.name}
- 回数: ${data.reps}
- セット数: ${data.sets}
- 重量: ${data.weights}
-└───────────────┘`.trim();
-    }
-    return String(data);
-  }; */
+   };*/
 
   
 
   const handleGetAll = async () => {
-   try {
-   const res = await fetch(`${workoutUrl}/${workoutId}`);
-   const data = await res.json();
-   setWorkout(data);
-   console.log(data);
+    try {
+      const res = await fetch(`${workoutUrl}/${workoutId}`);
+      const data = await res.json();
+      setWorkout(data);
+      console.log(data);
     } catch (err) {
-   console.error("error",err);
-     setError("Error");
-  }
+      console.error("error", err);
+      setError("Error");
+    }
   };
 
   const handleUpdateAllDetails = async () => {
@@ -250,9 +264,9 @@ export default function Workout() {
         <h2>Workout Details</h2>
 
         {!workoutId && <p>ユーザーIDが指定されていません</p>}
+        <p>Your workout data...</p>
 
-        {workout ? (
-          <div>
+        <div>
             <input
               placeholder="種目名"
               type="text"
@@ -289,27 +303,23 @@ export default function Workout() {
               }
             />
           </div>
-        ) : (
-          <p>Loading workout data...</p>
-        )}
 
-        <h3>操作</h3>
+        <h3></h3>
         <div className="button-group">
           <button onClick={handleCreateWorkout}>登録</button>
-          <button
-            onClick={() => {
-              handleUpdateAllDetails();
-            }}
-          >
-            ワークアウト更新
-          </button>
+
+          <button onClick={() => {handleUpdateAllDetails();}}>更新</button>
+
           <button onClick={handleGetAll}>全件取得</button>
-          <button onClick={AllHandleController}>一つ一つ更新</button>
+
+          {/*<button onClick={AllHandleController}>すべてのセッター呼び出し</button>*/}
+
         </div>
-        <h3>記録</h3>
+        <h3>記録一覧</h3>
         {Array.isArray(workout) ? (
           workout.map((item) => (
             <div key={item.id} style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}>
+              <button onClick={() => handleDeleteWorkout(item.id)}>削除</button>
               <p><span className="font-semibold">ID:</span>{item.id}</p>
               <p><span className="font-semibold">種目名:</span>{item.name}</p>
               <p><span className="font-semibold">回数:</span>{item.reps}</p>
