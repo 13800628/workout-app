@@ -36,18 +36,10 @@ public class UserService {
       Optional<User> userOpt = userRepository.findById(id);
       if (userOpt.isPresent()) {
           User user = userOpt.get();
-          user.setUsername(username);
-          user.setAge(age);
+          user.updateProfile(username, age);
           return userRepository.save(user);
       }
       return null;
-      
-      /**User user = userRepository.findById(id)
-                 .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "User not found with id: " + id));
-      user.setUsername(username);
-      user.setAge(age);
-
-      return user; */
 }
 
   public void deleteUser(Long id) {

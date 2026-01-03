@@ -29,6 +29,8 @@ public class User {
     this.age = age;
   }
 
+
+  // 基本的なgetterとsetter
   public Long getId() {
     return id;
   }
@@ -52,6 +54,15 @@ public class User {
 
   public void setAge(Integer age) {
     this.age = age;
+  }
+
+  // 各メソッドの実装
+  public void updateProfile(String username, Integer age) {
+    if (username == null) throw new IllegalArgumentException("ユーザー名を入力してください");
+    if (age < 0) throw new IllegalArgumentException("年齢は0以上で入力してください");
+    this.username = username;
+    this.age = age;
+
   }
 } 
 

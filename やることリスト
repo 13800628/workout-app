@@ -1,32 +1,13 @@
  Workoutページの作成、移動はできたので、今後の機能
 
  優先
-  updateの際の挙動がよくわからない
-  テストを書くか、実際にやりながら確認するか
-  (状況: 三つのカラムがあり挙動分からず更新)
+  
 
 
 整理用
-  user情報を含むカラムは取得できるが、それ以外は取得できない
-    
-    URLがidバレバレなのも対応
-
-    const AllHandleController = async () => {
-    await handleSetWorkoutName();
-    await handleSetWorkoutReps();
-    await handleSetWorkoutSets();
-    await handleSetWorkoutWeights();
-   };
-
-   const handleGetAll = async () => {
-    try {
-      const res = await fetch(`${workoutUrl}/${workoutId}`);
-      const data = await res.json();
-      setResult(formatResult(data));
-    } catch (err) {
-      setResult("エラー" + String(err));
-    }
-  }; 
-
-  この二つの挙動確認して実装を検討
+  handleGetAllWorkoutsのみで実装に
+  handleUpdateAllDetailsですべての項目入力で更新に
+    一つ一つの方がいいのか？検討
+  登録、更新、削除、取得の実装完了
+  
       
