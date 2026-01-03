@@ -32,7 +32,7 @@ public class WorkoutController {
   // Create - 作成
   @PostMapping("/create")
   public ResponseEntity<Workout> createWorkout(@RequestBody WorkoutRequest request) {
-    Workout workout = workoutService.createWorkout(request.getName(), request.getReps(), request.getSets(), request.getWeights(), request.getUserId());
+    Workout workout = workoutService.createWorkout(request);
     return new ResponseEntity<>(workout, HttpStatus.CREATED);
   }
   

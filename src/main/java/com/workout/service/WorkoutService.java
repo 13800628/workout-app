@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,6 +14,8 @@ import com.workout.model.User;
 import com.workout.model.Workout;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
+import com.workout.service.CreateWorkoutCommand;
+import com.workout.controller.WorkoutRequest;
 
 @Service
 public class WorkoutService {
@@ -26,15 +29,22 @@ public class WorkoutService {
     this.workoutRepository = workoutRepository;
   }
   
-  public Workout createWorkout(String name, Integer reps, Integer sets, Integer weights, Long userId) {
+  public Workout createWorkout(WorkoutRequest request) {
     User user = null;
-    if (userId != null) {
-      user = userRepository.findById(userId)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
+    if (request.getUserId() != null) {
+     user = userRepository.findById(request.getUserId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found: " + request.getUserId()));
     }
-    Workout workout = new Workout(name, reps, sets, weights, user);
+
+    Workout workout = new Workout(
+        request.getName(),
+        request.getReps(),
+        request.getSets(),
+        request.getWeights(),
+        user
+    );
     return workoutRepository.save(workout);
   }
+
 
   // GET/POST/DELETEの実装
   public List<Workout> getAllWorkoutById(Long id) {

@@ -190,6 +190,7 @@ export default function Workout() {
 
     if (res.ok) {
       alert("削除に成功しました");
+      console.log("削除成功: ID", id);
       // 削除に成功したら、画面上のリストからそのデータを消す
       // workoutが配列の場合の処理
       if (Array.isArray(workout)) {

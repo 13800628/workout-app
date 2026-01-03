@@ -48,6 +48,10 @@ public class WorkoutRequest {
     return userId;
   }
 
+  public void setUserId(Long userId) {
+    this.userId = userId;
+  }
+
   public void setUser(Long userId) {
     this.userId = userId;
   }
