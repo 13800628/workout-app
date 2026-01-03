@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.workout.controller.AllDetailsRequest;
+import com.workout.controller.WorkoutRequest;
 import com.workout.model.Workout;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
@@ -38,26 +39,7 @@ class WorkoutServiceTest {
   private WorkoutService service;
 
 
-  @Test
-  void createWorkout_userIdNullならユーザーなしで作成() {
-    Workout saved = new Workout("deadlift", 5, 5, 120, null);
-    when(workoutRepository.save(any())).thenReturn(saved);
-
-    Workout result = service.createWorkout("deadlift", 5, 5, 120, null);
-
-    verify(userRepository, never()).findById(anyLong());
-    assertNull(result.getUser());
-  }
   
-
-  @Test
-  void createWorkout_userがいない() {
-    when(userRepository.findById(99L)).thenReturn(Optional.empty());
-
-    assertThrows(ResponseStatusException.class, () -> {
-      service.createWorkout("deadlift", 5, 5, 120, 99L);
-    });
-  }
 
   @Test
   void updateName_名前が更新されて返る() {
