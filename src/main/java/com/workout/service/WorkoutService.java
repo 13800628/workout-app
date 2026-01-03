@@ -80,10 +80,17 @@ public class WorkoutService {
   public Workout updateAllDetails(Long id, AllDetailsRequest request) {
     Workout existingWorkout = workoutRepository.findById(id).orElseThrow(() -> new RuntimeException("Workout not found"));
 
-    existingWorkout.setName(request.getName());
+    /**existingWorkout.setName(request.getName());
     existingWorkout.setReps(request.getReps());
     existingWorkout.setSets(request.getSets());
-    existingWorkout.setWeights(request.getWeights());
+    existingWorkout.setWeights(request.getWeights()); */
+
+    existingWorkout.updateAllWorkoutDetails(
+        request.getName(),
+        request.getReps(),
+        request.getSets(),
+        request.getWeights()
+    );
 
 
     return workoutRepository.save(existingWorkout);
