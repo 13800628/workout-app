@@ -44,12 +44,15 @@ public class WorkoutController {
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteWorkout(@PathVariable("id") Long id) {
-    boolean deleted = workoutService.deletedWorkout(id);
+    /*boolean deleted = workoutService.deletedWorkout(id);
     if (deleted) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    }*/
+
+    workoutService.deletedWorkout(id);
+    return ResponseEntity.noContent().build();
   }
 
   @PutMapping("/{id}/setName")

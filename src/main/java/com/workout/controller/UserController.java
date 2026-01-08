@@ -65,7 +65,8 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         // 削除成功後はコンテンツなし (204 No Content) を返すのが一般的
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
+        //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   
