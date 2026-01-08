@@ -1,14 +1,4 @@
-/**
- * ページ移動はできたが、ボタンの動作がうまくいかないので改善
- * コンソールでエラーが複数出ているので修正していく
- * (URLか設定かの問題かと推測、調査必須)
- */
-
-
-
 import { useState } from "react";
-//import { data } from "react-router-dom";
-//import { data } from "react-router-dom";
 
 
 
@@ -38,22 +28,6 @@ export default function Workout() {
 
   const workoutUrl =
   (import.meta.env?.VITE_API_URL ?? "http://localhost:8080") + "/api/workouts";
-
-  /**useEffect(() => {
-  if (!workoutId) return;
-
-  const fetchWorkout = async () => {
-    try {
-      const res = await fetch(`${workoutUrl}/${workoutId}`);
-      const data = await res.json();
-      setWorkout(data);
-    } catch (err) {
-      console.error("取得に失敗:", err);
-    }
-  };
-
-  fetchWorkout();
-}, [workoutId]);**/
     
     // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
     const handleCreateWorkout = async () => {
@@ -79,106 +53,7 @@ export default function Workout() {
         } catch (err) {
           console.error("エラーが発生しました: ", err, error);
         }
-      }
-  
-
-    /**
-     * handleSetWorkoutName, handleSetWorkoutReps,, handleSetWorkoutSets
-     
-    const handleSetWorkoutName = async () => {
-      if (!workout || !workoutId) return;
-      try {
-        const res = await fetch(`${workoutUrl}/${workoutId}/setName`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formData.name,
-          }),
-        });
-        const data = await res.json();
-        setWorkout(data);
-      } catch (err) {
-        console.error("エラーが発生しました: ", err);
-      }
-        }
-
-    const handleSetWorkoutReps = async () => {
-      if (!workout || !workoutId) return;
-      try {
-        const res = await fetch(`${workoutUrl}/${workoutId}/setReps`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            reps: Number(formData.reps),
-          }),
-        });
-        const data = await res.json();
-        setWorkout(data);
-      } catch (err) {
-        console.error("エラーが発生しました: ", err);
-      }
-    }
-
-    const handleSetWorkoutSets = async () => {
-      if (!workout || !workoutId) return;
-      try {
-        const res = await fetch(`${workoutUrl}/${workoutId}/setSets`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            sets: Number(formData.sets),
-          }),
-      });
-      const data = await res.json();
-      setWorkout(data);
-    } catch (err) {
-      console.error("エラーが発生しました: ", err);
-    }
-   }
-
-   const handleSetWorkoutWeights = async () => {
-    if (!workout || !workoutId) return;
-    try {
-      const res = await fetch(`${workoutUrl}/${workoutId}/setWeights`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          weights: Number(formData.weights),
-        }),
-      });
-      const data = await res.json();
-      setWorkout(data);
-    } catch (err) {
-      console.error("エラーが発生しました: ", err);
-    }
-   };
-
-   const handleSetWorkoutUserId = async () => {
-    if (!workout || !workoutId) return;
-    try {
-      const res = await fetch(`${workoutUrl}/${workoutId}/setUSerId`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: Number(workoutId),
-        }),
-      });
-      const data = await res.json();
-      setWorkout(data);
-    } catch (err) {
-      console.error("エラーが発生しました: ", err);
-    }
-   }*/
+      };
 
    const handleDeleteWorkout = async (id: number) => {
     if (!window.confirm("本当に削除しますか？")) return;
@@ -206,17 +81,6 @@ export default function Workout() {
     console.error("通信エラー:", err);
   }
 };
-
-   /**const AllHandleController = async () => {
-    await handleSetWorkoutName();
-    await handleSetWorkoutReps();
-    await handleSetWorkoutSets();
-    await handleSetWorkoutWeights();
-    await handleSetWorkoutUserId();
-    // handleSetWorkoutUserIdの追加
-
-   };*/
-
   
 
   const handleGetAll = async () => {
@@ -255,11 +119,7 @@ export default function Workout() {
     }
   }
       
-
   
-
-
-
     return (
       <div style={{ padding: 20, fontSize: 18 }} className="gradation">
         <h2>Workout Details</h2>
@@ -312,8 +172,6 @@ export default function Workout() {
           <button onClick={() => {handleUpdateAllDetails();}}>更新</button>
 
           <button onClick={handleGetAll}>全件取得</button>
-
-          {/*<button onClick={AllHandleController}>すべてのセッター呼び出し</button>*/}
 
         </div>
         <h3>記録一覧</h3>

@@ -22,7 +22,6 @@ function Home() {
   const [result, setResult] = useState("");
 
   const baseUrl = "http://localhost:8080/api/users";
-  //const workoutUrl = "http://localhost:8080/api/workouts";
   
   // =========================================================================
   // CRUD 操作 各種
@@ -138,6 +137,7 @@ function Home() {
 └───────────────┘`.trim();
   }
 
+  // 文字列の場合の処理(データ表示されるが、エラーメッセージを返す)
   return String(data);
 };
 
@@ -190,7 +190,7 @@ function Home() {
       <button onClick={handleGoToWorkoutPage}>Workoutページへ</button>
       </div>
       <div>
-        <h3>結果</h3>
+        <h3>ユーザー情報</h3>
         <div style={{ whiteSpace: 'pre-line', marginTop: '10px'}}>{result}</div>
       </div>
     </div>
