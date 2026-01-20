@@ -43,10 +43,10 @@ public class UserController {
 
   @GetMapping("/{id}")
   public ResponseEntity <User> getUserBy(@PathVariable("id") Long id) {
-    Optional<User> user = userService.getUserById(id);
+    User user = userService.getUserById(id)
+            .orElseThrow(() -> new IllegalArgumentException("ID: " + id));
 
-    return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-               .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    return ResponseEntity.ok(user);
   }
 
   // --- U (Update) - ユーザー情報更新 ---
