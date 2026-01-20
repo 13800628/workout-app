@@ -1,5 +1,9 @@
 package com.workout.controller;
 
+import java.util.stream.Collectors;
+import java.util.List;
+import java.util.stream.*;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,38 +15,36 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 @ControllerAdvice
 public class GlobalExceptionHandle {
   
-  @ExceptionHandler({
-    HttpMessageNotReadableException.class,
-    MethodArgumentNotValidException.class,
-    IllegalArgumentException.class
-  })
-  public ResponseEntity<ErrorResponse> handleBadRequestException(Exception ex) {
-    String errorMessage;
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleBadRequestException(MethodArgumentNotValidException ex) {
+    List<String> details = ex.getBindingResult()
+          .getFieldErrors()
+          .stream()
+          .map(error -> error.getField() + ": " + error.getDefaultMessage())
+          .collect(Collectors.toList());
 
-    if (ex instanceof MethodArgumentNotValidException) {
-      MethodArgumentNotValidException manv = (MethodArgumentNotValidException) ex;
-      if (manv.getBindingResult().getFieldError() != null) {
-        errorMessage = "入力値が無効です。: " + manv.getBindingResult().getFieldError().getDefaultMessage();
-      } else {
-        errorMessage = "入力値が無効です。";
-      }
-    } else if (ex instanceof HttpMessageNotReadableException) {
-      errorMessage = "JSON形式が不正です。";
-    } else {
-      errorMessage = ex.getMessage();
-    }
+    ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "入力値が不正です");
+    return ResponseEntity.badRequest().body(error);
 
-    ErrorResponse errorResponse = new  ErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
-    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<ErrorResponse> handleReadableException(HttpMessageNotReadableException ex) {
+    ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "JSON形式が正しくありません");
+    return ResponseEntity.badRequest().body(error);
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException ex) {
+    ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    return ResponseEntity.badRequest().body(error);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
-    System.err.println("Unhandled Exception in UserController flow: " + ex.getClass().getName() + ": " + ex.getMessage());
+    ex.printStackTrace();
 
-    String errorMessage = "システムエラーが発生しました。再度お試しください。";
-
-    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
-    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    ErrorResponse error = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "システムエラーが発生しました");
+    return ResponseEntity.internalServerError().body(error);
   }
 }
