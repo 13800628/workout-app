@@ -82,12 +82,12 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
         // Act
-        Optional<User> result = userService.getUserById(userId);
+        User result = userService.getUserById(userId);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals("testuser", result.get().getUsername());
-        assertEquals(25, result.get().getAge());
+        assertTrue(result.equals(result));
+        assertEquals("testuser", result);
+        assertEquals(25, result.getAge());
         verify(userRepository, times(1)).findById(userId);
     }
 
@@ -98,10 +98,10 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act
-        Optional<User> result = userService.getUserById(userId);
+       User result = userService.getUserById(userId);
 
         // Assert
-        assertFalse(result.isPresent());
+        assertFalse(result.equals(result));
         verify(userRepository, times(1)).findById(userId);
     }
 

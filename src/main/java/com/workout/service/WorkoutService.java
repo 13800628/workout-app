@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,7 +13,6 @@ import com.workout.model.User;
 import com.workout.model.Workout;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
-import com.workout.service.CreateWorkoutCommand;
 import com.workout.controller.WorkoutRequest;
 
 @Service
@@ -63,37 +61,40 @@ public class WorkoutService {
   }
 
   public Workout updateName(Long id, String name) {
-    Workout existingWorkout = workoutRepository.findById(id).orElseThrow(() -> new RuntimeException("Workout not found"));
+    Workout existingWorkout = workoutRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Workout not found"));
     existingWorkout.setName(name);
+
     return workoutRepository.save(existingWorkout);
   }
 
   public Workout updateReps(Long id, Integer reps) {
-    Workout existingWorkout = workoutRepository.findById(id).orElseThrow(() -> new RuntimeException("Workout not found"));
+    Workout existingWorkout = workoutRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Workout not found"));
     existingWorkout.setReps(reps);
     return workoutRepository.save(existingWorkout);
   }
   
   public Workout updateSets(Long id, Integer sets) {
-    Workout exstingWorkout = workoutRepository.findById(id).orElseThrow(() -> new RuntimeException("Workout not found"));
+    Workout exstingWorkout = workoutRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Workout not found"));
     exstingWorkout.setSets(sets);
+
     return workoutRepository.save(exstingWorkout);
   }
   
   public Workout updateWeights(Long id, Integer weights) {
-    Workout exsitingWorkout = workoutRepository.findById(id).orElseThrow(() -> new RuntimeException("Workout not found"));
+    Workout exsitingWorkout = workoutRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Workout not found"));
     exsitingWorkout.setWeights(weights);
+
     return workoutRepository.save(exsitingWorkout);
   }
 
   @Transactional
   public Workout updateAllDetails(Long id, AllDetailsRequest request) {
-    Workout existingWorkout = workoutRepository.findById(id).orElseThrow(() -> new RuntimeException("Workout not found"));
-
-    /**existingWorkout.setName(request.getName());
-    existingWorkout.setReps(request.getReps());
-    existingWorkout.setSets(request.getSets());
-    existingWorkout.setWeights(request.getWeights()); */
+    Workout existingWorkout = workoutRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Workout not found"));
 
     existingWorkout.updateAllWorkoutDetails(
         request.getName(),
@@ -102,9 +103,6 @@ public class WorkoutService {
         request.getWeights()
     );
 
-
     return workoutRepository.save(existingWorkout);
   }
 }
-
-// エラーはWorkout,WorkoutRepositoryクラスの実装で解決

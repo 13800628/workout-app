@@ -3,7 +3,7 @@ package com.workout.controller;
 // Controllerクラスで使うWorkoutRequestクラスの定義
 // コードはシンプル
 /**
-* request.getName(), request.getReps(), request.getSets() のGetter/Setter
+ * request.getName(), request.getReps(), request.getSets() のGetter/Setter
  */
 public class WorkoutRequest {
   private String name;
@@ -11,7 +11,7 @@ public class WorkoutRequest {
   private Integer sets;
   private Integer weights;
   private Long userId;
-  
+
   public String getName() {
     return name;
   }
