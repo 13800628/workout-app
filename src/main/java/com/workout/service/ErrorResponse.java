@@ -1,4 +1,4 @@
-package com.workout.controller;
+package com.workout.service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -9,13 +9,13 @@ import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ErrorResponse {
-  // HTTPステータスコード (e.g., 400, 500)
+    // HTTPステータスコード (e.g., 400, 500)
     private final int status;
     // エラー詳細メッセージ
     private final String message;
     // エラー発生時刻
     @JsonFormat(pattern = "yyy-MM-dd HH:mm:ss")
-    private final LocalDateTime timestamp; 
+    private final LocalDateTime timestamp;
 
     private List<String> details;
 
@@ -23,7 +23,7 @@ public class ErrorResponse {
         this.status = status.value();
         this.message = message;
         // JSTで現在時刻を設定
-        this.timestamp = LocalDateTime.now(ZoneId.of("Asia/Tokyo")); 
+        this.timestamp = LocalDateTime.now(ZoneId.of("Asia/Tokyo"));
     }
 
     public ErrorResponse(HttpStatus status, String message, List<String> details) {
@@ -39,7 +39,6 @@ public class ErrorResponse {
     public String getMessage() {
         return message;
     }
-
 
     public LocalDateTime getTimestamp() {
         return timestamp;

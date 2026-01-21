@@ -21,96 +21,74 @@ import com.workout.service.WorkoutService;
 @RestController
 @RequestMapping("/api/workouts")
 @CrossOrigin(origins = "http://localhost:5173")
-//@CrossOrigin(origins = "") のちに新しいページ追加
+// @CrossOrigin(origins = "") のちに新しいページ追加
 public class WorkoutController {
-  
+
   @Autowired
   private WorkoutService workoutService; // のちに実装
-  
-  // メソッド　GET, POST, DELETEをまず実装
-  
+
+  // メソッド GET, POST, DELETEをまず実装
+
   // Create - 作成
   @PostMapping("/create")
   public ResponseEntity<Workout> createWorkout(@RequestBody WorkoutRequest request) {
     Workout workout = workoutService.createWorkout(request);
-    return new ResponseEntity<>(workout, HttpStatus.CREATED);
+    return ResponseEntity.status(HttpStatus.CREATED).body(workout);
   }
-  
+
   @GetMapping("/{id}")
   public ResponseEntity<List<Workout>> getAllWorkoutsById(@PathVariable Long id) {
     List<Workout> workouts = workoutService.getAllWorkoutById(id);
-    return new ResponseEntity<>(workouts, HttpStatus.OK);
+    return ResponseEntity.ok(workouts);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteWorkout(@PathVariable("id") Long id) {
-    /*boolean deleted = workoutService.deletedWorkout(id);
-    if (deleted) {
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }*/
-
     workoutService.deletedWorkout(id);
+
     return ResponseEntity.noContent().build();
   }
 
   @PutMapping("/{id}/setName")
-public ResponseEntity<Workout> updateName(
-        @PathVariable Long id,
-        @RequestBody NameRequest request
-) {
+  public ResponseEntity<Workout> updateName(@PathVariable Long id, @RequestBody NameRequest request) {
     Workout updated = workoutService.updateName(id, request.getName());
-    return ResponseEntity.ok(updated);
-}
 
-@PutMapping("/{id}/setReps")
-public ResponseEntity<Workout> updateReps(
-        @PathVariable Long id,
-        @RequestBody RepsRequest request
-) {
+    return ResponseEntity.ok(updated);
+  }
+
+  @PutMapping("/{id}/setReps")
+  public ResponseEntity<Workout> updateReps(
+      @PathVariable Long id,
+      @RequestBody RepsRequest request) {
     Workout updated = workoutService.updateReps(id, request.getReps());
     return ResponseEntity.ok(updated);
-}
+  }
 
-@PutMapping("/{id}/setSets")
-public ResponseEntity<Workout> updateSets(
-        @PathVariable Long id,
-        @RequestBody SetsRequest request
-) {
+  @PutMapping("/{id}/setSets")
+  public ResponseEntity<Workout> updateSets(@PathVariable Long id, @RequestBody SetsRequest request) {
     Workout updated = workoutService.updateSets(id, request.getSets());
+
     return ResponseEntity.ok(updated);
+  }
+
+  @PutMapping("/{id}/setWeights")
+  public ResponseEntity<Workout> updateWeights(@PathVariable Long id, @RequestBody WeightsRequest request) {
+    Workout updated = workoutService.updateWeights(id, request.getWeights());
+
+    return ResponseEntity.ok(updated);
+  }
+
+  /**
+   * 
+   * @param id
+   * @param request
+   * @return
+   */
+
+  @PutMapping("/{id}/details")
+  public ResponseEntity<Workout> updateDatails(@PathVariable Long id, @RequestBody AllDetailsRequest request) {
+    Workout updated = workoutService.updateAllDetails(id, request);
+
+    return ResponseEntity.ok(updated);
+  }
 }
-
-@PutMapping("/{id}/setWeights")
-public ResponseEntity<Workout> updateWeights(
-         @PathVariable Long id,
-         @RequestBody WeightsRequest request
-) {
-  Workout updated = workoutService.updateWeights(id, request.getWeights());
-  return ResponseEntity.ok(updated);
-}
-
-// upteUserId{/{id}/setsUserId}の実装
-
-/**
- * 
- * @param id
- * @param request
- * @return
- */
-
-@PutMapping("/{id}/details")
-public ResponseEntity<Workout> updateDatails(
-        @PathVariable Long id,
-        @RequestBody AllDetailsRequest request
-) {
-  Workout updated = workoutService.updateAllDetails(id, request);
-  return ResponseEntity.ok(updated);
-}
-}
-
-
-
-
-// エラー箇所はWorkoutクラスとWorkoutServiceクラスの実装

@@ -1,10 +1,8 @@
 package com.workout.service;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,10 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.workout.controller.AllDetailsRequest;
-import com.workout.controller.WorkoutRequest;
 import com.workout.model.Workout;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
@@ -36,10 +32,6 @@ class WorkoutServiceTest {
 
   @InjectMocks
   private WorkoutService workoutService;
-  private WorkoutService service;
-
-
-  
 
   @Test
   void updateName_名前が更新されて返る() {

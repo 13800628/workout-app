@@ -62,7 +62,6 @@ public class User {
     if (age < 0) throw new IllegalArgumentException("年齢は0以上で入力してください");
     this.username = username;
     this.age = age;
-
   }
 } 
 

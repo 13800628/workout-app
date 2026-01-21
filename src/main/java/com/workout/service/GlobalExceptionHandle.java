@@ -1,8 +1,7 @@
-package com.workout.controller;
+package com.workout.service;
 
 import java.util.stream.Collectors;
 import java.util.List;
-import java.util.stream.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,19 +10,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
-
 @ControllerAdvice
 public class GlobalExceptionHandle {
-  
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleBadRequestException(MethodArgumentNotValidException ex) {
     List<String> details = ex.getBindingResult()
-          .getFieldErrors()
-          .stream()
-          .map(error -> error.getField() + ": " + error.getDefaultMessage())
-          .collect(Collectors.toList());
+        .getFieldErrors()
+        .stream()
+        .map(error -> error.getField() + ": " + error.getDefaultMessage())
+        .collect(Collectors.toList());
 
-    ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "入力値が不正です");
+    ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, "入力値が不正です" + details);
     return ResponseEntity.badRequest().body(error);
 
   }
