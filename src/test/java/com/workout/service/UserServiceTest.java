@@ -85,8 +85,9 @@ class UserServiceTest {
         User result = userService.getUserById(userId);
 
         // Assert
-        assertTrue(result.equals(result));
-        assertEquals("testuser", result);
+        assertNotNull(result);
+        assertEquals(testUser, result);
+        assertEquals("testuser", result.getUsername());
         assertEquals(25, result.getAge());
         verify(userRepository, times(1)).findById(userId);
     }
@@ -98,10 +99,12 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act
-       User result = userService.getUserById(userId);
+       IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        userService.getUserById(userId);
+       });
 
         // Assert
-        assertFalse(result.equals(result));
+        assertEquals("ID: 999", exception.getMessage());
         verify(userRepository, times(1)).findById(userId);
     }
 
@@ -132,14 +135,25 @@ class UserServiceTest {
     void updateUser_異常系_存在しないIDの場合nullが返される() {
         // Arrange
         Long userId = 999L;
+
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        // Act
-        User result = userService.updateUser(userId, "newname", 30);
 
         // Assert
-        assertNull(result);
+        assertThrows(IllegalArgumentException.class, () -> userService.updateUser(userId, "newname", 30));
         verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void updatedUser_異常系_名前がnullの場合IllegelArgumentExceptionを投げる() {
+        Long userId = 1L;
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateUser(userId, null, 25);
+        });
+
         verify(userRepository, never()).save(any(User.class));
     }
 
@@ -147,12 +161,25 @@ class UserServiceTest {
     void deleteUser_正常系_ユーザーが削除される() {
         // Arrange
         Long userId = 1L;
-        doNothing().when(userRepository).deleteById(userId);
+
+        when(userRepository.existsById(userId)).thenReturn(true);
 
         // Act
         userService.deleteUser(userId);
 
         // Assert
         verify(userRepository, times(1)).deleteById(userId);
+    }
+
+    @Test
+    void deleteUser_異常系_存在しないIDの場合は例外が発生() {
+        Long userId = 999L;
+        when(userRepository.existsById(userId)).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.deleteUser(userId);
+        });
+
+        verify(userRepository, never()).deleteById(anyLong());
     }
 }

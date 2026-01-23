@@ -1,4 +1,4 @@
-package com.workout.controller;
+package com.workout.dto.workoutdto;
 
 public class SetsRequest {
   private Integer sets;

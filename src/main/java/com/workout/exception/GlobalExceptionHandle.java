@@ -1,4 +1,4 @@
-package com.workout.service;
+package com.workout.exception;
 
 import java.util.stream.Collectors;
 import java.util.List;

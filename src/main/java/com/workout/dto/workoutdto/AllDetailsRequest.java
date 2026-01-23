@@ -1,16 +1,10 @@
-package com.workout.controller;
+package com.workout.dto.workoutdto;
 
-// Controllerクラスで使うWorkoutRequestクラスの定義
-// コードはシンプル
-/**
- * request.getName(), request.getReps(), request.getSets() のGetter/Setter
- */
-public class WorkoutRequest {
+public class AllDetailsRequest {
   private String name;
   private Integer reps;
   private Integer sets;
   private Integer weights;
-  private Long userId;
 
   public String getName() {
     return name;
@@ -44,15 +38,4 @@ public class WorkoutRequest {
     this.weights = weights;
   }
 
-  public Long getUserId() {
-    return userId;
-  }
-
-  public void setUserId(Long userId) {
-    this.userId = userId;
-  }
-
-  public void setUser(Long userId) {
-    this.userId = userId;
-  }
 }

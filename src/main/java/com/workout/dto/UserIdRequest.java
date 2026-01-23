@@ -1,4 +1,4 @@
-package com.workout.controller;
+package com.workout.dto;
 
 public class UserIdRequest {
   private Integer userId;
