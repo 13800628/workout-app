@@ -8,14 +8,15 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.workout.controller.AllDetailsRequest;
+import com.workout.dto.workoutdto.AllDetailsRequest;
+import com.workout.dto.workoutdto.WorkoutRequest;
+import com.workout.model.User;
 import com.workout.model.Workout;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
@@ -32,6 +33,29 @@ class WorkoutServiceTest {
 
   @InjectMocks
   private WorkoutService workoutService;
+
+  @Test
+  void createWorkout_正常系_Idによって作成() {
+    Long userId = 1L;
+    WorkoutRequest request = new WorkoutRequest();
+    request.setName("ベンチプレス");
+    request.setReps(10);
+    request.setSets(3);
+    request.setWeights(60);
+    request.setUserId(userId);
+
+    User testUser = new User();
+    testUser.setId(userId);
+    testUser.setUsername("テストユーザー");
+
+    when (userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+    when (workoutRepository.save(any(Workout.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    Workout result = workoutService.createWorkout(request);
+
+    assertNotNull(result);
+    verify(userRepository, times(1)).findById(userId);
+  }
 
   @Test
   void updateName_名前が更新されて返る() {

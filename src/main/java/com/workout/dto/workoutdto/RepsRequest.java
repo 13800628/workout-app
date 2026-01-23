@@ -1,4 +1,4 @@
-package com.workout.controller;
+package com.workout.dto.workoutdto;
 
 public class RepsRequest {
   private Integer reps;

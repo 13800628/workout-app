@@ -35,10 +35,25 @@ public class UserService {
   public User updateUser(Long id, String username, Integer age) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("ID: " + id));
+
+    if (username == null || username.isEmpty()) {
+      throw new IllegalArgumentException("名前がnullです");
+    }
+
+    if (age == null) {
+      throw new IllegalArgumentException("年齢がnullです");
+    }
+    user.setUsername(username);
+    user.setAge(age);
     return userRepository.save(user);
   }
 
   public void deleteUser(Long id) {
+
+    if (!userRepository.existsById(id)) {
+      throw new IllegalArgumentException("ID: " + id + "は存在しません");
+    }
+
     userRepository.deleteById(id);
   }
 }

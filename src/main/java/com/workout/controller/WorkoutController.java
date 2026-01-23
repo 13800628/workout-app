@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.workout.dto.workoutdto.AllDetailsRequest;
+import com.workout.dto.workoutdto.NameRequest;
+import com.workout.dto.workoutdto.RepsRequest;
+import com.workout.dto.workoutdto.SetsRequest;
+import com.workout.dto.workoutdto.WeightsRequest;
+import com.workout.dto.workoutdto.WorkoutRequest;
 import com.workout.model.Workout;
 import com.workout.service.WorkoutService;
 

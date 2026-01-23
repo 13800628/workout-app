@@ -1,4 +1,4 @@
-package com.workout.controller;
+package com.workout.dto;
 
 public class UserRequest {
   private String username;

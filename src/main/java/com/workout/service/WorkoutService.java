@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.workout.controller.AllDetailsRequest;
+import com.workout.dto.workoutdto.AllDetailsRequest;
+import com.workout.dto.workoutdto.WorkoutRequest;
 import com.workout.model.User;
 import com.workout.model.Workout;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
-import com.workout.controller.WorkoutRequest;
 
 @Service
 public class WorkoutService {
