@@ -104,7 +104,7 @@ class UserServiceTest {
        });
 
         // Assert
-        assertEquals("ID: 999", exception.getMessage());
+        assertEquals("IDが見つかりません: 999", exception.getMessage());
         verify(userRepository, times(1)).findById(userId);
     }
 
