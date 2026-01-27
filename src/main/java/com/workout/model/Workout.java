@@ -94,7 +94,11 @@ public class Workout {
   }
 
   public void updateAllWorkoutDetails(String name, Integer reps, Integer sets, Integer weights) {
-    if (name == null) throw new IllegalArgumentException("種目名を入力してください");
+
+    if (name == null || reps == null || sets == null || weights == null) {
+      throw new IllegalArgumentException("全ての項目を入力してください");
+    }
+
     if (reps < 0) throw new IllegalArgumentException("回数は0回以上にしてください");
     if (sets < 0) throw new IllegalArgumentException("セット数は0回以上にしてください");
     if (weights < -1) throw new IllegalArgumentException("重量にマイナスは入力できません");
