@@ -1,10 +1,8 @@
 package com.workout.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
@@ -72,6 +70,19 @@ class WorkoutServiceTest {
     assertEquals("after", result.getName());
     verify(workoutRepository).findById(id);
     verify(workoutRepository).save(workout);
+  }
+
+  @Test
+  void updateName_異常系_IDが存在しない場合は例外を投げる() {
+    Long id = 999L;
+
+    when(workoutRepository.findById(id)).thenReturn(Optional.empty());
+
+    assertThrows(RuntimeException.class, () -> {
+      workoutService.updateName(id, "after");
+    });
+
+    verify(workoutRepository, never()).save(any());
   }
 
   @Test
@@ -153,5 +164,41 @@ class WorkoutServiceTest {
 
     verify(workoutRepository).findById(id);
     verify(workoutRepository).save(workout);
+  }
+
+  @Test
+  void updateAllDetails_異常系_IDが存在しない場合はRuntimeExceptionを投げる() {
+    Long id = 999L;
+    AllDetailsRequest request = new AllDetailsRequest();
+
+    when(workoutRepository.findById(id)).thenReturn(Optional.empty());
+
+    RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+      workoutService.updateAllDetails(id, request);
+    });
+
+    assertEquals("Workout not found", exception.getMessage());
+
+    verify(workoutRepository, never()).save(any(Workout.class));
+  }
+
+  @Test
+  void updateAllDetails_異常系_一部の項目がnullの場合のIllegalArugumentException() {
+    Long id = 1L;
+    Workout existing = new Workout("ベンチプレス", 10, 3, 60, null);
+
+    AllDetailsRequest request = new AllDetailsRequest();
+    request.setName("新しい名前");
+    request.setReps(null);
+    request.setSets(3);
+    request.setWeights(40);
+    
+    when(workoutRepository.findById(id)).thenReturn(Optional.of(existing));
+    
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        workoutService.updateAllDetails(id, request);
+    });
+
+    assertEquals("全ての項目を入力してください", exception.getMessage());
   }
 }
