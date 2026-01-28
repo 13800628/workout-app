@@ -177,7 +177,7 @@ class WorkoutServiceTest {
       workoutService.updateAllDetails(id, request);
     });
 
-    assertEquals("Workout not found", exception.getMessage());
+    assertEquals("Workoutが見つかりません: " + id, exception.getMessage());
 
     verify(workoutRepository, never()).save(any(Workout.class));
   }
