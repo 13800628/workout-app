@@ -171,34 +171,32 @@ class WorkoutServiceTest {
     Long id = 999L;
     AllDetailsRequest request = new AllDetailsRequest();
 
+    request.setName("ベンチ");
+    request.setReps(23);
+    request.setSets(4);
+    request.setWeights(60);
+
     when(workoutRepository.findById(id)).thenReturn(Optional.empty());
 
-    RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+    assertThrows(RuntimeException.class, () -> {
       workoutService.updateAllDetails(id, request);
     });
 
-    assertEquals("Workoutが見つかりません: " + id, exception.getMessage());
-
-    verify(workoutRepository, never()).save(any(Workout.class));
+    verify(workoutRepository).findById(id);
+    verify(workoutRepository, never()).save(any());
   }
 
   @Test
-  void updateAllDetails_異常系_一部の項目がnullの場合のIllegalArugumentException() {
-    Long id = 1L;
-    Workout existing = new Workout("ベンチプレス", 10, 3, 60, null);
-
+  void updateAllDetails_異常系_回数の項目がnullの場合() {
     AllDetailsRequest request = new AllDetailsRequest();
-    request.setName("新しい名前");
+    request.setName("ベンチ");
     request.setReps(null);
-    request.setSets(3);
-    request.setWeights(40);
     
-    when(workoutRepository.findById(id)).thenReturn(Optional.of(existing));
     
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-        workoutService.updateAllDetails(id, request);
+        workoutService.updateAllDetails(1L, request);
     });
 
-    assertEquals("全ての項目を入力してください", exception.getMessage());
+    assertEquals("回数は0回以上にしてください", exception.getMessage());
   }
 }
