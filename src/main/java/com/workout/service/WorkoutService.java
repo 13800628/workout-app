@@ -1,28 +1,33 @@
 package com.workout.service;
 
 import java.util.List;
+import java.util.function.Consumer;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.workout.dto.workoutdto.AllDetailsRequest;
 import com.workout.dto.workoutdto.WorkoutRequest;
 import com.workout.model.User;
 import com.workout.model.Workout;
+import com.workout.model.WorkoutValidator;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
 
 @Service
 public class WorkoutService {
  
-  
-  private WorkoutRepository workoutRepository;
-  private UserRepository userRepository;
+  private final WorkoutRepository workoutRepository;
+  private final UserRepository userRepository;
 
   public WorkoutService(UserRepository userRepository, WorkoutRepository workoutRepository) {
     this.userRepository = userRepository;
     this.workoutRepository = workoutRepository;
   }
+
   @Transactional
   public Workout createWorkout(WorkoutRequest request) {
+    WorkoutValidator.validateAll(request.getName(), request.getReps(), request.getSets(), request.getWeights());
+
     User user = null;
     if (request.getUserId() != null) {
      user = userRepository.findById(request.getUserId())
@@ -64,32 +69,29 @@ public class WorkoutService {
 
   @Transactional
   public Workout updateName(Long id, String name) {
-    Workout workout = getWorkoutById(id);
-    workout.setName(name);
-    return workoutRepository.save(workout);
+    WorkoutValidator.validateName(name);
+    return updateField(id, workout -> workout.setName(name));
   }
 
   public Workout updateReps(Long id, Integer reps) {
-    Workout workout = getWorkoutById(id);
-    workout.setReps(reps);
-    return workoutRepository.save(workout);
+    WorkoutValidator.validateReps(reps);
+    return updateField(id, workout -> workout.setReps(reps));
   }
   
   public Workout updateSets(Long id, Integer sets) {
-    Workout workout = getWorkoutById(id);
-    workout.setSets(sets);
-
-    return workoutRepository.save(workout);
+    WorkoutValidator.validateSets(sets);
+    return updateField(id, workout -> workout.setSets(sets));
   }
   
   public Workout updateWeights(Long id, Integer weights) {
-    Workout workout = getWorkoutById(id);
-    workout.setWeights(weights);
-    return workoutRepository.save(workout);
+    WorkoutValidator.validateWeights(weights);
+    return updateField(id, workout -> workout.setWeights(weights));
   }
 
   @Transactional
   public Workout updateAllDetails(Long id, AllDetailsRequest request) {
+    WorkoutValidator.validateAll(request.getName(), request.getReps(), request.getSets(), request.getWeights());
+    
     Workout workout = getWorkoutById(id);
 
     workout.updateAllWorkoutDetails(
@@ -99,6 +101,15 @@ public class WorkoutService {
         request.getWeights()
     );
 
+    return workoutRepository.save(workout);
+  }
+
+  /**
+   * 更新系共通テンプレ
+   */
+  private Workout updateField(Long id, Consumer<Workout> updateLogic) {
+    Workout workout = getWorkoutById(id);
+    updateLogic.accept(workout);
     return workoutRepository.save(workout);
   }
 }

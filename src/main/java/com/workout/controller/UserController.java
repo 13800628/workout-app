@@ -29,11 +29,10 @@ public class UserController {
 
   @PostMapping("/register")
   public ResponseEntity<User> registerUser(@RequestBody UserRequest request) {
-    User user = userService.registerUser(request.getUserName(), request.getAge());
+    User user = userService.registerUser(request.getUsername(), request.getAge());
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
-  // --- R (Read) - 全ユーザー取得 ---
   @GetMapping
   public ResponseEntity<List<User>> getAllUsers() {
     List<User> users = userService.getAllUsers();
@@ -51,10 +50,8 @@ public class UserController {
   // UserRequestを再利用して、ユーザー名と年齢を更新すると想定
   @PutMapping("/{id}")
   public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserRequest request) {
-    // UserServiceで更新処理を行い、更新後のUserオブジェクトを返す
-    User updatedUser = userService.updateUser(id, request.getUserName(), request.getAge());
+    User updatedUser = userService.updateUser(id, request.getUsername(), request.getAge());
 
-    // ユーザーが見つからない場合はUserService側でResourceNotFoundExceptionをスローさせても良い
     return ResponseEntity.ok(updatedUser);
   }
 
@@ -62,8 +59,7 @@ public class UserController {
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
     userService.deleteUser(id);
-    // 削除成功後はコンテンツなし (204 No Content) を返すのが一般的
+
     return ResponseEntity.noContent().build();
-    // return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }
