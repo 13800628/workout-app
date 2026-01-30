@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import org.springframework.test.web.servlet.MockMvc;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +51,7 @@ class UserControllerTest  {
 
     when(userService.registerUser(anyString(), anyInt())).thenReturn(savedUser);
 
-    mockMvc.perform(post("/api/users/register")
+    mockMvc.perform(post("/api/users")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)))
       .andDo(print())
@@ -58,6 +59,22 @@ class UserControllerTest  {
       .andExpect(jsonPath("$.id").value(1))
       .andExpect(jsonPath("$.username").value("テスト"))
       .andExpect(jsonPath("$.age").value(25));
+  }
+
+  @Test
+  void registerUser_異常系_バリデーションエラー時は400を返す() throws Exception {
+    UserRequest request = new UserRequest();
+    request.setUsername("");
+    request.setAge(25);
+
+    when(userService.registerUser(anyString(), anyInt()))
+        .thenThrow(new IllegalArgumentException("ユーザー名は必須です"));
+
+    mockMvc.perform(post("/api/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsBytes(request)))
+      .andDo(print())
+      .andExpect(status().isBadRequest());
   }
 
   @Test
@@ -72,6 +89,17 @@ class UserControllerTest  {
     mockMvc.perform(get("/api/users/{id}", id))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.username").value("検索ユーザー"));
+  }
+
+  @Test
+  void getUserById_異常系_存在しないIDを指定した場合は404を返す() throws Exception {
+    Long id = 999L;
+
+    when(userService.getUserById(id)).thenThrow(new IllegalArgumentException("IDが見つかりません: " + id));
+
+    mockMvc.perform(get("/api/users/{id}", id))
+        .andDo(print())
+        .andExpect(status().isBadRequest());
   }
 
   @Test

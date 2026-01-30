@@ -1,4 +1,4 @@
-package com.workout.dto.workoutdto;
+package com.workout.dto.workouts;
 
 public class WeightsRequest {
   private Integer weights;

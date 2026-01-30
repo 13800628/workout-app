@@ -2,7 +2,6 @@ package com.workout.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,10 +23,13 @@ import com.workout.service.UserService;
 @CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
-  @Autowired
-  private UserService userService;
+  private final UserService userService;
 
-  @PostMapping("/register")
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
+
+  @PostMapping
   public ResponseEntity<User> registerUser(@RequestBody UserRequest request) {
     User user = userService.registerUser(request.getUsername(), request.getAge());
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
@@ -35,15 +37,12 @@ public class UserController {
 
   @GetMapping
   public ResponseEntity<List<User>> getAllUsers() {
-    List<User> users = userService.getAllUsers();
-    return ResponseEntity.ok(users);
+    return ResponseEntity.ok(userService.getAllUsers());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<User> getUserBy(@PathVariable("id") Long id) {
-    User user = userService.getUserById(id); // コントローラーは成功だけ知っておく
-        
-    return ResponseEntity.ok(user);
+  public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
+    return ResponseEntity.ok(userService.getUserById(id));
   }
 
   // --- U (Update) - ユーザー情報更新 ---
@@ -51,7 +50,6 @@ public class UserController {
   @PutMapping("/{id}")
   public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserRequest request) {
     User updatedUser = userService.updateUser(id, request.getUsername(), request.getAge());
-
     return ResponseEntity.ok(updatedUser);
   }
 
@@ -59,7 +57,6 @@ public class UserController {
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
     userService.deleteUser(id);
-
     return ResponseEntity.noContent().build();
   }
 }

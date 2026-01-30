@@ -5,8 +5,9 @@ import java.util.function.Consumer;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.workout.dto.workoutdto.AllDetailsRequest;
-import com.workout.dto.workoutdto.WorkoutRequest;
+
+import com.workout.dto.workouts.AllDetailsRequest;
+import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.User;
 import com.workout.model.Workout;
 import com.workout.model.WorkoutValidator;

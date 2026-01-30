@@ -12,8 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.workout.dto.workoutdto.AllDetailsRequest;
-import com.workout.dto.workoutdto.WorkoutRequest;
+import com.workout.dto.workouts.AllDetailsRequest;
+import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.User;
 import com.workout.model.Workout;
 import com.workout.repository.UserRepository;
