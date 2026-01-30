@@ -1,4 +1,4 @@
-package com.workout.dto.workoutdto;
+package com.workout.dto.workouts;
 
 // Controllerクラスで使うWorkoutRequestクラスの定義
 // コードはシンプル

@@ -31,7 +31,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = new User("testuser", 25);
+        testUser = new User("tester", 25);
         testUser.setId(1L);
     }
 
@@ -70,7 +70,7 @@ class UserServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertEquals("testuser", result.get(0).getUsername());
+        assertEquals("tester", result.get(0).getUsername());
         assertEquals("user2", result.get(1).getUsername());
         verify(userRepository, times(1)).findAll();
     }
@@ -87,7 +87,7 @@ class UserServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(testUser, result);
-        assertEquals("testuser", result.getUsername());
+        assertEquals("tester", result.getUsername());
         assertEquals(25, result.getAge());
         verify(userRepository, times(1)).findById(userId);
     }
@@ -146,7 +146,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updatedUser_異常系_名前がnullの場合IllegelArgumentExceptionを投げる() {
+    void updatedUser_異常系_名前がnullの場合illegalArgumentExceptionを投げる() {
         Long userId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 

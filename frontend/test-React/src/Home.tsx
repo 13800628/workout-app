@@ -30,7 +30,7 @@ function Home() {
   // 登録処理
   const handleRegister = async () => {
     try {
-      const res = await fetch(`${baseUrl}/register`, {
+      const res = await fetch(`${baseUrl}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
