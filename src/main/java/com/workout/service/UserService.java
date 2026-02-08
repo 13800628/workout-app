@@ -47,12 +47,11 @@ public class UserService {
 
   @Transactional
   public void deleteUser(Long id) {
+    int deletedCount = userRepository.deleteDirectlyById(id);
 
-    if (!userRepository.existsById(id)) {
+    if (deletedCount == 0) {
       throw new IllegalArgumentException("ID: " + id + "は存在しません");
     }
-
-    userRepository.deleteById(id);
   }
 
   private void validateUserData(String username, Integer age) {
