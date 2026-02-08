@@ -40,8 +40,13 @@ public class UserController {
     return ResponseEntity.ok(userService.getAllUsers());
   }
 
+  @CrossOrigin(origins = "http://localhost:3000")
   @GetMapping("/{id}")
   public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
+    User user = userService.getUserById(id);
+    if (user == null) {
+      return ResponseEntity.notFound().build();
+    }
     return ResponseEntity.ok(userService.getUserById(id));
   }
 
