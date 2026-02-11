@@ -22,6 +22,8 @@ public class User {
   @Column(nullable = false)
   private Integer age;
 
+  private String password;
+
   public User() {}
 
   public User(String username, Integer age) {
@@ -54,6 +56,14 @@ public class User {
 
   public void setAge(Integer age) {
     this.age = age;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void serPassword() {
+    this.password = password;
   }
 
   // 各メソッドの実装
