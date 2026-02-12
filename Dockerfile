@@ -3,7 +3,7 @@ FROM node:20 AS frontend-build
 WORKDIR /app/frontend
 # フォルダ名が 'frontend' ではない場合は適宜書き換えてください
 COPY frontend/test-React/package*.json ./
-RUN npm install
+RUN npm install --force
 COPY frontend/ ./
 RUN npm run build
 
