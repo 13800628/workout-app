@@ -26,8 +26,8 @@ export default function Workout() {
   const params = new URLSearchParams(window.location.search);
   const workoutId = params.get("id");
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
-  const workoutUrl = `${API_BASE_URL}/api/workouts`;
+  //const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+  const workoutUrl = "/api/workouts";
     
     // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
     const handleCreateWorkout = async () => {
