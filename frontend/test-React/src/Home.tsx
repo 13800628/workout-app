@@ -21,7 +21,8 @@ function Home() {
   const [userId, setUserId] = useState("");
   const [result, setResult] = useState("");
 
-  const baseUrl = "http://localhost:8080/api/users";
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080"
+  const baseUrl = `${API_BASE_URL}/api/users`;
   
   // =========================================================================
   // CRUD 操作 各種

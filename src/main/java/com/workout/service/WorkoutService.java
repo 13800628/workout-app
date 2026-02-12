@@ -60,12 +60,12 @@ public class WorkoutService {
   
   // booleanか引数なしかは今後検討(仮)
   @Transactional
-  public boolean deletedWorkout(Long id) {
-    if (!workoutRepository.existsById(id)) {
-      return false;
+  public void deletedWorkout(Long id) {
+    int deletedCount = workoutRepository.deleteDirectlyById(id);
+
+    if (deletedCount == 0) {
+      throw new IllegalArgumentException("Workout ID: " + id + "は存在しません");
     }
-    workoutRepository.deleteById(id);
-    return true;
   }
 
   @Transactional

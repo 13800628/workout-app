@@ -20,7 +20,6 @@ import com.workout.service.UserService;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
   private final UserService userService;
@@ -40,7 +39,6 @@ public class UserController {
     return ResponseEntity.ok(userService.getAllUsers());
   }
 
-  @CrossOrigin(origins = "http://localhost:3000")
   @GetMapping("/{id}")
   public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
     User user = userService.getUserById(id);
