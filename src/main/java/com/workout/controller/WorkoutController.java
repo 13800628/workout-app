@@ -26,7 +26,6 @@ import com.workout.service.WorkoutService;
 
 @RestController
 @RequestMapping("/api/workouts")
-@CrossOrigin(origins = "http://localhost:5173")
 // @CrossOrigin(origins = "") のちに新しいページ追加
 public class WorkoutController {
 

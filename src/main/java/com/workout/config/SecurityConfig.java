@@ -20,7 +20,7 @@ public class SecurityConfig {
             // 1. CORS設定：React(5173)からのアクセスを完全に許可
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOrigins(List.of("http://localhost:5173"));
+                config.setAllowedOriginPatterns(List.of("http://localhost:5173","https://*.onrender.com"));
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("*"));
                 config.setAllowCredentials(true);
