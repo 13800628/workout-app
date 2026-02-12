@@ -1,22 +1,25 @@
 # 1. フロントエンドのビルド
 FROM node:20 AS frontend-build
 WORKDIR /app/frontend
-# フォルダ名が 'frontend' ではない場合は適宜書き換えてください
+
+# package-lock.json もコピーするように変更（npm ci のため）
 COPY frontend/test-React/package*.json ./
-RUN npm install --force
-COPY frontend/ ./
+
+# 依存関係のチェックを完全に無視してインストールを強行する
+RUN npm install --legacy-peer-deps
+
+COPY frontend/test-React/ ./
 RUN npm run build
 
-# 2. バックエンドのビルド（フロントの成果物を詰め込む）
+# 2. バックエンドのビルド（以下、前回と同じ）
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY . .
-# ステージ1で作った成果物を Java の静的リソースフォルダにコピー
-# Viteなら 'dist'、Create React Appなら 'build' になっているはずです
+# コピー元のパスを修正（frontend-buildステージのWORKDIRが/app/frontendなので、そこのdistを指す）
 COPY --from=frontend-build /app/frontend/dist ./src/main/resources/static
 RUN mvn clean package -DskipTests
 
-# 3. 実行
+# 3. 実行（以下、前回と同じ）
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
