@@ -33,6 +33,11 @@ public class UserService {
     return userRepository.findAll(pageable);
   }
 
+  // テスト用、ビルドの整合性のため
+  public List<User> getAllUsers() {
+    return userRepository.findAll();
+  }
+
   @Transactional(readOnly = true)
   public User getUserById(Long id) {
     return userRepository.findById(id)
