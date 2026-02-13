@@ -156,7 +156,7 @@ function Home() {
 
   return (
     <div style={{ padding: 20 , fontSize: 18}} className="gradation">
-      <h1>ユーザー登録テスト</h1>
+      <h1>ユーザー登録(個人情報は入力しないでください)</h1>
       
       <input
         placeholder="名前"
