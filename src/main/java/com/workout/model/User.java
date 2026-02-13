@@ -62,7 +62,7 @@ public class User {
     return password;
   }
 
-  public void serPassword() {
+  public void setPassword() {
     this.password = password;
   }
 
