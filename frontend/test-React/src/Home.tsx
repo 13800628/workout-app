@@ -155,9 +155,13 @@ function Home() {
 
 
   return (
-    <div style={{ padding: 20 , fontSize: 18}} className="gradation">
-      <h1>ユーザー登録(個人情報は入力しないでください)</h1>
-      
+    <div className="home-container">
+      <header className="home-header">
+        <h1>ユーザー管理</h1>
+        <p className="safety-note">個人情報は入力しないでください</p>
+      </header>
+
+     <div className="input-form">
       <input
         placeholder="名前"
         value={username}
@@ -174,25 +178,26 @@ function Home() {
       <br />
 
       <input
-        placeholder="ID"
+        placeholder="対象ユーザーID"
         type="number"
         value={userId}
         onChange={(e) => setUserId(e.target.value)}
       />
+    </div>
 
-      
-      <h3>操作</h3>
+      <h3 className="section-title">操作</h3>
       <div className="button-group">
-      <button onClick={handleRegister}>登録</button>
-      <button onClick={handleGetAll}>全部取得</button>
-      <button onClick={handleGetById}>ID 取得</button>
-      <button onClick={handleUpdate}>更新</button>
-      <button onClick={handleDelete}>削除</button>
-      <button onClick={handleGoToWorkoutPage}>Workoutページへ</button>
+        <button onClick={handleRegister}>登録</button>
+        <button onClick={handleGetAll}>全部取得</button>
+        <button onClick={handleGetById}>ID 取得</button>
+        <button onClick={handleUpdate}>更新</button>
+        <button onClick={handleDelete}>削除</button>
+        <button onClick={handleGoToWorkoutPage}>Workoutページへ</button>
       </div>
-      <div>
+
+      <div className="result-section">
         <h3>ユーザー情報</h3>
-        <div style={{ whiteSpace: 'pre-line', marginTop: '10px'}}>{result}</div>
+        <div className="result-section"> {result} </div>
       </div>
     </div>
   );
