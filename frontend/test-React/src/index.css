@@ -80,6 +80,7 @@ button:last-child {
 }
 
 
+div[style*="whiteSpace: 'pre'"]
 div[style*="whiteSpace: 'pre-line'"] {
   background: rgba(255, 255, 255, 0.9); /* 少し透ける白 */
   border-radius: 12px;
@@ -89,4 +90,8 @@ div[style*="whiteSpace: 'pre-line'"] {
   text-align: left;
   color: #333;
   font-size: 16px;
+
+  white-space: pre !important;    /* スペースと改行を完全に維持 */
+  font-family: 'Courier New', Courier, monospace; /* 等幅フォントでズレを防止 */
+  overflow-x: auto;
 }
