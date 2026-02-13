@@ -4,18 +4,12 @@ body {
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: linear-gradient(to right, #f8f9fa, #e9ecef);
   text-align: center;
 }
 
-h1 {
+h1 ,h3{
   color: navy;
-  text-align: center;
-}
-
-h3 {
-  color: navy;
-  text-align: center;
+  margin-top: 0;
 }
 
 p {
@@ -26,34 +20,73 @@ p {
 }
 
 input {
-  font-size: 16px;
-  padding: 8px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  width: 90%; /* 少し余裕を持たせる */
+  max-width: 400px; /* PCで広がりすぎないように */
+  padding: 12px; /* タップしやすく厚みを出す */
+  font-size: 16px; /* iPhoneでの自動ズーム防止 */
+  border-radius: 8px; /* 少し角を丸くして今風に */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 少し浮かせると見やすい */
 }
 
 button {
-  font-size: 15px;
-  padding: 8px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: lightskyblue;
-}
-
-.button-group button {
-  margin: 0 7px;
-}
-
-
-html,
-body {
-  height: 100%;
-  margin: 0;
+  width: 100%; /* グリッドの枠いっぱいに広げる */
+  margin: 0; /* gridで管理するので個別マージンは消す */
+  padding: 12px 5px;
+  font-weight: bold;
+  border: none;
+  background-color: white; /* グラデーションの上で見やすいように白背景 */
+  color: #8b5cf6; /* 文字色はグラデーションの片方の色に合わせると綺麗 */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.1s;
 }
 
 .gradation {
   min-height: 100vh;
   background-image: linear-gradient(90deg, #22d3ee, #8b5cf6);
+  padding: 20px 10px;
+  box-sizing: border-box;
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* スマホでは2列 */
+  gap: 10px; /* ボタン同士の隙間 */
+  max-width: 500px;
+  margin: 20px auto; /* 中央寄せ */
+  padding: 0 10px;
+}
+
+@media (min-width: 600px) {
+  .button-group {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+button:active {
+  transform: translateY(2px); /* 押した時に少し沈む演出 */
+}
+
+/* 最後の「Workoutページへ」ボタンだけ横いっぱいに */
+button:last-child {
+  grid-column: span 2; 
+  background-color: navy; /* 目立たせるために色を変える */
+  color: white;
+}
+
+@media (min-width: 600px) {
+  button:last-child {
+    grid-column: span 3;
+  }
+}
+
+
+div[style*="whiteSpace: 'pre-line'"] {
+  background: rgba(255, 255, 255, 0.9); /* 少し透ける白 */
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 500px;
+  text-align: left;
+  color: #333;
+  font-size: 16px;
 }
