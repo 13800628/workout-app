@@ -159,15 +159,6 @@ export default function Workout() {
             }
           />
 
-          <input
-            placeholder="更新対象ID"
-            type="number"
-            value={targetId}
-            readOnly
-            //onChange={(e) => setTargetId(e.target.value)}
-            style={{ width: "100px", border: "2px solid #007bff" }} // 目立つように
-          />
-
           <div className="button-group">
             <button onClick={handleCreateWorkout}>登録</button>
 
@@ -199,16 +190,7 @@ export default function Workout() {
                 </button>
 
                 <button
-                  onClick={() => {
-                    if (!targetId) {
-                      alert("更新したいIDを入力してください");
-                      return;
-                    }
-                    handleUpdateAllDetails(Number(targetId));
-                  }}
-                >
-                  編集を実行
-                </button>
+                  onClick={() => { handleUpdateAllDetails(Number(targetId));}}> 編集を実行 </button>
 
                 <p>
                   <span className="font-semibold">ID:</span>
