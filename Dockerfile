@@ -12,7 +12,7 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY . .
 # Viteはデフォルトで 'dist' フォルダに書き出すので、それをJavaへコピー
-COPY --from=frontend-build /app/frontend/dist ./src/main/resources/static
+COPY --from=frontend-build /app/frontend/dist/ /app/src/main/resources/static/
 RUN mvn clean package -DskipTests
 
 # 3. 実行
