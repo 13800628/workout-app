@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-
-
 type Workout ={
   id: number;
   name: string;
@@ -9,9 +7,6 @@ type Workout ={
   sets: number;
   weights: number;
 }
-
-
-
 
 export default function Workout() {
   const [workout, setWorkout] = useState<Workout | Workout[] |null>(null);
@@ -32,6 +27,8 @@ export default function Workout() {
     
     // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
     const handleCreateWorkout = async () => {
+      if (!validateWorkout()) return;
+
       try {
         const res = await fetch(`${workoutUrl}/create`, {
           method: "POST",
@@ -98,6 +95,7 @@ export default function Workout() {
 
   const handleUpdateAllDetails = async (id: number) => {
     if (!workoutId) return;
+    if (!validateWorkout()) return;
     
     try {
       const res = await fetch(`${workoutUrl}/${id}/details`, {
@@ -113,17 +111,41 @@ export default function Workout() {
         }),
       });
       const data = await res.json();
-      setWorkout(data);
-      console.log("更新成功:", data);
+      
+      if (!res.ok) {
+        setError(data.message || "更新に失敗しました");
+        return;
+      }
+      console.log("更新成功");
+      handleGetAll();
+      setError("");
     } catch (err) {
       console.error("エラーが発生しました: ", err);
+      setError("通信エラーが発生しました");
     }
   }
+
+  const validateWorkout = () => {
+    if (!formData.name.trim()) {
+      setError("種目名を入力してください");
+      return false;
+    }
+    if (Number(formData.reps) < 0 || Number(formData.sets) < 0 || Number(formData.weights) < 0) {
+      setError("数値にマイナスを入力することはできません");
+      return false;
+    }
+    setError("");
+    return true;
+  };
       
   
     return (
       <div style={{ padding: 20, fontSize: 18 }} className="gradation">
         <h2>Workout Details</h2>
+
+        {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
+
+        {!workoutId && <p>ユーザーIDが指定されていません</p>}
 
         {!workoutId && <p>ユーザーIDが指定されていません</p>}
         <p>Your workout data...</p>
@@ -190,7 +212,13 @@ export default function Workout() {
                 </button>
 
                 <button
-                  onClick={() => { handleUpdateAllDetails(Number(targetId));}}> 編集を実行 </button>
+                  onClick={() => {
+                    handleUpdateAllDetails(Number(targetId));
+                  }}
+                >
+                  {" "}
+                  編集を実行{" "}
+                </button>
 
                 <p>
                   <span className="font-semibold">ID:</span>
@@ -223,21 +251,25 @@ export default function Workout() {
                 style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}
               >
                 <p>
-                  <span className="font-semibold">ID:</span> {workout.id}
+                  {" "}
+                  <span className="font-semibold">ID:</span> {workout.id}{" "}
                 </p>
                 <p>
-                  <span className="font-semibold">種目名:</span> {workout.name}
+                  <span className="font-semibold">種目名:</span>{" "}
+                  {workout.name}{" "}
                 </p>
                 <p>
-                  <span className="font-semibold">回数:</span> {workout.reps}
+                  <span className="font-semibold">回数:</span>{" "}
+                  {workout.reps}{" "}
                 </p>
                 <p>
+                  {" "}
                   <span className="font-semibold">セット数:</span>{" "}
-                  {workout.sets}
+                  {workout.sets}{" "}
                 </p>
                 <p>
                   <span className="font-semibold">重量:</span> {workout.weights}{" "}
-                  Kg
+                  Kg{" "}
                 </p>
               </div>
             )}
