@@ -16,6 +16,7 @@ type Workout ={
 export default function Workout() {
   const [workout, setWorkout] = useState<Workout | Workout[] |null>(null);
   const [error, setError] = useState<string>("");
+  const [targetId, setTargetId] = useState<number | "">("");
   const [formData, setFormData] = useState({
     name: "",
     reps: "",
@@ -157,6 +158,33 @@ export default function Workout() {
               setFormData({ ...formData, weights: e.target.value })
             }
           />
+
+          <input
+            placeholder="更新対象ID"
+            type="number"
+            value={targetId}
+            readOnly
+            //onChange={(e) => setTargetId(e.target.value)}
+            style={{ width: "100px", border: "2px solid #007bff" }} // 目立つように
+          />
+
+          <div className="button-group">
+            <button onClick={handleCreateWorkout}>登録</button>
+
+            <button
+              onClick={() => {
+                if (!targetId) {
+                  alert("更新したいIDを入力してください");
+                  return;
+                }
+                handleUpdateAllDetails(Number(targetId));
+              }}
+            >
+              IDを更新
+            </button>
+
+            <button onClick={handleGetAll}>全件取得</button>
+          </div>
         </div>
 
         <h3></h3>
@@ -168,9 +196,20 @@ export default function Workout() {
                 key={item.id}
                 style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}
               >
-                <button onClick={() => handleDeleteWorkout(item.id)}>
-                  削除
+                <button
+                  onClick={() => {
+                    setTargetId(item.id);
+                    setFormData({
+                      name: item.name,
+                      reps: String(item.reps),
+                      sets: String(item.sets),
+                      weights: String(item.weights),
+                    });
+                  }}
+                >
+                  編集する
                 </button>
+
                 <p>
                   <span className="font-semibold">ID:</span>
                   {item.id}
@@ -192,19 +231,9 @@ export default function Workout() {
                   {item.weights}
                 </p>
 
-                <div className="button-group">
-                  <button onClick={handleCreateWorkout}>登録</button>
-
-                  <button
-                    onClick={() => {
-                      handleUpdateAllDetails(item.id);
-                    }}
-                  >
-                    更新
-                  </button>
-
-                  <button onClick={handleGetAll}>全件取得</button>
-                </div>
+                <button onClick={() => handleDeleteWorkout(item.id)}>
+                  削除
+                </button>
               </div>
             ))
           : workout && (
