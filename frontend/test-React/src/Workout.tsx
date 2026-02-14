@@ -95,11 +95,11 @@ export default function Workout() {
     }
   };
 
-  const handleUpdateAllDetails = async () => {
+  const handleUpdateAllDetails = async (id: number) => {
     if (!workoutId) return;
     
     try {
-      const res = await fetch(`${workoutUrl}/${workoutId}/details`, {
+      const res = await fetch(`${workoutUrl}/${id}/details`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -128,76 +128,108 @@ export default function Workout() {
         <p>Your workout data...</p>
 
         <div>
-            <input
-              placeholder="種目名"
-              type="text"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-            />
+          <input
+            placeholder="種目名"
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
 
-            <input
-              placeholder="回数"
-              type="number"
-              value={formData.reps}
-              onChange={(e) =>
-                setFormData({ ...formData, reps: e.target.value })
-              }
-            />
+          <input
+            placeholder="回数"
+            type="number"
+            value={formData.reps}
+            onChange={(e) => setFormData({ ...formData, reps: e.target.value })}
+          />
 
-            <input
-              placeholder="セット数"
-              type="number"
-              value={formData.sets}
-              onChange={(e) =>
-                setFormData({ ...formData, sets: e.target.value })
-              }
-            />
+          <input
+            placeholder="セット数"
+            type="number"
+            value={formData.sets}
+            onChange={(e) => setFormData({ ...formData, sets: e.target.value })}
+          />
 
-            <input
-              placeholder="重さ"
-              type="number"
-              value={formData.weights}
-              onChange={(e) =>
-                setFormData({ ...formData, weights: e.target.value })
-              }
-            />
-          </div>
+          <input
+            placeholder="重さ"
+            type="number"
+            value={formData.weights}
+            onChange={(e) =>
+              setFormData({ ...formData, weights: e.target.value })
+            }
+          />
+        </div>
 
         <h3></h3>
-        <div className="button-group">
-          <button onClick={handleCreateWorkout}>登録</button>
 
-          <button onClick={() => {handleUpdateAllDetails();}}>更新</button>
-
-          <button onClick={handleGetAll}>全件取得</button>
-
-        </div>
         <h3>記録一覧</h3>
-        {Array.isArray(workout) ? (
-          workout.map((item) => (
-            <div key={item.id} style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}>
-              <button onClick={() => handleDeleteWorkout(item.id)}>削除</button>
-              <p><span className="font-semibold">ID:</span>{item.id}</p>
-              <p><span className="font-semibold">種目名:</span>{item.name}</p>
-              <p><span className="font-semibold">回数:</span>{item.reps}</p>
-              <p><span className="font-semibold">セット数:</span>{item.sets}</p>
-              <p><span className="font-semibold">重量:</span>{item.weights}</p>
+        {Array.isArray(workout)
+          ? workout.map((item) => (
+              <div
+                key={item.id}
+                style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}
+              >
+                <button onClick={() => handleDeleteWorkout(item.id)}>
+                  削除
+                </button>
+                <p>
+                  <span className="font-semibold">ID:</span>
+                  {item.id}
+                </p>
+                <p>
+                  <span className="font-semibold">種目名:</span>
+                  {item.name}
+                </p>
+                <p>
+                  <span className="font-semibold">回数:</span>
+                  {item.reps}
+                </p>
+                <p>
+                  <span className="font-semibold">セット数:</span>
+                  {item.sets}
+                </p>
+                <p>
+                  <span className="font-semibold">重量:</span>
+                  {item.weights}
+                </p>
+
+                <div className="button-group">
+                  <button onClick={handleCreateWorkout}>登録</button>
+
+                  <button
+                    onClick={() => {
+                      handleUpdateAllDetails(item.id);
+                    }}
+                  >
+                    更新
+                  </button>
+
+                  <button onClick={handleGetAll}>全件取得</button>
+                </div>
               </div>
-          ))
-        ) : (
-          workout && (
-            <div style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}>
-              <p><span className="font-semibold">ID:</span> {workout.id}</p>
-              <p><span className="font-semibold">種目名:</span> {workout.name}</p>
-              <p><span className="font-semibold">回数:</span> {workout.reps}</p>
-              <p><span className="font-semibold">セット数:</span> {workout.sets}</p>
-              <p><span className="font-semibold">重量:</span> {workout.weights} Kg</p>
-            </div>
-            )
-          )
-        }
+            ))
+          : workout && (
+              <div
+                style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}
+              >
+                <p>
+                  <span className="font-semibold">ID:</span> {workout.id}
+                </p>
+                <p>
+                  <span className="font-semibold">種目名:</span> {workout.name}
+                </p>
+                <p>
+                  <span className="font-semibold">回数:</span> {workout.reps}
+                </p>
+                <p>
+                  <span className="font-semibold">セット数:</span>{" "}
+                  {workout.sets}
+                </p>
+                <p>
+                  <span className="font-semibold">重量:</span> {workout.weights}{" "}
+                  Kg
+                </p>
+              </div>
+            )}
       </div>
     );
   }
