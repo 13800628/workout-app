@@ -171,18 +171,6 @@ export default function Workout() {
           <div className="button-group">
             <button onClick={handleCreateWorkout}>登録</button>
 
-            <button
-              onClick={() => {
-                if (!targetId) {
-                  alert("更新したいIDを入力してください");
-                  return;
-                }
-                handleUpdateAllDetails(Number(targetId));
-              }}
-            >
-              IDを更新
-            </button>
-
             <button onClick={handleGetAll}>全件取得</button>
           </div>
         </div>
@@ -208,6 +196,18 @@ export default function Workout() {
                   }}
                 >
                   編集する
+                </button>
+
+                <button
+                  onClick={() => {
+                    if (!targetId) {
+                      alert("更新したいIDを入力してください");
+                      return;
+                    }
+                    handleUpdateAllDetails(Number(targetId));
+                  }}
+                >
+                  編集を実行
                 </button>
 
                 <p>
