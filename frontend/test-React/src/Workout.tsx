@@ -47,7 +47,6 @@ export default function Workout() {
           });
           const data = await res.json();
           setWorkout(data);
-          setError("Error")
         } catch (err) {
           console.error("エラーが発生しました: ", err, error);
         }
@@ -144,9 +143,6 @@ export default function Workout() {
         <h2>Workout Details</h2>
 
         {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
-
-        {!workoutId && <p>ユーザーIDが指定されていません</p>}
-
         {!workoutId && <p>ユーザーIDが指定されていません</p>}
         <p>Your workout data...</p>
 
