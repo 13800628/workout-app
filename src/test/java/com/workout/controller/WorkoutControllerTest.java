@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import static org.mockito.Mockito.times;
@@ -20,12 +21,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.workout.config.SecurityConfig;
 import com.workout.dto.workouts.AllDetailsRequest;
 import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.Workout;
 import com.workout.service.WorkoutService;
 
 @WebMvcTest(WorkoutController.class)
+@Import(SecurityConfig.class)
 class WorkoutControllerTest {
 
   @Autowired

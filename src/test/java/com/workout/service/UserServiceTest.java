@@ -162,19 +162,19 @@ class UserServiceTest {
         // Arrange
         Long userId = 1L;
 
-        when(userRepository.existsById(userId)).thenReturn(true);
+        when(userRepository.deleteDirectlyById(userId)).thenReturn(1);
 
         // Act
         userService.deleteUser(userId);
 
         // Assert
-        verify(userRepository, times(1)).deleteById(userId);
+        verify(userRepository, times(1)).deleteDirectlyById(userId);
     }
 
     @Test
     void deleteUser_異常系_存在しないIDの場合は例外が発生() {
         Long userId = 999L;
-        when(userRepository.existsById(userId)).thenReturn(false);
+        when(userRepository.deleteDirectlyById(userId)).thenReturn(0);
 
         assertThrows(IllegalArgumentException.class, () -> {
             userService.deleteUser(userId);
