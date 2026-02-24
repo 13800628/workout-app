@@ -4,10 +4,10 @@ package com.workout.controller;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 
+import static java.util.Objects.requireNonNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -35,7 +37,7 @@ class UserControllerTest  {
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
+  @MockitoBean
   private UserService userService;
 
   @Autowired
@@ -55,8 +57,8 @@ class UserControllerTest  {
     when(userService.registerUser(anyString(), anyInt())).thenReturn(savedUser);
 
     mockMvc.perform(post("/api/users")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(request)))
+        .contentType(requireNonNull(MediaType.APPLICATION_JSON))
+        .content(requireNonNull(objectMapper.writeValueAsString(request))))
       .andDo(print())
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.id").value(1))
@@ -74,8 +76,8 @@ class UserControllerTest  {
         .thenThrow(new IllegalArgumentException("ユーザー名は必須です"));
 
     mockMvc.perform(post("/api/users")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsBytes(request)))
+        .contentType(requireNonNull(MediaType.APPLICATION_JSON))
+        .content(requireNonNull(objectMapper.writeValueAsBytes(request))))
       .andDo(print())
       .andExpect(status().isBadRequest());
   }
