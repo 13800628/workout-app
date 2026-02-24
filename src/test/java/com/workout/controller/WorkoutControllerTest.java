@@ -4,13 +4,15 @@ package com.workout.controller;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+
 import org.springframework.context.annotation.Import;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -18,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import org.springframework.http.MediaType;
 import static org.mockito.ArgumentMatchers.eq;
+import static java.util.Objects.requireNonNull;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +37,7 @@ class WorkoutControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
+  @MockitoBean
   private WorkoutService workoutService;
 
   @Autowired
@@ -56,8 +59,8 @@ class WorkoutControllerTest {
     when(workoutService.createWorkout(any(WorkoutRequest.class))).thenReturn(savedWorkout);
 
     mockMvc.perform(post("/api/workouts/create")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(request)))
+        .contentType(requireNonNull(MediaType.APPLICATION_JSON))
+        .content(requireNonNull(objectMapper.writeValueAsString(request))))
       .andDo(print())
       .andExpect(status().isCreated())
       .andExpect(jsonPath("$.id").value(1));
@@ -88,8 +91,8 @@ class WorkoutControllerTest {
     when(workoutService.updateAllDetails(eq(id), any(WorkoutRequest.class))).thenReturn(updated);
 
     mockMvc.perform(put("/api/workouts/{id}/details", id)
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(request)))
+        .contentType(requireNonNull(MediaType.APPLICATION_JSON))
+        .content(requireNonNull(objectMapper.writeValueAsString(request))))
         .andDo(print())
         .andExpect(status().isOk());
   }

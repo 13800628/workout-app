@@ -40,6 +40,10 @@ public class UserService {
 
   @Transactional(readOnly = true)
   public User getUserById(Long id) {
+    if (id == null) {
+      throw new IllegalArgumentException("IDを指定してください");
+    }
+    
     return userRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("IDが見つかりません: " + id));
   }

@@ -19,6 +19,7 @@ import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("null")
 class WorkoutServiceTest {
 
   @Mock
