@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workout.config.SecurityConfig;
-import com.workout.dto.workouts.AllDetailsRequest;
+
 import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.Workout;
 import com.workout.service.WorkoutService;
@@ -42,11 +42,14 @@ class WorkoutControllerTest {
 
   @Test
   void createWorkout_正常系_201を返す() throws Exception {
-    WorkoutRequest request = new WorkoutRequest();
-    request.setName("ベンチ");
-    request.setReps(10);
-    request.setSets(3);
-    request.setWeights(100);
+    WorkoutRequest request = new WorkoutRequest(
+      "ベンチプレス",
+      10,
+      3,
+      60,
+      1L
+    );
+    
 
     Workout savedWorkout = new Workout();
     savedWorkout.setId(1L);
@@ -76,16 +79,13 @@ class WorkoutControllerTest {
   @Test
   void updateAllDetails_正常系_詳細を一括更新して200を返す() throws Exception {
     Long id = 1L;
-    AllDetailsRequest request = new AllDetailsRequest();
-    request.setName("スクワット");
-    request.setReps(10);
-    request.setSets(3);
-    request.setWeights(100);
+    WorkoutRequest request = new WorkoutRequest("ベンチプレス", 10, 3, 60, null);
 
     Workout updated = new Workout();
     updated.setId(id);
+    updated.setName("ベンチプレス");
 
-    when(workoutService.updateAllDetails(eq(id), any(AllDetailsRequest.class))).thenReturn(updated);
+    when(workoutService.updateAllDetails(eq(id), any(WorkoutRequest.class))).thenReturn(updated);
 
     mockMvc.perform(put("/api/workouts/{id}/details", id)
         .contentType(MediaType.APPLICATION_JSON)

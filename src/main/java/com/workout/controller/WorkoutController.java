@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.workout.dto.workouts.AllDetailsRequest;
 import com.workout.dto.workouts.NameRequest;
 import com.workout.dto.workouts.RepsRequest;
 import com.workout.dto.workouts.SetsRequest;
@@ -91,7 +90,7 @@ public class WorkoutController {
    */
 
   @PutMapping("/{id}/details")
-  public ResponseEntity<Workout> updateDetails(@PathVariable Long id, @RequestBody AllDetailsRequest request) {
+  public ResponseEntity<Workout> updateDetails(@PathVariable Long id, @RequestBody WorkoutRequest request) {
     Workout updated = workoutService.updateAllDetails(id, request);
 
     return ResponseEntity.ok(updated);
