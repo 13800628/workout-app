@@ -1,18 +1,20 @@
 package com.workout.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.workout.dto.workouts.AllDetailsRequest;
 import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.User;
 import com.workout.model.Workout;
 import com.workout.model.WorkoutValidator;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
+
+import static java.util.Objects.requireNonNull;
 
 @Service
 public class WorkoutService {
@@ -27,19 +29,22 @@ public class WorkoutService {
 
   @Transactional
   public Workout createWorkout(WorkoutRequest request) {
-    WorkoutValidator.validateAll(request.getName(), request.getReps(), request.getSets(), request.getWeights());
+    WorkoutValidator.validateAll(request.name(), request.reps(), request.sets(), request.weights());
 
-    User user = null;
-    if (request.getUserId() != null) {
-     user = userRepository.findById(request.getUserId())
-            .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません: " + request.getUserId()));
+    User user = Optional.ofNullable(request.userId())
+                .flatMap(id -> userRepository.findById(requireNonNull(id)))
+                .orElse(null);
+
+    if (request.userId() != null && user == null) {
+      throw new IllegalArgumentException("見つかりません" + request.userId());
     }
+                
 
     Workout workout = new Workout(
-        request.getName(),
-        request.getReps(),
-        request.getSets(),
-        request.getWeights(),
+        request.name(),
+        request.reps(),
+        request.sets(),
+        request.weights(),
         user
     );
     return workoutRepository.save(workout);
@@ -54,6 +59,9 @@ public class WorkoutService {
 
   @Transactional(readOnly = true)
   public Workout getWorkoutById(Long id) {
+     if (id == null) {
+      throw new IllegalArgumentException("IDを指定してください");
+     }
     return workoutRepository.findById(id)
            .orElseThrow(() -> new IllegalArgumentException("Workoutが見つかりません: " + id));
   }
@@ -90,16 +98,16 @@ public class WorkoutService {
   }
 
   @Transactional
-  public Workout updateAllDetails(Long id, AllDetailsRequest request) {
-    WorkoutValidator.validateAll(request.getName(), request.getReps(), request.getSets(), request.getWeights());
+  public Workout updateAllDetails(Long id, WorkoutRequest request) {
+    WorkoutValidator.validateAll(request.name(), request.reps(), request.sets(), request.weights());
     
     Workout workout = getWorkoutById(id);
 
     workout.updateAllWorkoutDetails(
-        request.getName(),
-        request.getReps(),
-        request.getSets(),
-        request.getWeights()
+        request.name(),
+        request.reps(),
+        request.sets(),
+        request.weights()
     );
 
     return workoutRepository.save(workout);
@@ -110,7 +118,8 @@ public class WorkoutService {
    */
   private Workout updateField(Long id, Consumer<Workout> updateLogic) {
     Workout workout = getWorkoutById(id);
+    Workout saved = workoutRepository.save(workout);
     updateLogic.accept(workout);
-    return workoutRepository.save(workout);
+    return saved;
   }
 }

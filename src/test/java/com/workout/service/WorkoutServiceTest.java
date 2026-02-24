@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.workout.dto.workouts.AllDetailsRequest;
 import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.User;
 import com.workout.model.Workout;
@@ -35,12 +34,7 @@ class WorkoutServiceTest {
   @Test
   void createWorkout_正常系_Idによって作成() {
     Long userId = 1L;
-    WorkoutRequest request = new WorkoutRequest();
-    request.setName("ベンチプレス");
-    request.setReps(10);
-    request.setSets(3);
-    request.setWeights(60);
-    request.setUserId(userId);
+    WorkoutRequest request = new WorkoutRequest("ベンチプレス", 10, 3, 60, userId);
 
     User testUser = new User();
     testUser.setId(userId);
@@ -52,6 +46,8 @@ class WorkoutServiceTest {
     Workout result = workoutService.createWorkout(request);
 
     assertNotNull(result);
+    assertEquals("ベンチプレス", result.getName());
+    assertEquals(testUser, result.getUser());
     verify(userRepository, times(1)).findById(userId);
   }
 
@@ -146,11 +142,7 @@ class WorkoutServiceTest {
     workout.setSets(1);
     workout.setWeights(10);
 
-    AllDetailsRequest request = new AllDetailsRequest();
-    request.setName("after");
-    request.setReps(10);
-    request.setSets(10);
-    request.setWeights(100);
+    WorkoutRequest request = new WorkoutRequest("after", 10, 10, 100, 1L);
 
     when(workoutRepository.findById(id)).thenReturn(Optional.of(workout));
     when(workoutRepository.save(any(Workout.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -169,12 +161,8 @@ class WorkoutServiceTest {
   @Test
   void updateAllDetails_異常系_IDが存在しない場合はRuntimeExceptionを投げる() {
     Long id = 999L;
-    AllDetailsRequest request = new AllDetailsRequest();
+    WorkoutRequest request = new WorkoutRequest("ベンチ", 23, 4, 60, 999L);
 
-    request.setName("ベンチ");
-    request.setReps(23);
-    request.setSets(4);
-    request.setWeights(60);
 
     when(workoutRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -188,10 +176,7 @@ class WorkoutServiceTest {
 
   @Test
   void updateAllDetails_異常系_回数の項目がnullの場合() {
-    AllDetailsRequest request = new AllDetailsRequest();
-    request.setName("ベンチ");
-    request.setReps(null);
-    
+    WorkoutRequest request = new WorkoutRequest("ベンチ", null, 3, 3, 1L);
     
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
         workoutService.updateAllDetails(1L, request);
