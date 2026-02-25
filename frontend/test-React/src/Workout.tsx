@@ -11,7 +11,7 @@ type Workout ={
 export default function Workout() {
   const [workout, setWorkout] = useState<Workout | Workout[] |null>(null);
   const [error, setError] = useState<string>("");
-  const [targetId, setTargetId] = useState<number | "">("");
+  const [targetId, setTargetId] = useState<number | "" | null>("");
   const [formData, setFormData] = useState({
     name: "",
     reps: "",
@@ -193,28 +193,33 @@ export default function Workout() {
                 key={item.id}
                 style={{ borderBottom: "1px solid #ddd", marginBottom: "10px" }}
               >
-                <button
-                  onClick={() => {
-                    setTargetId(item.id);
-                    setFormData({
-                      name: item.name,
-                      reps: String(item.reps),
-                      sets: String(item.sets),
-                      weights: String(item.weights),
-                    });
-                  }}
-                >
-                  編集する
-                </button>
-
-                <button
-                  onClick={() => {
-                    handleUpdateAllDetails(Number(targetId));
-                  }}
-                >
-                  {" "}
-                  編集を実行{" "}
-                </button>
+                {targetId === item.id ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 確実にそのアイテムのIDを数値として渡す
+                      handleUpdateAllDetails(Number(item.id));
+                      setTargetId(null); // 編集完了後に状態をリセット
+                    }}
+                  >
+                    編集を実行
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTargetId(item.id);
+                      setFormData({
+                        name: item.name,
+                        reps: String(item.reps),
+                        sets: String(item.sets),
+                        weights: String(item.weights),
+                      });
+                    }}
+                  >
+                    編集する
+                  </button>
+                )}
 
                 <p>
                   <span className="font-semibold">ID:</span>
