@@ -132,9 +132,9 @@ function Home() {
   ) {
     return `
 ┌───────────────┐
-│ ID: ${data.id}
-│ 名前: ${data.username}
-│ 年齢: ${data.age}
+│ ID: ${data.id}|
+│ 名前: ${data.username}|
+│ 年齢: ${data.age}|
 └───────────────┘`.trim();
   }
 
