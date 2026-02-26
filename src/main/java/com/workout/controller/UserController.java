@@ -30,7 +30,7 @@ public class UserController {
 
   @PostMapping
   public ResponseEntity<User> registerUser(@RequestBody UserRequest request) {
-    User user = userService.registerUser(request.getUsername(), request.getAge());
+    User user = userService.registerUser(request.username(), request.age());
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
@@ -54,7 +54,7 @@ public class UserController {
   // UserRequestを再利用して、ユーザー名と年齢を更新すると想定
   @PutMapping("/{id}")
   public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserRequest request) {
-    User updatedUser = userService.updateUser(id, request.getUsername(), request.getAge());
+    User updatedUser = userService.updateUser(id, request.username(), request.age());
     return ResponseEntity.ok(updatedUser);
   }
 
