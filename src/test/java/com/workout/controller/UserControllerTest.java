@@ -45,9 +45,7 @@ class UserControllerTest  {
 
   @Test
   void registerUser_正常系_ユーザーを新規登録し201を返す() throws Exception {
-    UserRequest request = new UserRequest();
-    request.setUsername("テスト");
-    request.setAge(25);
+    UserRequest request = new UserRequest(null, "テスト", 25);
 
     User savedUser = new User();
     savedUser.setId(1L);
@@ -68,9 +66,7 @@ class UserControllerTest  {
 
   @Test
   void registerUser_異常系_バリデーションエラー時は400を返す() throws Exception {
-    UserRequest request = new UserRequest();
-    request.setUsername("");
-    request.setAge(25);
+    UserRequest request = new UserRequest(null, "", 25);
 
     when(userService.registerUser(anyString(), anyInt()))
         .thenThrow(new IllegalArgumentException("ユーザー名は必須です"));

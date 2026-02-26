@@ -1,22 +1,17 @@
 package com.workout.dto;
 
-public class UserRequest {
-  private String username;
-    private Integer age;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-    public String getUsername() {
-      return username;
-    }
+public record UserRequest(
 
-    public void setUsername(String username) {
-      this.username = username;
-    }
+  @NotNull(message = "ユーザーIDは必須です")
+  Long userId,
 
-    public Integer getAge() {
-      return age;
-    }
+  @NotBlank(message = "ユーザー名は必須です")
+  String username,
 
-    public void setAge(Integer age) {
-      this.age = age;
-    }
-  } 
+  @Positive(message = "年齢は1歳以上で入力してください")
+  Integer age
+) {}

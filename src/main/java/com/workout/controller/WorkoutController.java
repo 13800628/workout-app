@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.workout.dto.workouts.NameRequest;
-import com.workout.dto.workouts.RepsRequest;
-import com.workout.dto.workouts.SetsRequest;
-import com.workout.dto.workouts.WeightsRequest;
+
 import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.Workout;
 import com.workout.service.WorkoutService;
@@ -53,8 +50,8 @@ public class WorkoutController {
   }
 
   @PutMapping("/{id}/setName")
-  public ResponseEntity<Workout> updateName(@PathVariable Long id, @RequestBody NameRequest request) {
-    Workout updated = workoutService.updateName(id, request.getName());
+  public ResponseEntity<Workout> updateName(@PathVariable Long id, @RequestBody WorkoutRequest request) {
+    Workout updated = workoutService.updateName(id, request.name());
 
     return ResponseEntity.ok(updated);
   }
@@ -62,21 +59,21 @@ public class WorkoutController {
   @PutMapping("/{id}/setReps")
   public ResponseEntity<Workout> updateReps(
       @PathVariable Long id,
-      @RequestBody RepsRequest request) {
-    Workout updated = workoutService.updateReps(id, request.getReps());
+      @RequestBody WorkoutRequest request) {
+    Workout updated = workoutService.updateReps(id, request.reps());
     return ResponseEntity.ok(updated);
   }
 
   @PutMapping("/{id}/setSets")
-  public ResponseEntity<Workout> updateSets(@PathVariable Long id, @RequestBody SetsRequest request) {
-    Workout updated = workoutService.updateSets(id, request.getSets());
+  public ResponseEntity<Workout> updateSets(@PathVariable Long id, @RequestBody WorkoutRequest request) {
+    Workout updated = workoutService.updateSets(id, request.sets());
 
     return ResponseEntity.ok(updated);
   }
 
   @PutMapping("/{id}/setWeights")
-  public ResponseEntity<Workout> updateWeights(@PathVariable Long id, @RequestBody WeightsRequest request) {
-    Workout updated = workoutService.updateWeights(id, request.getWeights());
+  public ResponseEntity<Workout> updateWeights(@PathVariable Long id, @RequestBody WorkoutRequest request) {
+    Workout updated = workoutService.updateWeights(id, request.weights());
 
     return ResponseEntity.ok(updated);
   }
