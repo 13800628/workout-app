@@ -54,8 +54,14 @@ public class UserService {
 
     validateUserData(username, age);
 
-    user.setUsername(username);
-    user.setAge(age);
+    if (!user.getUsername().equals(username)) {
+        user.setUsername(username);
+    }
+  
+    if (!user.getAge().equals(age)) {
+        user.setAge(age);
+    }
+    
     return userRepository.save(user);
   }
 
