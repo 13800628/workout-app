@@ -21,7 +21,6 @@ import com.workout.repository.WorkoutRepository;
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("null")
 class WorkoutServiceTest {
-
   @Mock
   private UserRepository userRepository;
   
@@ -53,85 +52,33 @@ class WorkoutServiceTest {
   }
 
   @Test
-  void updateName_名前が更新されて返る() {
+  void update_名前が更新されて返る() {
     Long id = 1L;
     Workout workout = new Workout();
     workout.setId(id);
     workout.setName("before");
-
-    when(workoutRepository.findById(id)).thenReturn(Optional.of(workout));
-    when(workoutRepository.save(any(Workout.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-    Workout result = workoutService.updateName(id, "after");
-
-    assertEquals("after", result.getName());
-    verify(workoutRepository).findById(id);
-    verify(workoutRepository).save(workout);
-  }
-
-  @Test
-  void updateName_異常系_IDが存在しない場合は例外を投げる() {
-    Long id = 999L;
-
-    when(workoutRepository.findById(id)).thenReturn(Optional.empty());
-
-    assertThrows(RuntimeException.class, () -> {
-      workoutService.updateName(id, "after");
-    });
-
-    verify(workoutRepository, never()).save(any());
-  }
-
-  @Test
-  void updateReps_回数が更新されて返る() {
-    Long id = 1L;
-    Workout workout = new Workout();
-    workout.setId(id);
     workout.setReps(1);
 
     when(workoutRepository.findById(id)).thenReturn(Optional.of(workout));
-    when(workoutRepository.save(any(Workout.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-    Workout result = workoutService.updateReps(id, 2);
+    // 「何をどう更新するか」をラムダで渡す
+    workoutService.update(id, w -> w.setName("after"));
+    workoutService.update(id, w -> w.setReps(2));
 
-    assertEquals(2, result.getReps());
-    verify(workoutRepository).findById(id);
-    verify(workoutRepository).save(workout);
+    assertEquals("after", workout.getName());
+    assertEquals(2, workout.getReps());
+    verify(workoutRepository, times(2)).findById(id);
   }
 
   @Test
-  void updateSets_セット数が更新されて返る() {
-    Long id = 1L;
-    Workout workout = new Workout();
-    workout.setId(id);
-    workout.setSets(3);
+  void update_IDが存在しない場合は例外を投げる() {
+    Long id = 999L;
+    when(workoutRepository.findById(id)).thenReturn(Optional.empty());
 
-    when(workoutRepository.findById(id)).thenReturn(Optional.of(workout));
-    when(workoutRepository.save(any(Workout.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-    Workout result = workoutService.updateSets(id, 5);
-
-    assertEquals(5, result.getSets());
-    verify(workoutRepository).findById(id);
-    verify(workoutRepository).save(workout);
+    // どの項目を更新しようとしてもエラーになることを確認
+    assertThrows(IllegalArgumentException.class, () -> workoutService.update(id, w -> w.setName("after")));
   }
 
-  @Test
-  void updateWeights_重量が更新されて返る() {
-    Long id = 1L;
-    Workout workout = new Workout();
-    workout.setId(id);
-    workout.setWeights(80);
-
-    when(workoutRepository.findById(id)).thenReturn(Optional.of(workout));
-    when(workoutRepository.save(any(Workout.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-    Workout result = workoutService.updateWeights(id, 100);
-
-    assertEquals(100, result.getWeights());
-    verify(workoutRepository).findById(id);
-    verify(workoutRepository).save(workout);
-  }
 
   @Test
   void updateAllDetails_全てが更新されて返る() {
@@ -173,16 +120,5 @@ class WorkoutServiceTest {
 
     verify(workoutRepository).findById(id);
     verify(workoutRepository, never()).save(any());
-  }
-
-  @Test
-  void updateAllDetails_異常系_回数の項目がnullの場合() {
-    WorkoutRequest request = new WorkoutRequest("ベンチ", null, 3, 3, 1L);
-    
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-        workoutService.updateAllDetails(1L, request);
-    });
-
-    assertEquals("回数は0回以上にしてください", exception.getMessage());
   }
 }

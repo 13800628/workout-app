@@ -18,6 +18,8 @@ import com.workout.dto.UserRequest;
 import com.workout.model.User;
 import com.workout.service.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -29,7 +31,7 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<User> registerUser(@RequestBody UserRequest request) {
+  public ResponseEntity<User> registerUser(@Valid @RequestBody UserRequest request) {
     User user = userService.registerUser(request.username(), request.age());
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
@@ -42,7 +44,7 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
+  public ResponseEntity<User> getUserById(@Valid @PathVariable("id") Long id) {
     User user = userService.getUserById(id);
     if (user == null) {
       return ResponseEntity.notFound().build();
@@ -53,7 +55,7 @@ public class UserController {
   // --- U (Update) - ユーザー情報更新 ---
   // UserRequestを再利用して、ユーザー名と年齢を更新すると想定
   @PutMapping("/{id}")
-  public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserRequest request) {
+  public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
     User updatedUser = userService.updateUser(id, request.username(), request.age());
     return ResponseEntity.ok(updatedUser);
   }

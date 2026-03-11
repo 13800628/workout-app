@@ -19,6 +19,8 @@ import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.Workout;
 import com.workout.service.WorkoutService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/workouts")
 // @CrossOrigin(origins = "") のちに新しいページ追加
@@ -31,7 +33,7 @@ public class WorkoutController {
 
   // Create - 作成
   @PostMapping("/create")
-  public ResponseEntity<Workout> createWorkout(@RequestBody WorkoutRequest request) {
+  public ResponseEntity<Workout> createWorkout(@Valid @RequestBody WorkoutRequest request) {
     Workout workout = workoutService.createWorkout(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(workout);
   }
@@ -49,7 +51,7 @@ public class WorkoutController {
     return ResponseEntity.noContent().build();
   }
 
-  @PutMapping("/{id}/setName")
+  /* @PutMapping("/{id}/setName")
   public ResponseEntity<Workout> updateName(@PathVariable Long id, @RequestBody WorkoutRequest request) {
     Workout updated = workoutService.updateName(id, request.name());
 
@@ -76,7 +78,7 @@ public class WorkoutController {
     Workout updated = workoutService.updateWeights(id, request.weights());
 
     return ResponseEntity.ok(updated);
-  }
+  } */
 
   /**
    * 
@@ -86,7 +88,7 @@ public class WorkoutController {
    */
 
   @PutMapping("/{id}/details")
-  public ResponseEntity<Workout> updateDetails(@PathVariable Long id, @RequestBody WorkoutRequest request) {
+  public ResponseEntity<Workout> updateDetails(@PathVariable Long id, @Valid @RequestBody WorkoutRequest request) {
     Workout updated = workoutService.updateAllDetails(id, request);
 
     return ResponseEntity.ok(updated);
