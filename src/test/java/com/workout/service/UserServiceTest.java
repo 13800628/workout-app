@@ -2,7 +2,9 @@ package com.workout.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.workout.model.User;
 import com.workout.repository.UserRepository;
+import com.workout.dto.UserRequest;
+
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("null")
@@ -113,16 +117,21 @@ class UserServiceTest {
     void updateUser_正常系_ユーザー情報が更新される() {
         // Arrange
         Long userId = 1L;
-        String newUsername = "updateduser";
-        Integer newAge = 35;
-        User updatedUser = new User(newUsername, newAge);
+        String newUsername = "更新後の名前";
+        Integer newAge = 30;
+
+        UserRequest request = new UserRequest(newUsername, newAge);
+
+        User updatedUser = new User();
         updatedUser.setId(userId);
+        updatedUser.setUsername(newUsername);
+        updatedUser.setAge(newAge);
         
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
         when(userRepository.save(any(User.class))).thenReturn(updatedUser);
 
         // Act
-        User result = userService.updateUser(userId, newUsername, newAge);
+        User result = userService.updateUser(userId, request);
 
         // Assert
         assertNotNull(result);
@@ -136,25 +145,34 @@ class UserServiceTest {
     void updateUser_異常系_存在しないIDの場合nullが返される() {
         // Arrange
         Long userId = 999L;
+        UserRequest request = new UserRequest("テスト", 25);
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
 
         // Assert
-        assertThrows(IllegalArgumentException.class, () -> userService.updateUser(userId, "newname", 30));
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateUser(userId, request);
+        });
+
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
-    void updatedUser_異常系_名前がnullの場合illegalArgumentExceptionを投げる() {
+    void updatedUser_異常系_名前がnullの場合IllegalArgumentExceptionを投げる() {
         Long userId = 1L;
+        // 更新用のDTO（名前をあえてnullにする）
+        UserRequest request = new UserRequest(null, 25);
+
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
+        // DTO を渡す形に修正
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.updateUser(userId, null, 25);
+            userService.updateUser(userId, request);
         });
 
+        // save が呼ばれないことを確認
         verify(userRepository, never()).save(any(User.class));
     }
 

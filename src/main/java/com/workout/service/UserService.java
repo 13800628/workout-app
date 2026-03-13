@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.workout.dto.UserRequest;
 import com.workout.model.User;
 import com.workout.repository.UserRepository;
 
@@ -48,11 +49,11 @@ public class UserService {
   }
 
   @Transactional
-  public User updateUser(Long id, String username, Integer age) {
+  public User updateUser(Long id, UserRequest request) {
     User user = getUserById(id);
 
-    user.setUsername(username);
-    user.setAge(age);
+    user.setUsername(request.username());
+    user.setAge(request.age());
 
     return user;
   }
