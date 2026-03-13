@@ -3,6 +3,7 @@ package com.workout.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +34,7 @@ import com.workout.service.UserService;
 
 @WebMvcTest(UserController.class)
 @Import(SecurityConfig.class)
+@AutoConfigureMockMvc(addFilters = false)
 class UserControllerTest  {
   
   @Autowired
@@ -45,7 +48,7 @@ class UserControllerTest  {
 
   @Test
   void registerUser_正常系_ユーザーを新規登録し201を返す() throws Exception {
-    UserRequest request = new UserRequest(null, "テスト", 25);
+    UserRequest request = new UserRequest("テスト", 25);
 
     User savedUser = new User();
     savedUser.setId(1L);
@@ -55,6 +58,7 @@ class UserControllerTest  {
     when(userService.registerUser(anyString(), anyInt())).thenReturn(savedUser);
 
     mockMvc.perform(post("/api/users")
+        .with(csrf())
         .contentType(requireNonNull(MediaType.APPLICATION_JSON))
         .content(requireNonNull(objectMapper.writeValueAsString(request))))
       .andDo(print())
@@ -66,7 +70,7 @@ class UserControllerTest  {
 
   @Test
   void registerUser_異常系_バリデーションエラー時は400を返す() throws Exception {
-    UserRequest request = new UserRequest(null, "", 25);
+    UserRequest request = new UserRequest("", 25);
 
     when(userService.registerUser(anyString(), anyInt()))
         .thenThrow(new IllegalArgumentException("ユーザー名は必須です"));
