@@ -81,6 +81,7 @@ function Home() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          userId: JSON.stringify(userId),
           username: username,
           age: Number(age),
         }),
@@ -197,7 +198,7 @@ function Home() {
 
       <div className="result-section">
         <h3>ユーザー情報</h3>
-        <div className="result-section"> {result} </div>
+        <pre style={{ whiteSpace: 'pre-wrap' }}>{result}</pre>
       </div>
     </div>
   );
