@@ -56,7 +56,7 @@ public class UserController {
   // UserRequestを再利用して、ユーザー名と年齢を更新すると想定
   @PutMapping("/{id}")
   public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
-    User updatedUser = userService.updateUser(id, request.username(), request.age());
+    User updatedUser = userService.updateUser(id, request);
     return ResponseEntity.ok(updatedUser);
   }
 
