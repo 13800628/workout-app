@@ -21,8 +21,8 @@ public class UserService {
   }
 
   @Transactional
-  public User registerUser(String username, Integer age) {
-    User user = new User(username, age);
+  public User registerUser(UserRequest request) {
+    User user = new User(request.username(), request.age());
     return userRepository.save(user);
   }
 
