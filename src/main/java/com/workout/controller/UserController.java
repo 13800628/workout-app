@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workout.dto.UserRequest;
+import com.workout.exception.UserResponse;
 import com.workout.model.User;
 import com.workout.service.UserService;
 
@@ -31,33 +32,32 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<User> registerUser(@Valid @RequestBody UserRequest request) {
-    User user = userService.registerUser(request.username(), request.age());
-    return ResponseEntity.status(HttpStatus.CREATED).body(user);
+  public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRequest request) {
+    User user = userService.registerUser(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.from(user));
   }
 
   @GetMapping
-  public ResponseEntity<Page<User>> getAllUsers(
+  public ResponseEntity<Page<UserResponse>> getAllUsers(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    return ResponseEntity.ok(userService.getAllUsers(page, size));
+    Page<UserResponse> users = userService.getAllUsers(page, size)
+        .map(UserResponse::from);
+    return ResponseEntity.ok(users);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<User> getUserById(@Valid @PathVariable("id") Long id) {
+  public ResponseEntity<UserResponse> getUserById(@Valid @PathVariable("id") Long id) {
     User user = userService.getUserById(id);
-    if (user == null) {
-      return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.ok(userService.getUserById(id));
+    return ResponseEntity.ok(UserResponse.from(user));
   }
 
   // --- U (Update) - ユーザー情報更新 ---
   // UserRequestを再利用して、ユーザー名と年齢を更新すると想定
   @PutMapping("/{id}")
-  public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
+  public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
     User updatedUser = userService.updateUser(id, request);
-    return ResponseEntity.ok(updatedUser);
+    return ResponseEntity.ok(UserResponse.from(updatedUser));
   }
 
   // --- D (Delete) - ユーザー削除 ---

@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -47,11 +45,12 @@ class UserServiceTest {
         Integer age = 30;
         User savedUser = new User(username, age);
         savedUser.setId(1L);
+        UserRequest request = new UserRequest(username, age);
         
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         // Act
-        User result = userService.registerUser(username, age);
+        User result = userService.registerUser(request);
 
         // Assert
         assertNotNull(result);

@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 
 import static java.util.Objects.requireNonNull;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,7 +53,7 @@ class UserControllerTest  {
     savedUser.setUsername("テスト");
     savedUser.setAge(25);
 
-    when(userService.registerUser(anyString(), anyInt())).thenReturn(savedUser);
+    when(userService.registerUser(request)).thenReturn(savedUser);
 
     mockMvc.perform(post("/api/users")
         .with(csrf())
@@ -72,7 +70,7 @@ class UserControllerTest  {
   void registerUser_異常系_バリデーションエラー時は400を返す() throws Exception {
     UserRequest request = new UserRequest("", 25);
 
-    when(userService.registerUser(anyString(), anyInt()))
+    when(userService.registerUser(request))
         .thenThrow(new IllegalArgumentException("ユーザー名は必須です"));
 
     mockMvc.perform(post("/api/users")
