@@ -27,14 +27,13 @@ public class WorkoutService {
 
   @Transactional
   public Workout createWorkout(WorkoutRequest request) {
-    User user = (request.userId() != null) 
+    User user = (request.userId() != null)
         ? userRepository.findById(request.userId())
             .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません"))
         : null;
 
     return workoutRepository.save(new Workout(
-        request.name(), request.reps(), request.sets(), request.weights(), user
-    ));
+        request.name(), request.reps(), request.sets(), request.weights(), user));
   }
 
 
