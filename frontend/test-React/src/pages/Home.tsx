@@ -8,12 +8,98 @@
  */
 
 import { useState } from "react";
+import {
+  fetchAllUsers,
+  fetchUserById,
+  registerUser,
+  updateUser,
+  deleteUser,
+} from "../hooks/useUserApi";
+import type { User } from "../hooks/useUserApi";
+import { formatUser, formatUsers } from "../utils/formatUser";
 
-type User = {
-  id: number;
+// 子コンポーネント
+
+type UserFormProps = {
   username: string;
-  age: number;
+  age: string;
+  userId: string;
+  onChangeUsername: (v: string) => void;
+  onChangeAge: (v: string) => void;
+  onChangeUserId: (v: string) => void;
+};
+
+function UserFrom({
+  username,
+  age,
+  userId,
+  onChangeUsername,
+  onChangeAge,
+  onChangeUserId,
+}: UserFormProps) {
+  return (
+    <div className="input-form">
+      <input
+      placeholder="名前"
+      value={username}
+      onChange={(e) => onChangeUsername(e.target.value)}
+      />
+      <input
+        placeholder="年齢"
+        type="number"
+        value={age}
+        onChange={(e) => onChangeAge(e.target.value)}
+      />
+      <input
+        placeholder="対象ユーザーID"
+        type="number"
+        value={userId}
+        onChange={(e) => onChangeUserId(e.target.value)}
+      />
+    </div>
+  );
 }
+
+type ActionButtonProps = {
+  onRegister: () => void;
+  onGetAll: () => void;
+  onGetById: () => void;
+  onUpdate: () => void;
+  onDelete: () => void;
+  onGoToWorkout: () => void;
+};
+
+function ActionButtons({
+  onRegister,
+  onGetAll,
+  onGetById,
+  onUpdate,
+  onDelete,
+  onGoToWorkout,
+}: ActionButtonProps) {
+  return (
+    <div className="button-group">
+      <button onClick={onRegister}>登録</button>
+      <button onClick={onGetAll}>全部取得</button>
+      <button onClick={onGetById}>ID 取得</button>
+      <button onClick={onUpdate}>更新</button>
+      <button onClick={onDelete}>削除</button>
+      <button onClick={onGoToWorkout}>Workoutページへ
+      </button>
+    </div>
+  );
+}
+
+function ResultPanel({ result }: { result: string }) {
+  return (
+    <div className="result-section">
+      <h3>ユーザー情報</h3>
+      <pre style={{ whiteSpace: "pre-wrap"}}>{result}</pre>
+    </div>
+  )
+}
+
+// メインコンポーネント
 
 function Home() {
   const [username, setUsername] = useState("");
@@ -21,8 +107,7 @@ function Home() {
   const [userId, setUserId] = useState("");
   const [result, setResult] = useState("");
 
-  //const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080"
-  const baseUrl = "/api/users";
+  const userIdNum = Number(userId);
   
   // =========================================================================
   // CRUD 操作 各種
@@ -30,119 +115,34 @@ function Home() {
 
   // 登録処理
   const handleRegister = async () => {
-    try {
-      const res = await fetch(`${baseUrl}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          age: Number(age),
-        }),
-      });
-     
-      const data = await res.json();
-      setResult(formatResult(data));
-    } catch (err) {
-      setResult("エラー起きたかも" + String(err));
-    }
+    const res = await registerUser(username, Number(age))
+    setResult(res.ok ? formatUser(res.data as User) : res.message); 
   };
   
 
 
   const handleGetAll = async () => {
-    try {
-      const res = await fetch(baseUrl);
-      const data = await res.json();
-      setResult(formatResult(data));
-    } catch (err) {
-      setResult("エラー" + String(err));
-    }
+    const res = await fetchAllUsers();
+    setResult(res.ok ? formatUsers(res.data as User[]) : res.message);
   };
 
   const handleGetById = async () => {
-    try {
-      const res = await fetch(`${baseUrl}/${userId}`);
-      if (!res.ok) {
-        setResult("ユーザーが見つからない");
-        return;
-      }
-      const data = await res.json();
-      setResult(formatResult(data));
-    } catch (err) {
-      setResult("エラー" + String(err));
-    }
+    if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
+    const res = await fetchUserById(userIdNum);
+    setResult(res.ok ? formatUser(res.data as User): res.message);
   };
 
   const handleUpdate = async () => {
-    try {
-      const res = await fetch(`${baseUrl}/${userId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: JSON.stringify(userId),
-          username: username,
-          age: Number(age),
-        }),
-      });
-
-      const data = await res.json();
-      setResult(formatResult(data));
-    } catch (err) {
-      setResult("エラー" + String (err));
-    }
+    if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
+    const res = await updateUser(userIdNum, username, Number(age));
+    setResult(res.ok ? formatUser(res.data as User): res.message);
   };
 
   const handleDelete = async () => {
-    try {
-      const res = await fetch(`${baseUrl}/${userId}`, {
-        method: "DELETE",
-      });
-
-      if (res.status === 204) {
-        setResult("削除完了");
-      } else {
-        setResult("失敗");
-      }
-    } catch (err) {
-      setResult("エラー" + String (err));
-    }
+    if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
+    const res = await deleteUser(userIdNum);
+    setResult(res.ok ? "削除完了": res.message);
   }
-
-  // =========================================================================
-
-  const formatResult = (data: User | User[] | string): string => {
-  // 複数ユーザーの場合
-  if (Array.isArray(data)) {
-    return data
-      .map(
-        (u) =>
-          `ID: ${u.id}\n名前: ${u.username}\n年齢: ${u.age}`  // <br>ではなく\n
-      )
-      .join('\n\n');  // <br><br>ではなく\n\n
-  }
-
-  // 単体オブジェクト（User型）の場合
-  if (
-    typeof data === 'object' &&
-    data !== null &&
-    'id' in data && 
-    'username' in data &&
-    'age' in data
-  ) {
-    return `
-┌───────────────┐
-│ ID: ${data.id}|
-│ 名前: ${data.username}|
-│ 年齢: ${data.age}|
-└───────────────┘`.trim();
-  }
-
-  // 文字列の場合の処理(データ表示されるが、エラーメッセージを返す)
-  return String(data);
-};
-
 
   // 別クラスで作成したので、代わりに別ページに飛ばす実装に変更
   const handleGoToWorkoutPage = () => {
@@ -162,45 +162,27 @@ function Home() {
         <p className="safety-note">個人情報は入力しないでください</p>
       </header>
 
-     <div className="input-form">
-      <input
-        placeholder="名前"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+      <UserFrom
+      username={username}
+      age={age}
+      userId={userId}
+      onChangeUsername={setUsername}
+      onChangeAge={setAge}
+      onChangeUserId={setUserId}
       />
-      <br />
-
-      <input
-        placeholder="年齢"
-        type="number"
-        value={age}
-        onChange={(e) => setAge(e.target.value)}
-      />
-      <br />
-
-      <input
-        placeholder="対象ユーザーID"
-        type="number"
-        value={userId}
-        onChange={(e) => setUserId(e.target.value)}
-      />
-    </div>
 
       <h3 className="section-title">操作</h3>
-      <div className="button-group">
-        <button onClick={handleRegister}>登録</button>
-        <button onClick={handleGetAll}>全部取得</button>
-        <button onClick={handleGetById}>ID 取得</button>
-        <button onClick={handleUpdate}>更新</button>
-        <button onClick={handleDelete}>削除</button>
-        <button onClick={handleGoToWorkoutPage}>Workoutページへ</button>
-      </div>
+      <ActionButtons
+        onRegister={handleRegister}
+        onGetAll={handleGetAll}
+        onGetById={handleGetById}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
+        onGoToWorkout={handleGoToWorkoutPage}
+        />
 
-      <div className="result-section">
-        <h3>ユーザー情報</h3>
-        <pre style={{ whiteSpace: 'pre-wrap' }}>{result}</pre>
-      </div>
-    </div>
+      <ResultPanel result={result} />
+     </div>
   );
 }
 export default Home;

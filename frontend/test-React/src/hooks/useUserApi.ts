@@ -69,7 +69,7 @@ export type DeleteResult = { ok: true} | { ok: false, message: string};
 
 export async function deleteUser(userId: number): Promise<DeleteResult> {
   try {
-    const res = await fetch(`${BASE_URL}`, { method: "DELETE" });
+    const res = await fetch(`${BASE_URL}/${userId}`, { method: "DELETE" });
 
     if (res.status === 204) return {ok: true };
     return { ok: false, message: `削除失敗: ${res.status}` };
