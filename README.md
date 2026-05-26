@@ -120,15 +120,22 @@ PUT /api/workouts/{id}/details - 種目名、重量、回数、セット数の�
 
 DELETE /api/workouts/{id} - ワークアウト記録の削除 (204 No Content)
 
-🔧 セットアップと起動方法 (Getting Started)
-1. バックエンドの起動
-前提条件: Java 17 または 21 のインストール、PostgreSQL の起動と application.properties への接続情報設定。
-cd backend
-./mvnw test              # 自動テストの実行
-./mvnw spring-boot:run   # アプリケーションのローカル起動
+## 🔧 セットアップと起動方法 (Getting Started)
 
-2. フロントエンドの起動
-前提条件: Node.js 環境のインストール。
-cd frontend
-npm install              # 依存関係のインストール
-npm run dev              # 開発サーバーの起動 (Vite)
+### 前提条件
+- Docker Desktop がインストールされ、起動していること
+
+### 起動
+
+```bash
+docker compose up --build   # 初回 or コード変更後
+docker compose up           # 2回目以降
+```
+
+ブラウザで http://localhost:8080 にアクセス。
+
+### 停止
+
+```bash
+docker compose down
+```
