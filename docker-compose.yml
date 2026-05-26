@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: workout_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5443:5432"  # ホスト5443 → コンテナ内5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/workout_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+
+volumes:
+  pgdata:
