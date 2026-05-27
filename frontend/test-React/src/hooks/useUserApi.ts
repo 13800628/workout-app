@@ -14,7 +14,8 @@ export async function fetchAllUsers(): Promise<ApiResult> {
   try {
     const res = await fetch(BASE_URL);
     if (!res.ok) return { ok: false, message: `サーバーエラー: ${res.status}` };
-    const data: User[] = await res.json();
+    const page: { content: User[] } = await res.json();
+    const data: User[] = page.content;
     return { ok: true, data };
   } catch (err) {
     return { ok: false, message: `通信エラー: ${String(err)}`};
@@ -55,7 +56,7 @@ export async function updateUser(userId:number, username: string, age: number): 
     const res = await fetch(`${BASE_URL}/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, username, age }),
+      body: JSON.stringify({ username, age }),
     });
     if (!res.ok) return { ok: false, message: `更新失敗: ${res.status}` };
     const data: User = await res.json();

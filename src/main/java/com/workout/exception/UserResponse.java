@@ -4,7 +4,7 @@ import com.workout.model.User;
 
 public record UserResponse(
   Long id, 
-  String isername,
+  String username,
   Integer age
 ) {
   
