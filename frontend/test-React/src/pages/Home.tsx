@@ -29,7 +29,7 @@ type UserFormProps = {
   onChangeUserId: (v: string) => void;
 };
 
-function UserFrom({
+function UserForm({
   username,
   age,
   userId,
@@ -162,7 +162,7 @@ function Home() {
         <p className="safety-note">個人情報は入力しないでください</p>
       </header>
 
-      <UserFrom
+      <UserForm
       username={username}
       age={age}
       userId={userId}
