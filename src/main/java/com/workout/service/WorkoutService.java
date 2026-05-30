@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.workout.dto.workouts.UpdateWorkoutRequest;
 import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.User;
 import com.workout.model.Workout;
@@ -63,7 +64,7 @@ public class WorkoutService {
   }
 
   @Transactional
-  public Workout updateAllDetails(Long id, WorkoutRequest request) {    
+  public Workout updateAllDetails(Long id, UpdateWorkoutRequest request) {    
     Workout workout = getWorkoutById(id);
 
     workout.updateAllWorkoutDetails(

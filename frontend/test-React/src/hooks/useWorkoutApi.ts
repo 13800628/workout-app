@@ -55,7 +55,7 @@ export async function updateWorkout(
   weights: number
 ): Promise<ApiResult> {
   try {
-    const response = await fetch(`${BASE_URL}/${id}/update`, {
+    const response = await fetch(`${BASE_URL}/${id}/details`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, reps, sets, weights }),

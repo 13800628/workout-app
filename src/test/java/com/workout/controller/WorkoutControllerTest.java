@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.workout.config.SecurityConfig;
-
+import com.workout.dto.workouts.UpdateWorkoutRequest;
 import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.Workout;
 import com.workout.service.WorkoutService;
@@ -82,13 +82,13 @@ class WorkoutControllerTest {
   @Test
   void updateAllDetails_正常系_詳細を一括更新して200を返す() throws Exception {
     Long id = 1L;
-    WorkoutRequest request = new WorkoutRequest("ベンチプレス", 10, 3, 60, null);
+    UpdateWorkoutRequest request = new UpdateWorkoutRequest("ベンチプレス", 10, 3, 60);
 
     Workout updated = new Workout();
     updated.setId(id);
     updated.setName("ベンチプレス");
 
-    when(workoutService.updateAllDetails(eq(id), any(WorkoutRequest.class))).thenReturn(updated);
+    when(workoutService.updateAllDetails(eq(id), any(UpdateWorkoutRequest.class))).thenReturn(updated);
 
     mockMvc.perform(put("/api/workouts/{id}/details", id)
         .contentType(requireNonNull(MediaType.APPLICATION_JSON))
