@@ -17,6 +17,7 @@ import com.workout.model.User;
 import com.workout.model.Workout;
 import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
+import com.workout.dto.workouts.UpdateWorkoutRequest;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("null")
@@ -90,7 +91,7 @@ class WorkoutServiceTest {
     workout.setSets(1);
     workout.setWeights(10);
 
-    WorkoutRequest request = new WorkoutRequest("after", 10, 10, 100, 1L);
+    UpdateWorkoutRequest request = new UpdateWorkoutRequest("after", 10, 10, 100);
 
     when(workoutRepository.findById(id)).thenReturn(Optional.of(workout));
     when(workoutRepository.save(any(Workout.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -109,7 +110,7 @@ class WorkoutServiceTest {
   @Test
   void updateAllDetails_異常系_IDが存在しない場合はRuntimeExceptionを投げる() {
     Long id = 999L;
-    WorkoutRequest request = new WorkoutRequest("ベンチ", 23, 4, 60, 999L);
+    UpdateWorkoutRequest request = new UpdateWorkoutRequest("ベンチ", 23, 4, 60);
 
 
     when(workoutRepository.findById(id)).thenReturn(Optional.empty());
