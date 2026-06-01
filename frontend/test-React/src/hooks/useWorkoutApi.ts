@@ -71,7 +71,7 @@ export async function updateWorkout(
 export async function deleteWorkout(id: number): Promise<DeleteResult> {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
-    if (response.status === 200) return { ok: true };
+    if (response.status === 204) return { ok: true };
     return { ok: false, message: `削除失敗: ${response.status}` };
   } catch (error) {
     return { ok: false, message: `通信エラー: ${String(error)}`};
