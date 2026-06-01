@@ -40,12 +40,7 @@ button {
   transition: transform 0.1s;
 }
 
-.gradation {
-  min-height: 100vh;
-  background-image: linear-gradient(90deg, #22d3ee, #8b5cf6);
-  padding: 20px 10px;
-  box-sizing: border-box;
-}
+
 
 .button-group {
   display: grid;
@@ -60,6 +55,17 @@ button {
   .button-group {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+
+.home-container {
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  padding: 20px 10px;
+  box-sizing: border-box;
+}
+
+.home-header {
+  margin-bottom: 20px;
 }
 
 button:active {

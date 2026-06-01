@@ -182,9 +182,11 @@ export default function Workout() {
 
   
     return (
-      <div style={{ padding: 20, fontSize: 18 }} className="gradation">
-        <h2>Workout Details</h2>
-
+      <div className="home-container">
+        <header className="home-header">
+          <h1>Workout Details</h1>
+        </header>
+        
         {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
         {!userId && <p>ユーザーIDが指定されていません</p>}
         <p>Your workout data...</p>
@@ -196,7 +198,7 @@ export default function Workout() {
           onGetAll={handleGetAll}
         />
 
-        <h3>記録一覧</h3>
+        <h3 className="section-title">記録一覧</h3>
         {workouts.map((item) => (
           <WorkoutItem
             key={item.id}
