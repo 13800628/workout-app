@@ -34,7 +34,7 @@ Java Record による不変（Immutable）な DTO を徹底し、エンティテ
 - **Linter:** ESLint 9
 
 ### バックエンド
-- **Framework:** Spring Boot 3.5.11 (Java 17/21)
+- **Framework:** Spring Boot 3.5.14 (Java 17/21)
 - **Security:** Spring Security, Spring Boot Starter Validation
 - **Data Access:** Spring Data JPA (Hibernate)
 - **Database:** PostgreSQL
@@ -50,13 +50,17 @@ Java Record による不変（Immutable）な DTO を徹底し、エンティテ
 .
 ├── frontend/                     # フロントエンド（Vite + React プロジェクト）
 │   ├── src/
-│   │   ├── assets/               # 静的アセット（画像等）
-│   │   ├── App.css               # アプリケーション共通スタイル
-│   │   ├── App.tsx               # ルーティング・全体レイアウト定義
-│   │   ├── Home.tsx              # ユーザー管理画面（CRUD、AA風フォーマット、画面遷移）
-│   │   ├── Workout.tsx           # ワークアウト記録管理（インライン編集、水際バリデーション）
-│   │   ├── index.css             # グローバルスタイル
-│   │   └── main.tsx              # エントリーポイント
+│   |    ├── hooks/
+│   |    │   ├── useUserApi.ts
+│   |    │   └── useWorkoutApi.ts
+│   |    ├── utils/
+│   |    │   └── formatUser.ts
+│   |    ├── pages/
+│   |    │   ├── Home.tsx
+│   |    │   └── Workout.tsx
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
 │   ├── package.json              # React 19 / Vite 7 依存関係
 │   └── vite.config.ts            # Vite 設定ファイル
 │
