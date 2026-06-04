@@ -8,6 +8,7 @@
  */
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   fetchAllUsers,
   fetchUserById,
@@ -107,6 +108,7 @@ function Home() {
   const [userId, setUserId] = useState("");
   const [result, setResult] = useState("");
 
+  const navigate = useNavigate();
   const userIdNum = Number(userId);
   
   // =========================================================================
@@ -150,7 +152,7 @@ function Home() {
       alert("ユーザーIDを入力してください");
       return;
     }
-    window.location.href = `/workout?id=${userId}`;
+    navigate(`/workout?id=${userId}`);
   }
 
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   fetchWorkoutByUserId,
   createWorkout,
@@ -95,8 +96,8 @@ export default function Workout() {
     weights: "",
   });
 
-  const params = new URLSearchParams(window.location.search); 
-  const userId = Number(params.get("id"));
+  const [searchParams] = useSearchParams();
+  const userId = Number(searchParams.get("id"));
 
     
     // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
