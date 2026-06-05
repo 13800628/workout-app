@@ -1,13 +1,28 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Workout from "./pages/Workout";
+import Login from "./pages/Login";
+import { isLoggedIn } from "./hooks/useAuth";
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  return isLoggedIn() ? <>{children}</> : <Navigate to="/login" />;
+}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/workout" element={<Workout />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={
+          <PrivateRoute>
+            <Home />
+          </PrivateRoute>
+        } />
+        <Route path="/workout" element={
+          <PrivateRoute>
+            <Workout />
+          </PrivateRoute>
+        } />
       </Routes>
     </BrowserRouter>
   );

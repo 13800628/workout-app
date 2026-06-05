@@ -1,3 +1,5 @@
+import { authHeaders } from "./useAuth";
+
 export type Workout = {
   id: number;
   name: string;
@@ -16,7 +18,9 @@ const BASE_URL = "/api/workouts";
 
 export async function fetchWorkoutByUserId(userId: number): Promise<ApiResult>  {
   try {
-    const response = await fetch(`${BASE_URL}/${userId}`);
+    const response = await fetch(`${BASE_URL}/${userId}`, {
+      headers: authHeaders(),
+    });
     if (!response.ok) return { ok: false, message: `サーバーエラー: ${response.status}`};
     const responseData = await response.json();
     return { ok: true, data: responseData };
@@ -36,7 +40,7 @@ export async function createWorkout(
     // ここのエンドポイントの確認必須(エラーになる可能性あり)
     const response = await fetch(`${BASE_URL}/create`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({ userId, name, reps, sets, weights }),
     });
     if (!response.ok) return { ok: false, message: `登録失敗: ${response.status}`};
@@ -57,7 +61,7 @@ export async function updateWorkout(
   try {
     const response = await fetch(`${BASE_URL}/${id}/details`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({ name, reps, sets, weights }),
     });
     if (!response.ok) return { ok: false, message: `更新失敗: ${response.status}`};
@@ -70,7 +74,10 @@ export async function updateWorkout(
 
 export async function deleteWorkout(id: number): Promise<DeleteResult> {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
+    const response = await fetch(`${BASE_URL}/${id}`, { 
+      method: "DELETE" ,
+      headers: authHeaders(),
+    });
     if (response.status === 204) return { ok: true };
     return { ok: false, message: `削除失敗: ${response.status}` };
   } catch (error) {
