@@ -1,3 +1,5 @@
+import { authHeaders } from "./useAuth";
+
 export type User = {
   id: number;
   username: string;
@@ -12,7 +14,9 @@ const BASE_URL = "/api/users";
 
 export async function fetchAllUsers(): Promise<ApiResult> {
   try {
-    const res = await fetch(BASE_URL);
+    const res = await fetch(BASE_URL, {
+      headers: authHeaders(),
+    });
     if (!res.ok) return { ok: false, message: `サーバーエラー: ${res.status}` };
     const page: { content: User[] } = await res.json();
     const data: User[] = page.content;
@@ -24,7 +28,9 @@ export async function fetchAllUsers(): Promise<ApiResult> {
 
 export async function fetchUserById(userId: number): Promise<ApiResult> {
   try {
-    const res = await fetch(`${BASE_URL}/${userId}`);
+    const res = await fetch(`${BASE_URL}/${userId}`, {
+      headers: authHeaders(),
+    });
 
     if (res.status == 404) return { ok: false, message: `ユーザーが見つかりません`};
     if (!res.ok) return { ok: false, message: `サーバーエラー: ${res.status}` };
@@ -40,7 +46,7 @@ export async function registerUser(username: string, age: number): Promise<ApiRe
   try {
     const res = await fetch(BASE_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({ username, age}),
     });
     if (!res.ok) return { ok: false, message: `登録失敗: ${res.status}`};
@@ -55,7 +61,7 @@ export async function updateUser(userId:number, username: string, age: number): 
   try {
     const res = await fetch(`${BASE_URL}/${userId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({ username, age }),
     });
     if (!res.ok) return { ok: false, message: `更新失敗: ${res.status}` };
@@ -70,7 +76,10 @@ export type DeleteResult = { ok: true} | { ok: false, message: string};
 
 export async function deleteUser(userId: number): Promise<DeleteResult> {
   try {
-    const res = await fetch(`${BASE_URL}/${userId}`, { method: "DELETE" });
+    const res = await fetch(`${BASE_URL}/${userId}`, { 
+      method: "DELETE",
+      headers: authHeaders(),
+    });
 
     if (res.status === 204) return {ok: true };
     return { ok: false, message: `削除失敗: ${res.status}` };
