@@ -15,11 +15,15 @@ public class User extends BaseEntity {
   @Column(nullable = false)
   private Integer age;
 
+  @Column(nullable = false)
+  private String password;
+
   public User() {}
 
-  public User(String username, Integer age) {
+  public User(String username, Integer age, String password) {
     this.username = username;
     this.age = age;
+    this.password = password;
   }
 
 
@@ -40,6 +44,14 @@ public class User extends BaseEntity {
 
   public void setAge(Integer age) {
     this.age = age;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 
 

@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.workout.dto.UserRequest;
 import com.workout.model.User;
@@ -15,14 +16,20 @@ import com.workout.repository.UserRepository;
 @Service
 public class UserService {
   private UserRepository userRepository;
+  private PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Transactional
   public User registerUser(UserRequest request) {
-    User user = new User(request.username(), request.age());
+    User user = new User(
+      request.username(),
+      request.age(),
+      passwordEncoder.encode(request.password())
+    );
     return userRepository.save(user);
   }
 

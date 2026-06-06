@@ -42,12 +42,12 @@ export async function fetchUserById(userId: number): Promise<ApiResult> {
   }
 }
 
-export async function registerUser(username: string, age: number): Promise<ApiResult> {
+export async function registerUser(username: string, age: number, password: string): Promise<ApiResult> {
   try {
     const res = await fetch(BASE_URL, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ username, age}),
+      body: JSON.stringify({ username, age, password}),
     });
     if (!res.ok) return { ok: false, message: `登録失敗: ${res.status}`};
     const data: User = await res.json();

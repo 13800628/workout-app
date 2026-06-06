@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { saveToken } from "../hooks/useAuth";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const redirect = searchParams.get("redirect") || "/";
 
   const handleLogin = async () => {
     try {
@@ -16,14 +18,14 @@ export default function Login() {
         body: JSON.stringify({ username, password }),
       });
 
-      if (res.ok) {
+      if (!res.ok) {
         setError("ユーザー名またはパスワードが違います");
         return;
       }
 
       const data = await res.json();
       saveToken(data.token);
-      navigate("/home");
+      navigate(redirect);
     } catch (err) {
       setError(`通信エラー: ${String(err)}`);
     }

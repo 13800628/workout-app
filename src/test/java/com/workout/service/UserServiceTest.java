@@ -34,7 +34,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = new User("tester", 25);
+        testUser = new User("tester", 25, "password");
         testUser.setId(1L);
     }
 
@@ -43,10 +43,10 @@ class UserServiceTest {
         // Arrange
         String username = "newuser";
         Integer age = 30;
-        User savedUser = new User(username, age);
+        User savedUser = new User(username, age, "password");
         savedUser.setId(1L);
-        UserRequest request = new UserRequest(username, age);
-        
+        UserRequest request = new UserRequest(username, age, "password");
+
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         // Act
@@ -62,7 +62,7 @@ class UserServiceTest {
     @Test
     void getAllUsers_正常系_全ユーザーが取得される() {
         // Arrange
-        User user2 = new User("user2", 28);
+        User user2 = new User("user2", 28, "password");
         user2.setId(2L);
         List<User> users = Arrays.asList(testUser, user2);
         
@@ -119,7 +119,7 @@ class UserServiceTest {
         String newUsername = "更新後の名前";
         Integer newAge = 30;
 
-        UserRequest request = new UserRequest(newUsername, newAge);
+        UserRequest request = new UserRequest(newUsername, newAge, "password");
 
         User updatedUser = new User();
         updatedUser.setId(userId);
@@ -144,7 +144,7 @@ class UserServiceTest {
     void updateUser_異常系_存在しないIDの場合nullが返される() {
         // Arrange
         Long userId = 999L;
-        UserRequest request = new UserRequest("テスト", 25);
+        UserRequest request = new UserRequest("テスト", 25, "password");
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
@@ -162,7 +162,7 @@ class UserServiceTest {
     void updatedUser_異常系_名前がnullの場合IllegalArgumentExceptionを投げる() {
         Long userId = 1L;
         // 更新用のDTO（名前をあえてnullにする）
-        UserRequest request = new UserRequest(null, 25);
+        UserRequest request = new UserRequest(null, 25, "password");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
