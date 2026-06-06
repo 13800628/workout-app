@@ -41,9 +41,11 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/", "/index.html", "/assets/**", "/*.js", "/*.css").permitAll()
-                .anyRequest().authenticated()
+               .requestMatchers("/api/auth/**").permitAll()
+               .requestMatchers("/", "/login","/index.html", "/assets/**", "/*.js", "/*.css", "/*.svg").permitAll()
+               .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/users").permitAll()
+               .requestMatchers("/api/users/**").permitAll()
+              .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

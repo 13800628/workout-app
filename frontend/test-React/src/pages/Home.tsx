@@ -18,6 +18,7 @@ import {
 } from "../hooks/useUserApi";
 import type { User } from "../hooks/useUserApi";
 import { formatUser, formatUsers } from "../utils/formatUser";
+import { isLoggedIn } from "../hooks/useAuth";
 
 // 子コンポーネント
 
@@ -25,18 +26,22 @@ type UserFormProps = {
   username: string;
   age: string;
   userId: string;
+  password: string;
   onChangeUsername: (v: string) => void;
   onChangeAge: (v: string) => void;
   onChangeUserId: (v: string) => void;
+  onChangePassword: (v: string) => void;
 };
 
 function UserForm({
   username,
   age,
   userId,
+  password,
   onChangeUsername,
   onChangeAge,
   onChangeUserId,
+  onChangePassword,
 }: UserFormProps) {
   return (
     <div className="input-form">
@@ -56,6 +61,12 @@ function UserForm({
         type="number"
         value={userId}
         onChange={(e) => onChangeUserId(e.target.value)}
+      />
+      <input
+        placeholder="パスワード"
+        type="string"
+        value={password}
+        onChange={(e) => onChangePassword(e.target.value)}
       />
     </div>
   );
@@ -107,6 +118,7 @@ function Home() {
   const [age, setAge] = useState("");
   const [userId, setUserId] = useState("");
   const [result, setResult] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
   const userIdNum = Number(userId);
@@ -117,7 +129,7 @@ function Home() {
 
   // 登録処理
   const handleRegister = async () => {
-    const res = await registerUser(username, Number(age))
+    const res = await registerUser(username, Number(age), password);
     setResult(res.ok ? formatUser(res.data as User) : res.message); 
   };
   
@@ -152,6 +164,11 @@ function Home() {
       alert("ユーザーIDを入力してください");
       return;
     }
+    console.log("isLoggedIn:", isLoggedIn());
+    if (!isLoggedIn()) {
+      navigate(`/login?redirect=/workout?id=${userId}`);
+      return;
+    }
     navigate(`/workout?id=${userId}`);
   }
 
@@ -168,9 +185,11 @@ function Home() {
       username={username}
       age={age}
       userId={userId}
+      password={password}
       onChangeUsername={setUsername}
       onChangeAge={setAge}
       onChangeUserId={setUserId}
+      onChangePassword={setPassword}
       />
 
       <h3 className="section-title">操作</h3>

@@ -14,5 +14,8 @@ public record UserRequest(
   String username,
 
   @Positive(message = "年齢は1歳以上で入力してください")
-  Integer age
+  Integer age,
+
+  @NotBlank(message = "パスワードは必須です")
+  String password
 ) {}

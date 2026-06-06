@@ -13,11 +13,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={
-          <PrivateRoute>
-            <Home />
-          </PrivateRoute>
-        } />
+        <Route path="/" element={<Home />} />  {/* 認証不要 */}
         <Route path="/workout" element={
           <PrivateRoute>
             <Workout />
@@ -27,5 +23,6 @@ function App() {
     </BrowserRouter>
   );
 }
+
 
 export default App;

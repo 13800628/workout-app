@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // Spring Securityが理解できるUserオブジェクトを作成して返す
         return User.builder()
                 .username(user.getUsername())
-                .password("{noop}password") // ここはDB内のハッシュ化された値
+                .password(user.getPassword()) // ここはDB内のハッシュ化された値
                 .roles("USER")
                 .build();
     }
