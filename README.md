@@ -53,11 +53,13 @@ Java Record による不変（Immutable）な DTO を徹底し、エンティテ
 │   |    ├── hooks/
 │   |    │   ├── useUserApi.ts
 │   |    │   └── useWorkoutApi.ts
+|   |    |   └── useAuth.ts
 │   |    ├── utils/
 │   |    │   └── formatUser.ts
-│   |    ├── pages/
-│   |    │   ├── Home.tsx
-│   |    │   └── Workout.tsx
+│   |    └── pages/
+│   |       ├── Home.tsx
+│   |       |── Workout.tsx
+|   |       └── Login.tsx
 │   ├── App.tsx
 │   ├── index.css
 │   └── main.tsx
@@ -67,13 +69,13 @@ Java Record による不変（Immutable）な DTO を徹底し、エンティテ
 └── backend/                      # バックエンド（Spring Boot プロジェクト）
     ├── src/main/java/com/workout/
     │   ├── WorkoutApplication.java
-    │   ├── config/               # SecurityConfig (セキュリティ・認可設定)
-    │   ├── controller/           # SpaController, UserController, WorkoutController
+    │   ├── config/               # SecurityConfig, JwtFilter, JwtUtil (セキュリティ・認可設定)
+    │   ├── controller/           # AuthContoroller, SpaController, UserController, WorkoutController
     │   ├── dto/                  # Record を使用したデータ転送オブジェクト (Req/Res)
     │   ├── exception/            # GlobalExceptionHandle, ErrorResponse
     │   ├── model/                # User, Workout などのエンティティ、Validator
     │   ├── repository/           # UserRepository, WorkoutRepository
-    │   └── service/              # WorkoutService, UserService (ビジネスロジック層)
+    │   └── service/              # CreateWorkoutCommand, CustomUserDetailsService ,WorkoutService, UserService (ビジネスロジック層)
     └── pom.xml                   # Maven 依存関係
 
     設計・実装のこだわり (Design Highlights)
