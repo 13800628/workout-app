@@ -87,3 +87,22 @@ export async function deleteUser(userId: number): Promise<DeleteResult> {
     return { ok: false, message: `通信エラー: ${String(err)}` };
   }
 }
+
+// パスワード変更
+export async function changePassword(
+  userId: number,
+  oldPassword: string,
+  newPassword: string
+) : Promise<DeleteResult> {
+  try {
+    const res = await fetch(`${BASE_URL}/${userId}/password`, {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({ oldPassword, newPassword }),
+    });
+    if (res.status === 204) return { ok: true };
+    return { ok: false, message: `パスワード変更失敗: ${res.status}` };
+  } catch (err) {
+    return { ok: false, message: `通信エラー: ${String(err)}` };
+  }
+}

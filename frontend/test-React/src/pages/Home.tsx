@@ -15,6 +15,7 @@ import {
   registerUser,
   updateUser,
   deleteUser,
+  changePassword,
 } from "../hooks/useUserApi";
 import type { User } from "../hooks/useUserApi";
 import { formatUser, formatUsers } from "../utils/formatUser";
@@ -79,6 +80,7 @@ type ActionButtonProps = {
   onUpdate: () => void;
   onDelete: () => void;
   onGoToWorkout: () => void;
+  onOpenModal: () => void;
 };
 
 function ActionButtons({
@@ -88,6 +90,7 @@ function ActionButtons({
   onUpdate,
   onDelete,
   onGoToWorkout,
+  onOpenModal,
 }: ActionButtonProps) {
   return (
     <div className="button-group">
@@ -96,8 +99,8 @@ function ActionButtons({
       <button onClick={onGetById}>ID 取得</button>
       <button onClick={onUpdate}>更新</button>
       <button onClick={onDelete}>削除</button>
-      <button onClick={onGoToWorkout}>Workoutページへ
-      </button>
+      <button onClick={onOpenModal}>パスワード変更</button>
+      <button onClick={onGoToWorkout}>Workoutページへ</button>
     </div>
   );
 }
@@ -112,6 +115,71 @@ function ResultPanel({ result }: { result: string }) {
   )
 }
 
+// モーダルコンポーネント
+type PasswordModalProps = {
+  isOpen: boolean;
+  oldPassword: string;
+  newPassword: string;
+  error: string;
+  onChangeOld: (v: string) => void;
+  onChangeNew: (v: string) => void;
+  onSubmit: () => void;
+  onClose: () => void;
+}; 
+
+function PasswordModal({
+  isOpen,
+  oldPassword,
+  newPassword,
+  error,
+  onChangeOld,
+  onChangeNew,
+  onSubmit,
+  onClose,
+} : PasswordModalProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 1000,
+    }}>
+      <div style={{
+        background: "white",
+        borderRadius: 12,
+        padding: 30,
+        width: 320,
+      }}>
+        <h3>パスワード変更</h3>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <input
+          placeholder="現在のパスワード"
+          type="password"
+          value={oldPassword}
+          onChange={(e) => onChangeOld(e.target.value)}
+          style={{ width: "100%", marginBottom: 10, padding: 8 }}
+        />
+        <input
+          placeholder="新しいパスワード"
+          type="password"
+          value={newPassword}
+          onChange={(e) => onChangeNew(e.target.value)}
+          style={{ width: "100%", marginBottom: 10, padding: 8 }}
+        />
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={onSubmit}>変更する</button>
+          <button onClick={onClose}>キャンセル</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // メインコンポーネント
 
 function Home() {
@@ -120,6 +188,10 @@ function Home() {
   const [userId, setUserId] = useState("");
   const [result, setResult] = useState("");
   const [password, setPassword] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [modalError, setModalError] = useState("");
 
   const navigate = useNavigate();
   const userIdNum = Number(userId);
@@ -173,6 +245,20 @@ function Home() {
     navigate(`/workout?id=${userId}`);
   }
 
+  const handleChangePassword = async () => {
+    if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
+    const res = await changePassword(userIdNum, oldPassword, newPassword);
+    if (res.ok) {
+      setResult("パスワードを変更しました");
+      setIsModalOpen(false);
+      setOldPassword("");
+      setNewPassword("");
+    } else {
+      setModalError(res.message);
+    }
+  }
+
+
 
 
   return (
@@ -201,7 +287,22 @@ function Home() {
         onUpdate={handleUpdate}
         onDelete={handleDelete}
         onGoToWorkout={handleGoToWorkoutPage}
-        />
+        onOpenModal={() => setIsModalOpen(true)}
+      />
+
+      <PasswordModal
+        isOpen={isModalOpen}
+        oldPassword={oldPassword}
+        newPassword={newPassword}
+        error={modalError}
+        onChangeOld={setOldPassword}
+        onChangeNew={setNewPassword}
+        onSubmit={handleChangePassword}
+        onClose={() => {
+          setIsModalOpen(false);
+          setModalError("");
+        }}
+      />
 
       <ResultPanel result={result} />
      </div>

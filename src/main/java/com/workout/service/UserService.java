@@ -73,4 +73,17 @@ public class UserService {
       throw new IllegalArgumentException("ID: " + id + "は存在しません");
     }
   }
+
+  // password
+  @Transactional
+  public void changePassword(Long id, String oldPassword, String newPassword) {
+    User user = getUserById(id);
+
+    if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+      throw new IllegalArgumentException("現在のパスワードが正しくありません");
+    }
+
+    user.setPassword(passwordEncoder.encode(newPassword));
+    userRepository.save(user);
+  }
 }
