@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   fetchWorkoutByUserId,
   createWorkout,
@@ -7,6 +8,7 @@ import {
   deleteWorkout,
 } from "../hooks/useWorkoutApi";
 import type { Workout } from "../hooks/useWorkoutApi";
+import { removeToken } from "../hooks/useAuth";
 
 // 子コンポーネント
 type WorkoutFormProps = {
@@ -98,6 +100,7 @@ export default function Workout() {
 
   const [searchParams] = useSearchParams();
   const userId = Number(searchParams.get("id"));
+  const navigate = useNavigate();
 
     
     // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
@@ -181,11 +184,17 @@ export default function Workout() {
     });
   };
 
+  const handleLogout = () => {
+    removeToken();
+    navigate("/login")
+  }
+
   
     return (
       <div className="home-container">
         <header className="home-header">
           <h1>Workout Details</h1>
+          <button onClick={handleLogout}>ログアウト</button>
         </header>
         
         {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
