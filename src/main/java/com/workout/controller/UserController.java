@@ -18,6 +18,7 @@ import com.workout.dto.UserRequest;
 import com.workout.exception.UserResponse;
 import com.workout.model.User;
 import com.workout.service.UserService;
+import com.workout.dto.ChangePasswordRequest;
 
 import jakarta.validation.Valid;
 
@@ -66,4 +67,13 @@ public class UserController {
     userService.deleteUser(id);
     return ResponseEntity.noContent().build();
   }
+
+  // password
+  @PutMapping("/{id}/password")
+  public ResponseEntity<Void> changePassword(
+      @PathVariable Long id,
+      @Valid @RequestBody ChangePasswordRequest request) {
+        userService.changePassword(id, request.oldPassword(), request.newPassword());
+        return ResponseEntity.noContent().build();
+      }
 }
