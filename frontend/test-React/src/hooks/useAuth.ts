@@ -16,6 +16,7 @@ export function isLoggedIn(): boolean {
   return getToken() !== null;
 }
 
+// トークンの付与が固定化されてるので可用性が低い。
 export function authHeaders(): HeadersInit {
   const token = getToken();
   return {
