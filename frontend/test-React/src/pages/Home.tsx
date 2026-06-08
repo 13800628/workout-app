@@ -102,6 +102,7 @@ function ActionButtons({
   );
 }
 
+// ここのresultが表示される文字が小さいので今後少し改善
 function ResultPanel({ result }: { result: string }) {
   return (
     <div className="result-section">
