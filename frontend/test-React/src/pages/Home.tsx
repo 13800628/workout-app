@@ -116,6 +116,7 @@ function ResultPanel({ result }: { result: string }) {
 }
 
 // モーダルコンポーネント
+// エラーメッセージが表示されなかったのでモーダル内で管理する。今後は責務などの問題で切り出す余地ありか。
 type PasswordModalProps = {
   isOpen: boolean;
   oldPassword: string;
