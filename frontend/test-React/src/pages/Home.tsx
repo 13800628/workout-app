@@ -246,6 +246,7 @@ function Home() {
     navigate(`/workout?id=${userId}`);
   }
 
+  // パスワードの再設定関数
   const handleChangePassword = async () => {
     if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
     const res = await changePassword(userIdNum, oldPassword, newPassword);
