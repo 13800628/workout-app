@@ -86,4 +86,10 @@ public class UserService {
     user.setPassword(passwordEncoder.encode(newPassword));
     userRepository.save(user);
   }
+
+  @Transactional(readOnly = true)
+  public User getUserByUsername(String username) {
+    return userRepository.findByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません: " + username));
+  }
 }
