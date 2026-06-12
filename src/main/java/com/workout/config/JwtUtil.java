@@ -3,6 +3,8 @@ package com.workout.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -11,10 +13,12 @@ import java.util.Date;
 @Component
 public class JwtUtil {
   
-  private static final String SECRET = "your-secret-key-must-be-least-32-bytes!!";
+  private final SecretKey key;
   private static final long EXPIRATION_MS = 1000 * 60 * 60 *24;
 
-  private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+  public JwtUtil(@Value("${jwt.secret}") String secret) {
+    this.key = Keys.hmacShaKeyFor(secret.getBytes());
+  }
 
   public String generateToken(String username) {
     return Jwts.builder()
