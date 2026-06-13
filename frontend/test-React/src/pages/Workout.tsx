@@ -21,9 +21,10 @@ type WorkoutFormProps = {
   onChange: (field: string, value: string) => void;
   onRegister: () => void;
   onGetAll: () => void;
+  isLoading: boolean;
 };
 
-function WorkoutForm({ formData, onChange, onRegister, onGetAll }: WorkoutFormProps) {
+function WorkoutForm({ formData, onChange, onRegister, onGetAll, isLoading }: WorkoutFormProps) {
   return (
     <div>
       <input
@@ -51,8 +52,12 @@ function WorkoutForm({ formData, onChange, onRegister, onGetAll }: WorkoutFormPr
         onChange={(e) => onChange("weights", e.target.value)}
       />
       <div className="button-group">
-        <button onClick={onRegister}>登録</button>
-        <button onClick={onGetAll}>全件取得</button>
+        <button onClick={onRegister} disabled={isLoading}>
+          {isLoading ? "処理中..." : "登録"}
+        </button>
+        <button onClick={onGetAll} disabled={isLoading}>
+          {isLoading ? "処理中..." : "全件取得"}
+        </button>
       </div>
     </div>
   )
@@ -64,22 +69,29 @@ type WorkoutItemProps = {
   onEditStart: (item: Workout) => void;
   onEditSubmit: (id: number) => void;
   onDelete: (id: number) => void;
+  isLoading: boolean;
 }
 
-function WorkoutItem({ item, isEditing, onEditStart, onEditSubmit, onDelete }: WorkoutItemProps) {
+function WorkoutItem({ item, isEditing, onEditStart, onEditSubmit, onDelete, isLoading }: WorkoutItemProps) {
   return (
     <div style={{ borderBottom: "1px solid #ddd", marginBottom: "10px"}}>
       {isEditing ? (
-        <button onClick={() => onEditSubmit(item.id)}>編集を実行</button>
+        <button onClick={() => onEditSubmit(item.id)} disabled={isLoading}>
+          {isLoading ? "処理中..." : "編集を実行"}
+        </button>
       ) : (
-        <button onClick={() => onEditStart(item)}>編集する</button>
+        <button onClick={() => onEditStart(item)} disabled={isLoading}>
+          {isLoading ? "処理中..." : "編集する"}
+        </button>
       )}
       <p>ID: {item.id}</p>
       <p>種目名: {item.name}</p>
       <p>回数: {item.reps}</p>
       <p>セット数: {item.sets}</p>
       <p>重さ: {item.weights}</p>
-      <button onClick={() => onDelete(item.id)}>削除</button>
+      <button onClick={() => onDelete(item.id)} disabled={isLoading}>
+        {isLoading ? "処理中..." : "削除"}
+      </button>
     </div>
   );
 }
@@ -90,6 +102,7 @@ export default function Workout() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [error, setError] = useState("");
   const [targetId, setTargetId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -123,54 +136,74 @@ export default function Workout() {
   
 
   const handleGetAll = async () => {
-    const response = await fetchWorkoutByUserId(userId);
-    if (response.ok) {
+    setIsLoading(true);
+    try {
+      const response = await fetchWorkoutByUserId(userId);
+      if (response.ok) {
       setWorkouts(response.data as Workout[]);
-    } else {
+     } else {
       setError(response.message);
+     }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleCreate = async () => {
     if (!validate()) return;
-    const response = await createWorkout(
+    setIsLoading(true);
+    try {
+      const response = await createWorkout(
       userId, 
       formData.name,
       Number(formData.reps),
       Number(formData.sets),
       Number(formData.weights)
-    );
-    if (response.ok) {
-      await handleGetAll();
-    } else {
+     );
+     if (response.ok) {
+       await handleGetAll();
+     } else {
       setError(response.message);
+     }
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleUpdate = async (id: number) => {
     if (!validate()) return;
-    const response = await updateWorkout(
+    setIsLoading(true);
+    try {
+      const response = await updateWorkout(
       id,
       formData.name,
       Number(formData.reps),
       Number(formData.sets),
       Number(formData.weights)
-    );
-    if (response.ok) {
+     );
+     if (response.ok) {
       setTargetId(null);
       await handleGetAll();
-    } else {
+     } else {
       setError(response.message);
+     }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
     if (!window.confirm("本当に削除しますか？")) return;
-    const response = await deleteWorkout(id);
-    if (response.ok) {
-      setWorkouts((prev) => (prev ?? []).filter((w) => w.id !== id));
-    } else {
-      setError(response.message);
+    setIsLoading(true);
+    try {
+      const response = await deleteWorkout(id);
+      if (response.ok) {
+        setWorkouts((prev) => (prev ?? []).filter((w) => w.id !== id));
+      } else {
+        setError(response.message);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
       
@@ -206,6 +239,7 @@ export default function Workout() {
           onChange={handleChange}
           onRegister={handleCreate}
           onGetAll={handleGetAll}
+          isLoading={isLoading}
         />
 
         <h3 className="section-title">記録一覧</h3>
@@ -217,6 +251,7 @@ export default function Workout() {
             onEditStart={handleEditStart}
             onEditSubmit={handleUpdate}
             onDelete={handleDelete}
+            isLoading={isLoading}
             />
         ))}
       </div>
