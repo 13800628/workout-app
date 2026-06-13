@@ -81,6 +81,7 @@ type ActionButtonProps = {
   onDelete: () => void;
   onGoToWorkout: () => void;
   onOpenModal: () => void;
+  isLoading: boolean;
 };
 
 function ActionButtons({
@@ -91,16 +92,31 @@ function ActionButtons({
   onDelete,
   onGoToWorkout,
   onOpenModal,
+  isLoading,
 }: ActionButtonProps) {
   return (
     <div className="button-group">
-      <button onClick={onRegister}>登録</button>
-      <button onClick={onGetAll}>全部取得</button>
-      <button onClick={onGetById}>ID 取得</button>
-      <button onClick={onUpdate}>更新</button>
-      <button onClick={onDelete}>削除</button>
-      <button onClick={onOpenModal}>パスワード変更</button>
-      <button onClick={onGoToWorkout}>Workoutページへ</button>
+      <button onClick={onRegister} disabled={isLoading}>
+        {isLoading ? "処理中..." : "登録"}
+      </button>
+      <button onClick={onGetAll} disabled={isLoading}>
+        {isLoading ? "処理中..." : "全部取得"}
+      </button>
+      <button onClick={onGetById} disabled={isLoading}>
+        {isLoading ? "処理中..." : "ID 取得"}
+      </button>
+      <button onClick={onUpdate} disabled={isLoading}>
+        {isLoading ? "処理中" : "更新"}
+      </button>
+      <button onClick={onDelete} disabled={isLoading}>
+        {isLoading ? "処理中..." : "削除"}
+      </button>
+      <button onClick={onOpenModal} disabled={isLoading}>
+         {isLoading ? "処理中..." : "パスワード変更"}
+      </button>
+      <button onClick={onGoToWorkout} disabled={isLoading}>
+        Workoutページへ
+      </button>
     </div>
   );
 }
@@ -193,6 +209,7 @@ function Home() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [modalError, setModalError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const userIdNum = Number(userId);
@@ -203,15 +220,25 @@ function Home() {
 
   // 登録処理
   const handleRegister = async () => {
-    const res = await registerUser(username, Number(age), password);
-    setResult(res.ok ? formatUser(res.data as User) : res.message); 
+    setIsLoading(true);
+    try {
+      const res = await registerUser(username, Number(age), password);
+      setResult(res.ok ? formatUser(res.data as User) : res.message);
+    } finally {
+      setIsLoading(false);
+    } 
   };
   
 
 
   const handleGetAll = async () => {
-    const res = await fetchAllUsers();
-    setResult(res.ok ? formatUsers(res.data as User[]) : res.message);
+    setIsLoading(true);
+    try {
+      const res = await fetchAllUsers();
+      setResult(res.ok ? formatUsers(res.data as User[]) : res.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGetById = async () => {
@@ -222,15 +249,25 @@ function Home() {
 
   const handleUpdate = async () => {
     if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
-    const res = await updateUser(userIdNum, username, Number(age));
-    setResult(res.ok ? formatUser(res.data as User): res.message);
+    setIsLoading(true);
+    try {
+      const res = await updateUser(userIdNum, username, Number(age));
+      setResult(res.ok ? formatUser(res.data as User): res.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDelete = async () => {
     if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
-    const res = await deleteUser(userIdNum);
-    setResult(res.ok ? "削除完了": res.message);
-  }
+    setIsLoading(true);
+    try {
+      const res = await deleteUser(userIdNum);
+      setResult(res.ok ? "削除完了": res.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // 別クラスで作成したので、代わりに別ページに飛ばす実装に変更
   const handleGoToWorkoutPage = () => {
@@ -244,21 +281,26 @@ function Home() {
       return;
     }
     navigate(`/workout?id=${userId}`);
-  }
+  };
 
   // パスワードの再設定関数
   const handleChangePassword = async () => {
     if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
     const res = await changePassword(userIdNum, oldPassword, newPassword);
-    if (res.ok) {
+    setIsLoading(true);
+    try {
+      if (res.ok) {
       setResult("パスワードを変更しました");
       setIsModalOpen(false);
       setOldPassword("");
       setNewPassword("");
-    } else {
+     } else {
       setModalError(res.message);
+     }
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
 
 
@@ -290,6 +332,7 @@ function Home() {
         onDelete={handleDelete}
         onGoToWorkout={handleGoToWorkoutPage}
         onOpenModal={() => setIsModalOpen(true)}
+        isLoading={isLoading}
       />
 
       <PasswordModal
