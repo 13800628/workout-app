@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.workout.model.User;
 import com.workout.repository.UserRepository;
+import com.workout.dto.UpdateUserRequest;
 import com.workout.dto.UserRequest;
 
 
@@ -119,7 +120,7 @@ class UserServiceTest {
         String newUsername = "更新後の名前";
         Integer newAge = 30;
 
-        UserRequest request = new UserRequest(newUsername, newAge, "password");
+        UpdateUserRequest request = new UpdateUserRequest(newUsername, newAge);
 
         User updatedUser = new User();
         updatedUser.setId(userId);
@@ -144,7 +145,7 @@ class UserServiceTest {
     void updateUser_異常系_存在しないIDの場合nullが返される() {
         // Arrange
         Long userId = 999L;
-        UserRequest request = new UserRequest("テスト", 25, "password");
+        UpdateUserRequest request = new UpdateUserRequest("テスト", 25);
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
@@ -162,7 +163,7 @@ class UserServiceTest {
     void updatedUser_異常系_名前がnullの場合IllegalArgumentExceptionを投げる() {
         Long userId = 1L;
         // 更新用のDTO（名前をあえてnullにする）
-        UserRequest request = new UserRequest(null, 25, "password");
+        UpdateUserRequest request = new UpdateUserRequest(null, 25);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 

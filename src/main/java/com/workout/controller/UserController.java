@@ -19,6 +19,7 @@ import com.workout.exception.UserResponse;
 import com.workout.model.User;
 import com.workout.service.UserService;
 import com.workout.dto.ChangePasswordRequest;
+import com.workout.dto.UpdateUserRequest;
 
 import jakarta.validation.Valid;
 
@@ -56,7 +57,9 @@ public class UserController {
   // --- U (Update) - ユーザー情報更新 ---
   // UserRequestを再利用して、ユーザー名と年齢を更新すると想定
   @PutMapping("/{id}")
-  public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
+  public ResponseEntity<UserResponse> updateUser(
+    @PathVariable Long id,
+    @Valid @RequestBody UpdateUserRequest request) {
     User updatedUser = userService.updateUser(id, request);
     return ResponseEntity.ok(UserResponse.from(updatedUser));
   }

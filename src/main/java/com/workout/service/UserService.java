@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.workout.dto.UserRequest;
 import com.workout.model.User;
 import com.workout.repository.UserRepository;
+import com.workout.dto.UpdateUserRequest;
 
 @Service
 public class UserService {
@@ -56,7 +57,7 @@ public class UserService {
   }
 
   @Transactional
-  public User updateUser(Long id, UserRequest request) {
+  public User updateUser(Long id, UpdateUserRequest request) {
     User user = getUserById(id);
 
     user.setUsername(request.username());
