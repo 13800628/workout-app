@@ -46,6 +46,15 @@ public class WorkoutController {
     }
   }
 
+  // Workout専用バリデーション
+  private void validateWorkoutOwner(Long workoutId, Authentication auth) {
+    User loginUser = userService.getUserByUsername(auth.getName());
+    Workout workout = workoutService.getWorkoutById(workoutId);
+    if (!workout.getUser().getId().equals(loginUser.getId())) {
+      throw new IllegalArgumentException("アクセス権限がありません");
+    }
+  }
+
   // メソッド GET, POST, DELETEをまず実装
 
   // Create - 作成
@@ -71,7 +80,7 @@ public class WorkoutController {
   public ResponseEntity<Void> deleteWorkout(
     @PathVariable("id") Long id,
     Authentication auth) {
-    validateOwner(id, auth);
+    validateWorkoutOwner(id, auth);
     workoutService.deletedWorkout(id);
     return ResponseEntity.noContent().build();
   }
@@ -88,7 +97,7 @@ public class WorkoutController {
     @PathVariable Long id, 
     @Valid @RequestBody UpdateWorkoutRequest request,
     Authentication auth) {
-    validateOwner(id, auth);
+    validateWorkoutOwner(id, auth);
     Workout updated = workoutService.updateAllDetails(id, request);
     return ResponseEntity.ok(updated);
   }
