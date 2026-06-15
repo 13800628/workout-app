@@ -9,6 +9,7 @@ import {
 } from "../hooks/useWorkoutApi";
 import type { Workout } from "../hooks/useWorkoutApi";
 import { removeToken } from "../hooks/useAuth";
+import { calcStats } from "../utils/workoutCalc";
 
 // 子コンポーネント
 type WorkoutFormProps = {
@@ -92,6 +93,43 @@ function WorkoutItem({ item, isEditing, onEditStart, onEditSubmit, onDelete, isL
       <button onClick={() => onDelete(item.id)} disabled={isLoading}>
         {isLoading ? "処理中..." : "削除"}
       </button>
+    </div>
+  );
+}
+
+// 計算機コンポーネント
+type WorkoutCalculatorProps = {
+  workouts: Workout[];
+};
+
+function WorkoutCalculator({ workouts }: WorkoutCalculatorProps) {
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  const selected = workouts.find((w) => w.id  === selectedId) ?? null;
+  const stats = selected ? calcStats(selected) : null;
+
+  return (
+    <div className="result-section">
+      <h3>計算セクション</h3>
+      <select
+        onChange={(e) => setSelectedId(Number(e.target.value))}
+        value={selectedId ?? ""}
+      >
+        <option value="">種目を選択してください</option>
+        {workouts.map((w) => (
+          <option key={w.id} value={w.id}>
+            {w.name}
+          </option>
+        ))}
+      </select>
+
+      {stats && selected && (
+        <div style={{ marginTop: 16 }}>
+          <p>種目名: {selected.name}</p>
+          <p>総重量: {stats.totalVolume} kg</p>
+          <p>1RM : {stats.oneRM} kg</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -254,6 +292,7 @@ export default function Workout() {
             isLoading={isLoading}
             />
         ))}
+        <WorkoutCalculator workouts={workouts}/>
       </div>
     );
   }
