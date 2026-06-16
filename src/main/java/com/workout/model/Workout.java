@@ -19,7 +19,7 @@ public class Workout extends BaseEntity{
   @Column(nullable = false)
   private Integer sets;
   
-  @Column(nullable = true)
+  @Column(nullable = false)
   private Integer weights;
 
 

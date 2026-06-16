@@ -1,6 +1,5 @@
 package com.workout.controller;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,13 +48,12 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> getUserById(@Valid @PathVariable("id") Long id) {
+  public ResponseEntity<UserResponse> getUserById(@PathVariable("id") Long id) {
     User user = userService.getUserById(id);
     return ResponseEntity.ok(UserResponse.from(user));
   }
 
   // --- U (Update) - ユーザー情報更新 ---
-  // UserRequestを再利用して、ユーザー名と年齢を更新すると想定
   @PutMapping("/{id}")
   public ResponseEntity<UserResponse> updateUser(
     @PathVariable Long id,

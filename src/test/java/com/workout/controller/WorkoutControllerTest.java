@@ -104,6 +104,6 @@ class WorkoutControllerTest {
     mockMvc.perform(delete("/api/workouts/{id}", id))
         .andExpect(status().isNoContent());
 
-    verify(workoutService, times(1)).deletedWorkout(id);
+    verify(workoutService, times(1)).deleteWorkout(id);
   }
 }

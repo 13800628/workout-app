@@ -26,11 +26,10 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/workouts")
-// @CrossOrigin(origins = "") のちに新しいページ追加
 public class WorkoutController {
 
-  private WorkoutService workoutService; 
-  private UserService userService;
+  private final WorkoutService workoutService; 
+  private final UserService userService;
 
   //コンストラクタインジェクションに変更
   public WorkoutController(WorkoutService workoutService, UserService userService) {
@@ -38,7 +37,7 @@ public class WorkoutController {
     this.userService = userService;
   }
 
-  // IDを比較して権限の付与するかの関数
+  // ユーザーIDの比較のための関数
   private void validateOwner(Long userId, Authentication auth) {
     User loginUser = userService.getUserByUsername(auth.getName());
     if (!loginUser.getId().equals(userId)) {
@@ -46,7 +45,7 @@ public class WorkoutController {
     }
   }
 
-  // Workout専用バリデーション
+  // Workoutのオーナー確認用
   private void validateWorkoutOwner(Long workoutId, Authentication auth) {
     User loginUser = userService.getUserByUsername(auth.getName());
     Workout workout = workoutService.getWorkoutById(workoutId);
@@ -81,16 +80,9 @@ public class WorkoutController {
     @PathVariable("id") Long id,
     Authentication auth) {
     validateWorkoutOwner(id, auth);
-    workoutService.deletedWorkout(id);
+    workoutService.deleteWorkout(id);
     return ResponseEntity.noContent().build();
   }
-
-  /**
-   * 
-   * @param id
-   * @param request
-   * @return
-   */
 
   @PutMapping("/{id}/details")
   public ResponseEntity<Workout> updateDetails(
