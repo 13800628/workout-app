@@ -65,7 +65,7 @@ function UserForm({
       />
       <input
         placeholder="パスワード"
-        type="string"
+        type="password"
         value={password}
         onChange={(e) => onChangePassword(e.target.value)}
       />
@@ -106,7 +106,7 @@ function ActionButtons({
         {isLoading ? "処理中..." : "ID 取得"}
       </button>
       <button onClick={onUpdate} disabled={isLoading}>
-        {isLoading ? "処理中" : "更新"}
+        {isLoading ? "処理中..." : "更新"}
       </button>
       <button onClick={onDelete} disabled={isLoading}>
         {isLoading ? "処理中..." : "削除"}
@@ -243,9 +243,14 @@ function Home() {
 
   const handleGetById = async () => {
     if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
-    const res = await fetchUserById(userIdNum);
-    setResult(res.ok ? formatUser(res.data as User): res.message);
-  };
+    setIsLoading(true);
+    try {
+      const res = await fetchUserById(userIdNum);
+      setResult(res.ok ? formatUser(res.data as User): res.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const handleUpdate = async () => {
     if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
@@ -275,7 +280,6 @@ function Home() {
       alert("ユーザーIDを入力してください");
       return;
     }
-    console.log("isLoggedIn:", isLoggedIn());
     if (!isLoggedIn()) {
       navigate(`/login?redirect=/workout?id=${userId}`);
       return;
@@ -286,9 +290,9 @@ function Home() {
   // パスワードの再設定関数
   const handleChangePassword = async () => {
     if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
-    const res = await changePassword(userIdNum, oldPassword, newPassword);
     setIsLoading(true);
     try {
+      const res = await changePassword(userIdNum, oldPassword, newPassword);
       if (res.ok) {
       setResult("パスワードを変更しました");
       setIsModalOpen(false);

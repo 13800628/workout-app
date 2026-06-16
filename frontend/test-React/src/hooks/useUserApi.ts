@@ -32,7 +32,7 @@ export async function fetchUserById(userId: number): Promise<ApiResult> {
       headers: authHeaders(),
     });
 
-    if (res.status == 404) return { ok: false, message: `ユーザーが見つかりません`};
+    if (res.status === 404) return { ok: false, message: `ユーザーが見つかりません`};
     if (!res.ok) return { ok: false, message: `サーバーエラー: ${res.status}` };
 
     const data: User = await res.json();
@@ -72,9 +72,7 @@ export async function updateUser(userId:number, username: string, age: number): 
   }
 }
 
-export type DeleteResult = { ok: true} | { ok: false, message: string};
-
-export async function deleteUser(userId: number): Promise<DeleteResult> {
+export async function deleteUser(userId: number): Promise<VoidResult> {
   try {
     const res = await fetch(`${BASE_URL}/${userId}`, { 
       method: "DELETE",
@@ -89,11 +87,15 @@ export async function deleteUser(userId: number): Promise<DeleteResult> {
 }
 
 // パスワード変更
+
+// 汎用性を持たせているのが気になるので今後切り出して型定義専用を作るか検討
+export type VoidResult = { ok: true } | { ok: false; message: string }
+
 export async function changePassword(
   userId: number,
   oldPassword: string,
   newPassword: string
-) : Promise<DeleteResult> {
+) : Promise<VoidResult> {
   try {
     const res = await fetch(`${BASE_URL}/${userId}/password`, {
       method: "PUT",

@@ -1,4 +1,5 @@
 import { authHeaders } from "./useAuth";
+import type { VoidResult } from "./useUserApi";
 
 export type Workout = {
   id: number;
@@ -12,7 +13,6 @@ type ApiResult =
   | { ok: true; data: Workout | Workout[] }
   | { ok: false; message: string };
 
-type DeleteResult = { ok: true } | { ok: false; message: string };
 
 const BASE_URL = "/api/workouts";
 
@@ -37,7 +37,6 @@ export async function createWorkout(
   weights: number
 ): Promise<ApiResult> {
   try {
-    // ここのエンドポイントの確認必須(エラーになる可能性あり)
     const response = await fetch(`${BASE_URL}/create`, {
       method: "POST",
       headers: authHeaders(),
@@ -72,7 +71,7 @@ export async function updateWorkout(
   }
 }
 
-export async function deleteWorkout(id: number): Promise<DeleteResult> {
+export async function deleteWorkout(id: number): Promise<VoidResult> {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, { 
       method: "DELETE" ,

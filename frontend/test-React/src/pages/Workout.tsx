@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams , useNavigate} from "react-router-dom";
 import {
   fetchWorkoutByUserId,
   createWorkout,
@@ -30,19 +29,19 @@ function WorkoutForm({ formData, onChange, onRegister, onGetAll, isLoading }: Wo
     <div>
       <input
         placeholder="種目名"
-        type="text"
+        type="number"
         value={formData.name}
         onChange={(e) => onChange("name", e.target.value)}
       />
       <input
         placeholder="回数"
-        type="text"
+        type="number"
         value={formData.reps}
         onChange={(e) => onChange("reps", e.target.value)}
       />
       <input
         placeholder="セット数"
-        type="text"
+        type="number"
         value={formData.sets}
         onChange={(e) => onChange("sets", e.target.value)}
       />
@@ -171,17 +170,22 @@ export default function Workout() {
       setError("");
       return true;
     };
+    
+    // データ習得の共通関数
+    const fetchWorkoutsAllData = async () => {
+      const response = await fetchWorkoutByUserId(userId);
+      if (response.ok) {
+        setWorkouts(response.data as Workout[]);
+      } else {
+        setError(response.message);
+      }
+    }
   
 
   const handleGetAll = async () => {
     setIsLoading(true);
     try {
-      const response = await fetchWorkoutByUserId(userId);
-      if (response.ok) {
-      setWorkouts(response.data as Workout[]);
-     } else {
-      setError(response.message);
-     }
+      await fetchWorkoutsAllData();
     } finally {
       setIsLoading(false);
     }
@@ -199,7 +203,7 @@ export default function Workout() {
       Number(formData.weights)
      );
      if (response.ok) {
-       await handleGetAll();
+      await fetchWorkoutsAllData();
      } else {
       setError(response.message);
      }
@@ -221,7 +225,7 @@ export default function Workout() {
      );
      if (response.ok) {
       setTargetId(null);
-      await handleGetAll();
+      await fetchWorkoutsAllData();
      } else {
       setError(response.message);
      }
@@ -236,7 +240,7 @@ export default function Workout() {
     try {
       const response = await deleteWorkout(id);
       if (response.ok) {
-        setWorkouts((prev) => (prev ?? []).filter((w) => w.id !== id));
+        await fetchWorkoutsAllData();
       } else {
         setError(response.message);
       }
@@ -270,7 +274,6 @@ export default function Workout() {
         
         {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
         {!userId && <p>ユーザーIDが指定されていません</p>}
-        <p>Your workout data...</p>
 
         <WorkoutForm
           formData={formData}
