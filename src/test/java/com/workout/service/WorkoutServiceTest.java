@@ -60,11 +60,13 @@ class WorkoutServiceTest {
     workout.setName("before");
     workout.setReps(1);
 
+    
+    UpdateWorkoutRequest request = new UpdateWorkoutRequest("after", 2, 1, 10);
     when(workoutRepository.findById(id)).thenReturn(Optional.of(workout));
 
     // 「何をどう更新するか」をラムダで渡す
-    workoutService.update(id, w -> w.setName("after"));
-    workoutService.update(id, w -> w.setReps(2));
+    workoutService.updateAllDetails(id, request);
+    workoutService.updateAllDetails(id, request);
 
     assertEquals("after", workout.getName());
     assertEquals(2, workout.getReps());
@@ -75,9 +77,8 @@ class WorkoutServiceTest {
   void update_IDが存在しない場合は例外を投げる() {
     Long id = 999L;
     when(workoutRepository.findById(id)).thenReturn(Optional.empty());
-
-    // どの項目を更新しようとしてもエラーになることを確認
-    assertThrows(IllegalArgumentException.class, () -> workoutService.update(id, w -> w.setName("after")));
+    UpdateWorkoutRequest request = new UpdateWorkoutRequest("after", 2, 1, 10);
+    assertThrows(IllegalArgumentException.class, () -> workoutService.updateAllDetails(id, request));
   }
 
 

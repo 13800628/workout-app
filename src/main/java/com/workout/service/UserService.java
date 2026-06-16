@@ -16,8 +16,8 @@ import com.workout.dto.UpdateUserRequest;
 
 @Service
 public class UserService {
-  private UserRepository userRepository;
-  private PasswordEncoder passwordEncoder;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
   public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
@@ -63,7 +63,7 @@ public class UserService {
     user.setUsername(request.username());
     user.setAge(request.age());
 
-    return user;
+    return userRepository.save(user);
   }
 
   @Transactional

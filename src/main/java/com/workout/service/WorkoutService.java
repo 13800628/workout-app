@@ -2,8 +2,6 @@ package com.workout.service;
 
 import java.util.List;
 
-import java.util.function.Consumer;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +35,6 @@ public class WorkoutService {
         request.name(), request.reps(), request.sets(), request.weights(), user));
   }
 
-
-  // GET/POST/DELETEの実装
   @Transactional(readOnly = true)
   public List<Workout> getAllWorkoutById(Long id) {
     return workoutRepository.findByUserId(id);
@@ -53,9 +49,8 @@ public class WorkoutService {
            .orElseThrow(() -> new IllegalArgumentException("Workoutが見つかりません: " + id));
   }
   
-  // booleanか引数なしかは今後検討(仮)
   @Transactional
-  public void deletedWorkout(Long id) {
+  public void deleteWorkout(Long id) {
     int deletedCount = workoutRepository.deleteDirectlyById(id);
 
     if (deletedCount == 0) {
@@ -75,22 +70,5 @@ public class WorkoutService {
     );
 
     return workoutRepository.save(workout);
-  }
-
-  @Transactional
-  public Workout update(Long id, Consumer<Workout> updateLogic) {
-    Workout workout = getWorkoutById(id);
-    updateLogic.accept(workout);
-    return workout;
-  }
-
-  /**
-   * 更新系共通テンプレ
-   */
-  @Transactional
-  private Workout updateField(Long id, Consumer<Workout> updateLogic) {
-    Workout workout = getWorkoutById(id);
-    updateLogic.accept(workout);
-    return workout;
   }
 }
