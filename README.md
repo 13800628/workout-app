@@ -55,7 +55,8 @@ Java Record による不変（Immutable）な DTO を徹底し、エンティテ
 │   |    │   └── useWorkoutApi.ts
 |   |    |   └── useAuth.ts
 │   |    ├── utils/
-│   |    │   └── formatUser.ts
+│   |    │   |── formatUser.ts
+|   |    |   └── workoutCalc.ts
 │   |    └── pages/
 │   |       ├── Home.tsx
 │   |       |── Workout.tsx
