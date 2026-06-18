@@ -88,7 +88,7 @@ export async function deleteUser(userId: number): Promise<VoidResult> {
 
 // パスワード変更
 
-// 汎用性を持たせているのが気になるので今後切り出して型定義専用を作るか検討
+// 汎用性を持たせているのが気になるので今後切り出して型定義専用を作るか検討/ 別の関数でも型定義のものがあればまとめて切り出す
 export type VoidResult = { ok: true } | { ok: false; message: string }
 
 export async function changePassword(
