@@ -1,7 +1,7 @@
 package com.workout.service;
 
+import com.workout.config.CustomUserDetails;
 import com.workout.repository.UserRepository;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,11 +22,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         com.workout.model.User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("ユーザー名が見つかりません: " + username));
 
-        // Spring Securityが理解できるUserオブジェクトを作成して返す
-        return User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword()) // ここはDB内のハッシュ化された値
-                .roles("USER")
-                .build();
+        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword());
     }
 }
