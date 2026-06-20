@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.workout.dto.workouts.WorkoutRequest;
+import com.workout.config.CustomUserDetails;
 import com.workout.dto.workouts.UpdateWorkoutRequest;
-import com.workout.model.User;
+
 import com.workout.model.Workout;
 import com.workout.service.UserService;
 import com.workout.service.WorkoutService;
@@ -29,32 +30,29 @@ import jakarta.validation.Valid;
 public class WorkoutController {
 
   private final WorkoutService workoutService; 
-  private final UserService userService;
 
   //コンストラクタインジェクションに変更
   public WorkoutController(WorkoutService workoutService, UserService userService) {
     this.workoutService = workoutService;
-    this.userService = userService;
   }
 
   // ユーザーIDの比較のための関数
   private void validateOwner(Long userId, Authentication auth) {
-    User loginUser = userService.getUserByUsername(auth.getName());
-    if (!loginUser.getId().equals(userId)) {
+    CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
+    if (!principal.getUserId().equals(userId)) {
       throw new IllegalArgumentException("アクセス権限がありません");
     }
   }
 
   // Workoutのオーナー確認用
   private void validateWorkoutOwner(Long workoutId, Authentication auth) {
-    User loginUser = userService.getUserByUsername(auth.getName());
+    CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
     Workout workout = workoutService.getWorkoutById(workoutId);
-    if (!workout.getUser().getId().equals(loginUser.getId())) {
+    if (!workout.getUser().getId().equals(principal.getUserId())) {
       throw new IllegalArgumentException("アクセス権限がありません");
     }
   }
 
-  // メソッド GET, POST, DELETEをまず実装
 
   // Create - 作成
   @PostMapping("/create")

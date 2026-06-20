@@ -47,7 +47,7 @@ function WorkoutForm({ formData, onChange, onRegister, onGetAll, isLoading }: Wo
       />
       <input
         placeholder="重さ"
-        type="text"
+        type="number"
         value={formData.weights}
         onChange={(e) => onChange("weights", e.target.value)}
       />
