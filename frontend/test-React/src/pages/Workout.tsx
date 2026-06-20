@@ -29,7 +29,7 @@ function WorkoutForm({ formData, onChange, onRegister, onGetAll, isLoading }: Wo
     <div>
       <input
         placeholder="種目名"
-        type="number"
+        type="text"
         value={formData.name}
         onChange={(e) => onChange("name", e.target.value)}
       />

@@ -1,4 +1,5 @@
 import { authHeaders } from "./useAuth";
+import type { ApiResult, VoidResult } from "../types/api";
 
 export type User = {
   id: number;
@@ -6,13 +7,10 @@ export type User = {
   age: number;
 };
 
-type ApiResult = 
-| {ok: true; data: User | User[] }
-| {ok: false; message: string };
 
 const BASE_URL = "/api/users";
 
-export async function fetchAllUsers(): Promise<ApiResult> {
+export async function fetchAllUsers(): Promise<ApiResult<User[]>> {
   try {
     const res = await fetch(BASE_URL, {
       headers: authHeaders(),
@@ -26,7 +24,7 @@ export async function fetchAllUsers(): Promise<ApiResult> {
   }
 }
 
-export async function fetchUserById(userId: number): Promise<ApiResult> {
+export async function fetchUserById(userId: number): Promise<ApiResult<User>> {
   try {
     const res = await fetch(`${BASE_URL}/${userId}`, {
       headers: authHeaders(),
@@ -42,7 +40,7 @@ export async function fetchUserById(userId: number): Promise<ApiResult> {
   }
 }
 
-export async function registerUser(username: string, age: number, password: string): Promise<ApiResult> {
+export async function registerUser(username: string, age: number, password: string): Promise<ApiResult<User>> {
   try {
     const res = await fetch(BASE_URL, {
       method: "POST",
@@ -57,7 +55,7 @@ export async function registerUser(username: string, age: number, password: stri
   }
 }
 
-export async function updateUser(userId:number, username: string, age: number): Promise<ApiResult> {
+export async function updateUser(userId:number, username: string, age: number): Promise<ApiResult<User>> {
   try {
     const res = await fetch(`${BASE_URL}/${userId}`, {
       method: "PUT",
@@ -85,11 +83,6 @@ export async function deleteUser(userId: number): Promise<VoidResult> {
     return { ok: false, message: `通信エラー: ${String(err)}` };
   }
 }
-
-// パスワード変更
-
-// 汎用性を持たせているのが気になるので今後切り出して型定義専用を作るか検討/ 別の関数でも型定義のものがあればまとめて切り出す
-export type VoidResult = { ok: true } | { ok: false; message: string }
 
 export async function changePassword(
   userId: number,
