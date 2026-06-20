@@ -1,5 +1,5 @@
 import { authHeaders } from "./useAuth";
-import type { VoidResult } from "./useUserApi";
+import type { ApiResult, VoidResult } from "../types/api";
 
 export type Workout = {
   id: number;
@@ -9,14 +9,10 @@ export type Workout = {
   weights: number;
 };
 
-type ApiResult =
-  | { ok: true; data: Workout | Workout[] }
-  | { ok: false; message: string };
-
 
 const BASE_URL = "/api/workouts";
 
-export async function fetchWorkoutByUserId(userId: number): Promise<ApiResult>  {
+export async function fetchWorkoutByUserId(userId: number): Promise<ApiResult<Workout[]>>  {
   try {
     const response = await fetch(`${BASE_URL}/${userId}`, {
       headers: authHeaders(),
@@ -35,7 +31,7 @@ export async function createWorkout(
   reps: number,
   sets: number,
   weights: number
-): Promise<ApiResult> {
+): Promise<ApiResult<Workout>> {
   try {
     const response = await fetch(`${BASE_URL}/create`, {
       method: "POST",
@@ -56,7 +52,7 @@ export async function updateWorkout(
   reps: number,
   sets: number,
   weights: number
-): Promise<ApiResult> {
+): Promise<ApiResult<Workout>> {
   try {
     const response = await fetch(`${BASE_URL}/${id}/details`, {
       method: "PUT",
