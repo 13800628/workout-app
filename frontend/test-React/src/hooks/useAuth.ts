@@ -24,3 +24,10 @@ export function authHeaders(): HeadersInit {
     ...(token ? { "Authorization": `Bearer ${token}`} : {}),
   };
 }
+
+export function handleUnauthorized(status: number, navigate: (path: string) => void): void {
+  if (status === 401) {
+    removeToken();
+    navigate("/login");
+  }
+}

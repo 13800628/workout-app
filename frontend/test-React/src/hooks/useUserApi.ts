@@ -24,12 +24,12 @@ export async function fetchAllUsers(): Promise<ApiResult<User[]>> {
   }
 }
 
+// ここちょっと検討
 export async function fetchUserById(userId: number): Promise<ApiResult<User>> {
   try {
     const res = await fetch(`${BASE_URL}/${userId}`, {
       headers: authHeaders(),
     });
-
     if (res.status === 404) return { ok: false, message: `ユーザーが見つかりません`};
     if (!res.ok) return { ok: false, message: `サーバーエラー: ${res.status}` };
 
@@ -40,7 +40,10 @@ export async function fetchUserById(userId: number): Promise<ApiResult<User>> {
   }
 }
 
-export async function registerUser(username: string, age: number, password: string): Promise<ApiResult<User>> {
+export async function registerUser(username: string, 
+  age: number, 
+  password: string, 
+): Promise<ApiResult<User>> {
   try {
     const res = await fetch(BASE_URL, {
       method: "POST",
@@ -55,7 +58,11 @@ export async function registerUser(username: string, age: number, password: stri
   }
 }
 
-export async function updateUser(userId:number, username: string, age: number): Promise<ApiResult<User>> {
+export async function updateUser(
+  userId:number, 
+  username: string, 
+  age: number, 
+): Promise<ApiResult<User>> {
   try {
     const res = await fetch(`${BASE_URL}/${userId}`, {
       method: "PUT",
@@ -70,13 +77,14 @@ export async function updateUser(userId:number, username: string, age: number): 
   }
 }
 
-export async function deleteUser(userId: number): Promise<VoidResult> {
+export async function deleteUser(
+   userId: number,
+  ): Promise<VoidResult> {
   try {
     const res = await fetch(`${BASE_URL}/${userId}`, { 
       method: "DELETE",
       headers: authHeaders(),
     });
-
     if (res.status === 204) return {ok: true };
     return { ok: false, message: `削除失敗: ${res.status}` };
   } catch (err) {
@@ -87,7 +95,7 @@ export async function deleteUser(userId: number): Promise<VoidResult> {
 export async function changePassword(
   userId: number,
   oldPassword: string,
-  newPassword: string
+  newPassword: string,
 ) : Promise<VoidResult> {
   try {
     const res = await fetch(`${BASE_URL}/${userId}/password`, {
