@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workout.dto.UserRequest;
-import com.workout.exception.UserResponse;
+import com.workout.dto.UserResponse;
 import com.workout.model.User;
 import com.workout.service.UserService;
 import com.workout.dto.ChangePasswordRequest;

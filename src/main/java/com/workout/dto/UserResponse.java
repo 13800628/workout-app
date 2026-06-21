@@ -1,4 +1,4 @@
-package com.workout.exception;
+package com.workout.dto;
 
 import com.workout.model.User;
 
