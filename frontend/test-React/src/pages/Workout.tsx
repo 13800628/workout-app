@@ -173,7 +173,7 @@ export default function Workout() {
     
     // データ習得の共通関数
     const fetchWorkoutsAllData = async () => {
-      const response = await fetchWorkoutByUserId(userId);
+      const response = await fetchWorkoutByUserId(userId, navigate);
       if (response.ok) {
         setWorkouts(response.data as Workout[]);
       } else {
@@ -200,7 +200,8 @@ export default function Workout() {
       formData.name,
       Number(formData.reps),
       Number(formData.sets),
-      Number(formData.weights)
+      Number(formData.weights),
+      navigate
      );
      if (response.ok) {
       await fetchWorkoutsAllData();
@@ -221,7 +222,8 @@ export default function Workout() {
       formData.name,
       Number(formData.reps),
       Number(formData.sets),
-      Number(formData.weights)
+      Number(formData.weights),
+      navigate
      );
      if (response.ok) {
       setTargetId(null);
@@ -238,7 +240,7 @@ export default function Workout() {
     if (!window.confirm("本当に削除しますか？")) return;
     setIsLoading(true);
     try {
-      const response = await deleteWorkout(id);
+      const response = await deleteWorkout(id, navigate);
       if (response.ok) {
         await fetchWorkoutsAllData();
       } else {
