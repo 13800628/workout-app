@@ -28,6 +28,6 @@ export function authHeaders(): HeadersInit {
 export function handleUnauthorized(status: number, navigate: (path: string) => void): void {
   if (status === 401) {
     removeToken();
-    navigate("/login");
+    navigate("/login?message=セッションが切れました。再度ログインしてください");
   }
 }
