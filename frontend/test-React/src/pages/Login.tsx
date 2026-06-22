@@ -7,6 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [searchParams] = useSearchParams();
+  const sessionMessage = searchParams.get("message");
   const navigate = useNavigate();
   const redirect = searchParams.get("redirect") || "/";
 
@@ -35,6 +36,7 @@ export default function Login() {
     <div className="home-container">
       <header className="home-header">
         <h1>ログイン</h1>
+        {sessionMessage && <p style={{ color: "red" }}>{sessionMessage}</p>}
       </header>
 
       <div className="input-form">
