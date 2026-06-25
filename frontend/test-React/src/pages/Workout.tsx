@@ -205,6 +205,7 @@ export default function Workout() {
      );
      if (response.ok) {
       await fetchWorkoutsAllData();
+      setFormData({ name: "", reps: "", sets: "", weights: "" });
      } else {
       setError(response.message);
      }
@@ -228,6 +229,7 @@ export default function Workout() {
      if (response.ok) {
       setTargetId(null);
       await fetchWorkoutsAllData();
+      setFormData({ name: "", reps: "", sets: "", weights: "" });
      } else {
       setError(response.message);
      }
