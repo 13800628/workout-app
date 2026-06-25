@@ -1,5 +1,6 @@
 import { authHeaders } from "./useAuth";
 import type { ApiResult, VoidResult } from "../types/api";
+import { extractErrorMessage } from "../utils/apiError";
 
 export type User = {
   id: number;
@@ -31,7 +32,10 @@ export async function fetchUserById(userId: number): Promise<ApiResult<User>> {
       headers: authHeaders(),
     });
     if (res.status === 404) return { ok: false, message: `ユーザーが見つかりません`};
-    if (!res.ok) return { ok: false, message: `サーバーエラー: ${res.status}` };
+    if (!res.ok) {
+      const message = await extractErrorMessage(res, `サーバーエラー: ${res.status}`);
+      return { ok: false, message };
+    }
 
     const data: User = await res.json();
     return { ok: true, data};
@@ -50,7 +54,11 @@ export async function registerUser(username: string,
       headers: authHeaders(),
       body: JSON.stringify({ username, age, password}),
     });
-    if (!res.ok) return { ok: false, message: `登録失敗: ${res.status}`};
+    if (!res.ok) {
+      const message = await extractErrorMessage(res, `サーバーエラー: ${res.status}`);
+      console.log("抽出したmessage:", message);
+      return { ok: false, message };
+    }
     const data: User = await res.json();
     return { ok: true, data}
   } catch (err) {
@@ -69,7 +77,10 @@ export async function updateUser(
       headers: authHeaders(),
       body: JSON.stringify({ username, age }),
     });
-    if (!res.ok) return { ok: false, message: `更新失敗: ${res.status}` };
+    if (!res.ok) {
+      const message = await extractErrorMessage(res, `サーバーエラー: ${res.status}`);
+      return { ok: false, message };
+    }
     const data: User = await res.json();
     return { ok: true, data };
   } catch (err) {
@@ -86,7 +97,8 @@ export async function deleteUser(
       headers: authHeaders(),
     });
     if (res.status === 204) return {ok: true };
-    return { ok: false, message: `削除失敗: ${res.status}` };
+    const message = await extractErrorMessage(res, `削除失敗: ${res.status}`);
+    return { ok: false, message};
   } catch (err) {
     return { ok: false, message: `通信エラー: ${String(err)}` };
   }
@@ -104,7 +116,8 @@ export async function changePassword(
       body: JSON.stringify({ oldPassword, newPassword }),
     });
     if (res.status === 204) return { ok: true };
-    return { ok: false, message: `パスワード変更失敗: ${res.status}` };
+    const message = await extractErrorMessage(res, `パスワード変更失敗: ${res.status}`);
+    return { ok: false, message };
   } catch (err) {
     return { ok: false, message: `通信エラー: ${String(err)}` };
   }
