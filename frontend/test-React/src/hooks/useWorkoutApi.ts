@@ -1,5 +1,6 @@
 import { authHeaders, handleUnauthorized } from "./useAuth";
 import type { ApiResult, VoidResult } from "../types/api";
+import { extractErrorMessage } from "../utils/apiError";
 
 export type Workout = {
   id: number;
@@ -21,7 +22,10 @@ export async function fetchWorkoutByUserId(
       headers: authHeaders(),
     });
     handleUnauthorized(response.status, navigate);
-    if (!response.ok) return { ok: false, message: `サーバーエラー: ${response.status}`};
+    if (!response.ok) {
+      const message = await extractErrorMessage(response, `サーバーエラー: ${response.status}`);
+      return { ok: false, message};
+    }
     const data: Workout[] = await response.json();
     return { ok: true, data: data };
   }catch (error) {
@@ -44,7 +48,10 @@ export async function createWorkout(
       body: JSON.stringify({ userId, name, reps, sets, weights }),
     });
     handleUnauthorized(response.status, navigate);
-    if (!response.ok) return { ok: false, message: `登録失敗: ${response.status}`};
+    if (!response.ok) {
+      const message = await extractErrorMessage(response, `サーバーエラー: ${response.status}`);
+      return { ok: false, message};
+    }
     const data: Workout = await response.json();
     return { ok: true, data };
   } catch (error) {
@@ -67,7 +74,10 @@ export async function updateWorkout(
       body: JSON.stringify({ name, reps, sets, weights }),
     });
     handleUnauthorized(response.status, navigate);
-    if (!response.ok) return { ok: false, message: `更新失敗: ${response.status}`};
+    if (!response.ok) {
+      const message = await extractErrorMessage(response, `サーバーエラー: ${response.status}`);
+      return { ok: false, message};
+    }
     const data: Workout = await response.json();
     return { ok: true, data };
   } catch (error) {
@@ -86,7 +96,8 @@ export async function deleteWorkout(
     });
     handleUnauthorized(response.status, navigate);
     if (response.status === 204) return { ok: true };
-    return { ok: false, message: `削除失敗: ${response.status}` };
+    const message = await extractErrorMessage(response, `削除失敗: ${response.status}`);
+    return { ok: false, message};
   } catch (error) {
     return { ok: false, message: `通信エラー: ${String(error)}`};
   }
