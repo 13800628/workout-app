@@ -223,7 +223,15 @@ function Home() {
     setIsLoading(true);
     try {
       const res = await registerUser(username, Number(age), password);
-      setResult(res.ok ? formatUser(res.data as User) : res.message);
+      if (res.ok) {
+        setResult(formatUser(res.data));
+        setUsername("");
+        setAge("");
+        setUserId("");
+        setPassword("");
+      } else {
+        setResult(res.message);
+      }
     } finally {
       setIsLoading(false);
     } 
@@ -257,7 +265,15 @@ function Home() {
     setIsLoading(true);
     try {
       const res = await updateUser(userIdNum, username, Number(age));
-      setResult(res.ok ? formatUser(res.data as User): res.message);
+      if (res.ok) {
+        setResult(formatUser(res.data));
+        setUsername("");
+        setAge("");
+        setUserId("");
+        setPassword("");
+      } else {
+        setResult("");
+      }
     } finally {
       setIsLoading(false);
     }
