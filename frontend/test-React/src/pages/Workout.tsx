@@ -73,6 +73,14 @@ type WorkoutItemProps = {
 }
 
 function WorkoutItem({ item, isEditing, onEditStart, onEditSubmit, onDelete, isLoading }: WorkoutItemProps) {
+  const formattedDate = new Date(item.createdAt).toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   return (
     <div style={{ borderBottom: "1px solid #ddd", marginBottom: "10px"}}>
       {isEditing ? (
@@ -89,6 +97,7 @@ function WorkoutItem({ item, isEditing, onEditStart, onEditSubmit, onDelete, isL
       <p>回数: {item.reps}</p>
       <p>セット数: {item.sets}</p>
       <p>重さ: {item.weights}</p>
+      <p>記録日時: {formattedDate}</p>
       <button onClick={() => onDelete(item.id)} disabled={isLoading}>
         {isLoading ? "処理中..." : "削除"}
       </button>

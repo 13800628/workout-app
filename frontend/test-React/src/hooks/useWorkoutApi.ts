@@ -8,6 +8,8 @@ export type Workout = {
   reps: number;
   sets: number;
   weights: number;
+  createdAt: string;
+  updateAt: string;
 };
 
 

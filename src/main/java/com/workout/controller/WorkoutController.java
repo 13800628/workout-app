@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.workout.dto.workouts.WorkoutRequest;
+import com.workout.dto.workouts.WorkoutResponse;
 import com.workout.config.CustomUserDetails;
 import com.workout.dto.workouts.UpdateWorkoutRequest;
 
 import com.workout.model.Workout;
-import com.workout.service.UserService;
 import com.workout.service.WorkoutService;
 
 import jakarta.validation.Valid;
@@ -32,7 +32,7 @@ public class WorkoutController {
   private final WorkoutService workoutService; 
 
   //コンストラクタインジェクションに変更
-  public WorkoutController(WorkoutService workoutService, UserService userService) {
+  public WorkoutController(WorkoutService workoutService) {
     this.workoutService = workoutService;
   }
 
@@ -54,22 +54,26 @@ public class WorkoutController {
   }
 
 
+  // HTTPステータスが見えてるから関数に切り出しか？
   // Create - 作成
   @PostMapping("/create")
-  public ResponseEntity<Workout> createWorkout(
+  public ResponseEntity<WorkoutResponse> createWorkout(
     @Valid @RequestBody WorkoutRequest request,
     Authentication auth) {
     validateOwner(request.userId(), auth);
     Workout workout = workoutService.createWorkout(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(workout);
+    return ResponseEntity.status(HttpStatus.CREATED).body(WorkoutResponse.from(workout));
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<List<Workout>> getAllWorkoutsById(
+  public ResponseEntity<List<WorkoutResponse>> getAllWorkoutsById(
     @PathVariable Long id,
     Authentication auth) {
     validateOwner(id, auth);
-    List<Workout> workouts = workoutService.getAllWorkoutById(id);
+    List<WorkoutResponse> workouts = workoutService.getAllWorkoutById(id)
+     .stream()
+     .map(WorkoutResponse::from)
+     .toList();
     return ResponseEntity.ok(workouts);
   }
 
@@ -83,12 +87,12 @@ public class WorkoutController {
   }
 
   @PutMapping("/{id}/details")
-  public ResponseEntity<Workout> updateDetails(
+  public ResponseEntity<WorkoutResponse> updateDetails(
     @PathVariable Long id, 
     @Valid @RequestBody UpdateWorkoutRequest request,
     Authentication auth) {
     validateWorkoutOwner(id, auth);
     Workout updated = workoutService.updateAllDetails(id, request);
-    return ResponseEntity.ok(updated);
+    return ResponseEntity.ok(WorkoutResponse.from(updated));
   }
 }
