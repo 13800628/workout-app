@@ -9,7 +9,7 @@ export type Workout = {
   sets: number;
   weights: number;
   createdAt: string;
-  updateAt: string;
+  updatedAt: string;
 };
 
 
