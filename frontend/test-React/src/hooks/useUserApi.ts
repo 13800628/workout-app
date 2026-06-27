@@ -1,5 +1,5 @@
 import { authHeaders } from "./useAuth";
-import type { ApiResult, VoidResult } from "../types/api";
+import type { ApiResult, VoidResult, PageResult } from "../types/api";
 import { extractErrorMessage } from "../utils/apiError";
 
 export type User = {
@@ -11,14 +11,20 @@ export type User = {
 
 const BASE_URL = "/api/users";
 
-export async function fetchAllUsers(): Promise<ApiResult<User[]>> {
+// ページネーション対応するように変更
+export async function fetchAllUsers(
+  page = 0,
+  size = 10,
+): Promise<ApiResult<PageResult<User>>> {
   try {
-    const res = await fetch(BASE_URL, {
+    const res = await fetch(`${BASE_URL}?page=${page}&size=${size}`, {
       headers: authHeaders(),
     });
-    if (!res.ok) return { ok: false, message: `サーバーエラー: ${res.status}` };
-    const page: { content: User[] } = await res.json();
-    const data: User[] = page.content;
+    if (!res.ok) {
+      const message = await extractErrorMessage(res, `サーバーエラー: ${res.status}`);
+      return { ok: false, message};
+    }
+    const data: PageResult<User> = await res.json();
     return { ok: true, data };
   } catch (err) {
     return { ok: false, message: `通信エラー: ${String(err)}`};

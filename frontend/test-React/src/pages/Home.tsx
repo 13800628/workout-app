@@ -21,6 +21,8 @@ import type { User } from "../hooks/useUserApi";
 import { formatUser, formatUsers } from "../utils/formatUser";
 import { isLoggedIn } from "../hooks/useAuth";
 
+const PAGE_SIZE = 10;
+
 // 子コンポーネント
 
 type UserFormProps = {
@@ -131,6 +133,39 @@ function ResultPanel({ result }: { result: string }) {
   )
 }
 
+// ページ送りボタンブロック
+type PaginationControlsProps = {
+  currentPage: number;
+  totalPages: number;
+  onPrev: () => void;
+  onNext: () => void;
+  isLoading: boolean;
+}
+
+function PaginationControls({
+  currentPage,
+  totalPages,
+  onPrev,
+  onNext,
+  isLoading,
+}: PaginationControlsProps) {
+  if (totalPages <= 0) return null;
+
+  return (
+    <div className="pagination-controls">
+      <button onClick={onPrev} disabled={isLoading || currentPage === 0}>
+        前へ
+      </button>
+      <span>
+        {currentPage + 1} / {totalPages} ページ
+      </span>
+      <button onClick={onNext} disabled={isLoading || currentPage + 1 >= totalPages}>
+        次へ
+      </button>
+    </div>
+  );
+}
+
 // モーダルコンポーネント
 // エラーメッセージが表示されなかったのでモーダル内で管理する。今後は責務などの問題で切り出す余地ありか。
 type PasswordModalProps = {
@@ -210,6 +245,9 @@ function Home() {
   const [newPassword, setNewPassword] = useState("");
   const [modalError, setModalError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  // ページネーション用
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const navigate = useNavigate();
   const userIdNum = Number(userId);
@@ -239,15 +277,28 @@ function Home() {
   
 
 
-  const handleGetAll = async () => {
+  const handleGetAll = async (page: number = currentPage) => {
     setIsLoading(true);
     try {
-      const res = await fetchAllUsers();
-      setResult(res.ok ? formatUsers(res.data as User[]) : res.message);
+      const res = await fetchAllUsers(page, PAGE_SIZE);
+      if (res.ok) {
+        setResult(formatUsers(res.data.content as User[]));
+        setCurrentPage(res.data.number);
+        setTotalPages(res.data.totalPages);
+      }
     } finally {
       setIsLoading(false);
     }
   };
+
+  // ページネーション用(今後まとめておいておく場所検討か)
+  const handlePrevPage = () => {
+    if (currentPage > 0) handleGetAll(currentPage - 1);
+  }
+
+  const handleNextPage = () => {
+    if (currentPage + 1 < totalPages) handleGetAll(currentPage + 1);
+  }
 
   const handleGetById = async () => {
     if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
@@ -346,13 +397,21 @@ function Home() {
       <h3 className="section-title">操作</h3>
       <ActionButtons
         onRegister={handleRegister}
-        onGetAll={handleGetAll}
+        onGetAll={() => handleGetAll(0)}
         onGetById={handleGetById}
         onUpdate={handleUpdate}
         onDelete={handleDelete}
         onGoToWorkout={handleGoToWorkoutPage}
         onOpenModal={() => setIsModalOpen(true)}
         isLoading={isLoading}
+      />
+
+      <PaginationControls
+       currentPage={currentPage}
+       totalPages={totalPages}
+       onPrev={handlePrevPage}
+       onNext={handleNextPage}
+       isLoading={isLoading}
       />
 
       <PasswordModal
