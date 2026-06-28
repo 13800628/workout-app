@@ -25,6 +25,7 @@ export function authHeaders(): HeadersInit {
   };
 }
 
+// 他のエラーでも必要であれば追加実装か
 export function handleUnauthorized(status: number, navigate: (path: string) => void): void {
   if (status === 401) {
     removeToken();
