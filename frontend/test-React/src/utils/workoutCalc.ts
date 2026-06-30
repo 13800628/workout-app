@@ -6,7 +6,7 @@ export type WorkoutStatus = {
 };
 
 export function calcStats(workout: Workout): WorkoutStatus {
-  const totalVolume = workout.weights * workout.sets * workout.sets;
+  const totalVolume = workout.weights * workout.reps * workout.sets;
   const oneRM = Math.round(workout.weights * (1 + workout.reps / 30));
   return { totalVolume, oneRM };
 }

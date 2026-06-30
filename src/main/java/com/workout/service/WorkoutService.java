@@ -50,8 +50,8 @@ public class WorkoutService {
   }
   
   @Transactional
-  public void deleteWorkout(Long id) {
-    int deletedCount = workoutRepository.deleteDirectlyById(id);
+  public void deleteWorkout(Long id, Long userId) {
+    int deletedCount = workoutRepository.deleteDirectlyByIdAndUserId(id, userId);
 
     if (deletedCount == 0) {
       throw new IllegalArgumentException("Workout ID: " + id + "は存在しません");
