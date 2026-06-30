@@ -37,5 +37,5 @@ public abstract class BaseEntity {
   public Long getId() { return id;}
   public void setId(Long id) { this.id = id; }
   public LocalDateTime getCreatedAt() { return createdAt; }
-  public LocalDateTime getUpdateAt() { return updatedAt; }
+  public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

@@ -23,7 +23,7 @@ public record WorkoutResponse(
       workout.getSets(),
       workout.getWeights(),
       workout.getCreatedAt(),
-      workout.getUpdateAt()
+      workout.getUpdatedAt()
     );
   }
 } 

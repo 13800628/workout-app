@@ -82,7 +82,8 @@ public class WorkoutController {
     @PathVariable("id") Long id,
     Authentication auth) {
     validateWorkoutOwner(id, auth);
-    workoutService.deleteWorkout(id);
+    CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
+    workoutService.deleteWorkout(id, principal.getUserId());
     return ResponseEntity.noContent().build();
   }
 

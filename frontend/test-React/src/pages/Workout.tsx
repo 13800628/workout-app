@@ -158,7 +158,8 @@ export default function Workout() {
   });
 
   const [searchParams] = useSearchParams();
-  const userId = Number(searchParams.get("id"));
+  const idParam = searchParams.get("id");
+  const userId = idParam ? Number(idParam) : null;
   const navigate = useNavigate();
 
     
@@ -182,6 +183,10 @@ export default function Workout() {
     
     // データ習得の共通関数
     const fetchWorkoutsAllData = async () => {
+      if (userId === null) {
+        setError("ユーザーIDが指定されていません");
+        return;
+      }
       const response = await fetchWorkoutByUserId(userId, navigate);
       if (response.ok) {
         setWorkouts(response.data as Workout[]);
@@ -202,6 +207,10 @@ export default function Workout() {
 
   const handleCreate = async () => {
     if (!validate()) return;
+    if (userId === null) {
+      setError("ユーザーIDが指定されていません");
+      return;
+    }
     setIsLoading(true);
     try {
       const response = await createWorkout(
