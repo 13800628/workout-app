@@ -59,10 +59,7 @@ public class UserService {
   @Transactional
   public User updateUser(Long id, UpdateUserRequest request) {
     User user = getUserById(id);
-
-    user.setUsername(request.username());
-    user.setAge(request.age());
-
+    user.updateProfile(request.username(), request.age());
     return userRepository.save(user);
   }
 

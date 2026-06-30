@@ -285,6 +285,8 @@ function Home() {
         setResult(formatUsers(res.data.content as User[]));
         setCurrentPage(res.data.number);
         setTotalPages(res.data.totalPages);
+      } else {
+        setResult(res.message);
       }
     } finally {
       setIsLoading(false);
@@ -323,7 +325,7 @@ function Home() {
         setUserId("");
         setPassword("");
       } else {
-        setResult("");
+        setResult(res.message);
       }
     } finally {
       setIsLoading(false);
