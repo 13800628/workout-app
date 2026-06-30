@@ -62,7 +62,6 @@ export async function registerUser(username: string,
     });
     if (!res.ok) {
       const message = await extractErrorMessage(res, `サーバーエラー: ${res.status}`);
-      console.log("抽出したmessage:", message);
       return { ok: false, message };
     }
     const data: User = await res.json();
