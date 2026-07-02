@@ -9,6 +9,8 @@ type WorkoutItemProps = {
   isLoading: boolean;
 };
 
+// 表示用のコンポーネント
+// 修正の余地ありか
 export function WorkoutItem({ item, isEditing, onEditStart, onEditSubmit, onDelete, isLoading }: WorkoutItemProps) {
   const formattedDate = new Date(item.createdAt).toLocaleDateString("ja-JP", {
     year: "numeric",
