@@ -65,35 +65,36 @@ public class WorkoutController {
     return ResponseEntity.status(HttpStatus.CREATED).body(WorkoutResponse.from(workout));
   }
 
-  @GetMapping("/{id}")
+  // ここはUserIdを使ってGETするのでここだけエンドポイントが違う
+  @GetMapping("/user/{id}")
   public ResponseEntity<List<WorkoutResponse>> getAllWorkoutsById(
-    @PathVariable Long id,
+    @PathVariable Long userId,
     Authentication auth) {
-    validateOwner(id, auth);
-    List<WorkoutResponse> workouts = workoutService.getAllWorkoutById(id)
+    validateOwner(userId, auth);
+    List<WorkoutResponse> workouts = workoutService.getAllWorkoutById(userId)
      .stream()
      .map(WorkoutResponse::from)
      .toList();
     return ResponseEntity.ok(workouts);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/{workoutId}")
   public ResponseEntity<Void> deleteWorkout(
-    @PathVariable("id") Long id,
+    @PathVariable Long workoutId,
     Authentication auth) {
-    validateWorkoutOwner(id, auth);
+    validateWorkoutOwner(workoutId, auth);
     CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
-    workoutService.deleteWorkout(id, principal.getUserId());
+    workoutService.deleteWorkout(workoutId, principal.getUserId());
     return ResponseEntity.noContent().build();
   }
 
-  @PutMapping("/{id}/details")
+  @PutMapping("/{workoutId}/details")
   public ResponseEntity<WorkoutResponse> updateDetails(
-    @PathVariable Long id, 
+    @PathVariable Long workoutId, 
     @Valid @RequestBody UpdateWorkoutRequest request,
     Authentication auth) {
-    validateWorkoutOwner(id, auth);
-    Workout updated = workoutService.updateAllDetails(id, request);
+    validateWorkoutOwner(workoutId, auth);
+    Workout updated = workoutService.updateAllDetails(workoutId, request);
     return ResponseEntity.ok(WorkoutResponse.from(updated));
   }
 }
