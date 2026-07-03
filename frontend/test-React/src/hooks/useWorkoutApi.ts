@@ -20,7 +20,7 @@ export async function fetchWorkoutByUserId(
   navigate: (path: string) => void
 ): Promise<ApiResult<Workout[]>>  {
   try {
-    const response = await fetch(`${BASE_URL}/${userId}`, {
+    const response = await fetch(`${BASE_URL}/user/${userId}`, {
       headers: authHeaders(),
     });
     handleUnauthorized(response.status, navigate);
