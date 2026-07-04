@@ -23,8 +23,8 @@ public class Workout extends BaseEntity{
   private Integer weights;
 
 
-  @ManyToOne(optional= true)
-  @JoinColumn(name = "user_id", nullable = true)
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
 

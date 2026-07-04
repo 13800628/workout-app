@@ -25,6 +25,6 @@ public interface WorkoutRepository extends JpaRepository<Workout, Long> {
 
   @Modifying
   @Transactional
-  @Query("DELETE FROM Workout w WHERE w.id = :id AND w.user.id = : userId")
+  @Query("DELETE FROM Workout w WHERE w.id = :id AND w.user.id = :userId")
   int deleteDirectlyByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 }
