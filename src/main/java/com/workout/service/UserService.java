@@ -34,7 +34,6 @@ public class UserService {
     return userRepository.save(user);
   }
 
-  // getAllUsers getUserById updateUser deleteUser の実装
   @Transactional(readOnly = true)
   public Page<User> getAllUsers(int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
