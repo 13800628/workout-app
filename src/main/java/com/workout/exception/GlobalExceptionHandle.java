@@ -1,5 +1,7 @@
 package com.workout.exception;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.LoggerFactory;
@@ -46,5 +48,16 @@ public class GlobalExceptionHandle {
     log.error("Unhandled exception occurred: ", ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "サーバーエラーが発生しました", List.of()));
+  }
+
+  @ExceptionHandler(UserNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+    ErrorResponse errorResponse = new ErrorResponse(
+      HttpStatus.NOT_FOUND.value(),
+      ex.getMessage(),
+      Collections.emptyList(),
+    LocalDateTime.now()
+  );
+  return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
 }

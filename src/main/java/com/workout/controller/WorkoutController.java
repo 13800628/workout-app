@@ -66,7 +66,7 @@ public class WorkoutController {
   }
 
   // ここはUserIdを使ってGETするのでここだけエンドポイントが違う
-  @GetMapping("/user/{id}")
+  @GetMapping("/user/{userId}")
   public ResponseEntity<List<WorkoutResponse>> getAllWorkoutsById(
     @PathVariable Long userId,
     Authentication auth) {
