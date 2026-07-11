@@ -1,6 +1,5 @@
 package com.workout.exception;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +10,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.workout.exception.user.UserDomainException;
+import com.workout.exception.workout.WorkoutDomainException;
+
 import org.slf4j.Logger;
 
 @RestControllerAdvice
@@ -50,14 +53,22 @@ public class GlobalExceptionHandle {
         .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "サーバーエラーが発生しました", List.of()));
   }
 
-  @ExceptionHandler(UserNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+  @ExceptionHandler(UserDomainException.class)
+  public ResponseEntity<ErrorResponse> handleUserDomainException(UserDomainException ex) {
+    return buildErrorResponse(ex);
+  }
+
+  @ExceptionHandler(WorkoutDomainException.class)
+  public ResponseEntity<ErrorResponse> handleWorkoutDomainException(WorkoutDomainException ex) {
+    return buildErrorResponse(ex);
+  }
+
+  private ResponseEntity<ErrorResponse> buildErrorResponse(DomainException ex) {
     ErrorResponse errorResponse = new ErrorResponse(
-      HttpStatus.NOT_FOUND.value(),
+      ex.getStatus().value(),
       ex.getMessage(),
-      Collections.emptyList(),
-    LocalDateTime.now()
-  );
-  return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+      Collections.emptyList() 
+    );
+    return new ResponseEntity<>(errorResponse, ex.getStatus());
   }
 }

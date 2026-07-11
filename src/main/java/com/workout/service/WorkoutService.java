@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.workout.dto.workouts.UpdateWorkoutRequest;
+import com.workout.exception.user.UserDomainException;
+import com.workout.exception.workout.WorkoutDomainException;
 import com.workout.dto.workouts.WorkoutRequest;
 import com.workout.model.User;
 import com.workout.model.Workout;
@@ -27,7 +29,7 @@ public class WorkoutService {
   @Transactional
   public Workout createWorkout(WorkoutRequest request) {
     User user = userRepository.findById(request.userId())
-            .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません"));
+            .orElseThrow(() -> UserDomainException.notFound("ユーザーが見つかりません"));
 
     return workoutRepository.save(new Workout(
         request.name(), request.reps(), request.sets(), request.weights(), user));
@@ -44,7 +46,7 @@ public class WorkoutService {
       throw new IllegalArgumentException("IDを指定してください");
      }
     return workoutRepository.findById(id)
-           .orElseThrow(() -> new IllegalArgumentException("Workoutが見つかりません: " + id));
+           .orElseThrow(() -> WorkoutDomainException.notFound("Workoutが見つかりません: " + id));
   }
   
   @Transactional
@@ -52,7 +54,7 @@ public class WorkoutService {
     int deletedCount = workoutRepository.deleteDirectlyByIdAndUserId(id, userId);
 
     if (deletedCount == 0) {
-      throw new IllegalArgumentException("Workout ID: " + id + "は存在しません");
+      throw WorkoutDomainException.notFound("Workout ID: " + id + "は存在しません");
     }
   }
 
