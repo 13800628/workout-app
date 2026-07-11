@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.workout.dto.UserRequest;
-import com.workout.exception.UserNotFoundException;
+import com.workout.exception.user.UserDomainException;
 import com.workout.model.User;
 import com.workout.repository.UserRepository;
 import com.workout.dto.UpdateUserRequest;
@@ -53,7 +53,7 @@ public class UserService {
     }
     
     return userRepository.findById(id)
-        .orElseThrow(() -> new UserNotFoundException("IDが見つかりません: " + id));
+        .orElseThrow(() -> UserDomainException.notFound("IDが見つかりません: " + id));
   }
 
   @Transactional
@@ -68,7 +68,7 @@ public class UserService {
     int deletedCount = userRepository.deleteDirectlyById(id);
 
     if (deletedCount == 0) {
-      throw new UserNotFoundException("ID: " + id + "は存在しません");
+      throw UserDomainException.notFound("ID: " + id + "は存在しません");
     }
   }
 
@@ -88,6 +88,6 @@ public class UserService {
   @Transactional(readOnly = true)
   public User getUserByUsername(String username) {
     return userRepository.findByUsername(username)
-            .orElseThrow(() -> new UserNotFoundException("ユーザーが見つかりません: " + username));
+            .orElseThrow(() -> UserDomainException.notFound("ユーザーが見つかりません: " + username));
   }
 }
