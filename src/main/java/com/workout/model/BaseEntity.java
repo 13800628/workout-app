@@ -11,6 +11,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.GenerationType;
 
+// 抽象クラスっぽいのにどこも継承していないため今後の修正でこれを継承するようなクラスを作り、存在価値をより持たせる
 @MappedSuperclass
 public abstract class BaseEntity {
   
