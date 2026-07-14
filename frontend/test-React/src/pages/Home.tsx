@@ -136,7 +136,9 @@ function ResultPanel({ result }: { result: string }) {
 // ページ送りボタンブロック
 type PaginationControlsProps = {
   currentPage: number;
-  totalPages: number;
+  totalPages: number; 
+  totalElements: number;
+  size: number;
   onPrev: () => void;
   onNext: () => void;
   isLoading: boolean;
@@ -145,19 +147,27 @@ type PaginationControlsProps = {
 function PaginationControls({
   currentPage,
   totalPages,
+  totalElements,
+  size,
   onPrev,
   onNext,
   isLoading,
 }: PaginationControlsProps) {
   if (totalPages <= 0) return null;
 
+  const startItem = totalElements === 0 ? 0 : currentPage * size + 1;
+  const endItem = Math.min((currentPage + 1) * size, totalElements);
+
   return (
     <div className="pagination-controls">
       <button onClick={onPrev} disabled={isLoading || currentPage === 0}>
         前へ
       </button>
-      <span>
+      <span className="pagination-range">
         {currentPage + 1} / {totalPages} ページ
+      </span>
+      <span>
+        {startItem}~{endItem}件目 / 全{totalElements}件
       </span>
       <button onClick={onNext} disabled={isLoading || currentPage + 1 >= totalPages}>
         次へ
@@ -248,6 +258,7 @@ function Home() {
   // ページネーション用
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
   const navigate = useNavigate();
   const userIdNum = Number(userId);
@@ -285,6 +296,7 @@ function Home() {
         setResult(formatUsers(res.data.content as User[]));
         setCurrentPage(res.data.number);
         setTotalPages(res.data.totalPages);
+        setTotalElements(res.data.totalElements);
       } else {
         setResult(res.message);
       }
@@ -411,6 +423,8 @@ function Home() {
       <PaginationControls
        currentPage={currentPage}
        totalPages={totalPages}
+       totalElements={totalElements}
+       size={PAGE_SIZE}
        onPrev={handlePrevPage}
        onNext={handleNextPage}
        isLoading={isLoading}
