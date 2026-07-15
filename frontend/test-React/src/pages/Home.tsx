@@ -355,7 +355,6 @@ function Home() {
     }
   };
 
-  // 別クラスで作成したので、代わりに別ページに飛ばす実装に変更
   const handleGoToWorkoutPage = () => {
     if (!userId) {
       alert("ユーザーIDを入力してください");
