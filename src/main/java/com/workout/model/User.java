@@ -55,7 +55,7 @@ public class User extends BaseEntity {
   }
 
 
-  // 各メソッドの実装
+  // プロフィール専用での更新(重要度が高くなるなら切り出しも検討か)
   public void updateProfile(String username, Integer age) {
     if (username == null) throw new IllegalArgumentException("ユーザー名を入力してください");
     if (age < 0) throw new IllegalArgumentException("年齢は0以上で入力してください");
