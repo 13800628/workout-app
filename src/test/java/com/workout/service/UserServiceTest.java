@@ -108,4 +108,6 @@ public class UserServiceTest {
       verify(userRepository).findAll(PageRequest.of(0, 10));
     }
   }
+
+  // ここからテストを追記していく
 }
