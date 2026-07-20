@@ -110,4 +110,37 @@ public class UserServiceTest {
   }
 
   // ここからテストを追記していく
+  @Test
+  @DisplayName("異常系: 存在しないユーザー名の場合はUserDomainException(404)を投げる")
+  void getUserByUsername_notFound() {
+    given(userRepository.findByUsername("unknown")).willReturn(Optional.empty());
+
+    assertThatThrownBy(() -> userService.getUserByUsername("unknown"))
+        .isInstanceOf(UserDomainException.class)
+        .hasMessage("ユーザーが見つかりません: unknown")
+        .extracting(ex -> ((UserDomainException) ex).getStatus())
+        .isEqualTo(HttpStatus.NOT_FOUND);
+  }
+
+  @Nested
+  @DisplayName("updateUser")
+  class UpdateUser {
+
+    @Test
+    @SuppressWarnings("null")
+    @DisplayName("正常系: プロフィールを更新して保存")
+    void updateUser_success() {
+
+      UpdateUserRequest request = new UpdateUserRequest("taro-updated", 26);
+      given(userRepository.findById(1L)).willReturn(Optional.of(existingUser));
+      given(userRepository.save(any(User.class)))
+          .willAnswer(invocation -> invocation.getArgument(0));
+
+      User result = userService.updateUser(1L, request);
+
+      assertThat(result.getUsername()).isEqualTo("taro-updated");
+      assertThat(result.getAge()).isEqualTo(26);
+      verify(userRepository).save(existingUser);
+    }
+  }
 }
