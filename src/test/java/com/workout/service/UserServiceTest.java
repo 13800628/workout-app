@@ -142,5 +142,30 @@ public class UserServiceTest {
       assertThat(result.getAge()).isEqualTo(26);
       verify(userRepository).save(existingUser);
     }
+
+    @Test
+    @DisplayName("異常系: 存在しないIDの場合はUserDomainExceptionを投げ、保存しない")
+    void updateUser_notFound() {
+      UpdateUserRequest request = new UpdateUserRequest("taro-updated", 26);
+      given(userRepository.findById(99L)).willReturn(Optional.empty());
+
+      assertThatThrownBy(() -> userService.updateUser(99L, request))
+          .isInstanceOf(UserDomainException.class);
+
+      then(userRepository).should(never()).save(any());
+    }
+
+    @Test
+    @DisplayName("異常系: 年齢が負の数の場合はIllegalArgumentExceptionを投げる")
+    void updateUser_negativeAge() {
+      UpdateUserRequest request = new UpdateUserRequest("taro-updated", -1);
+      given(userRepository.findById(1L)).willReturn(Optional.of(existingUser));
+
+      assertThatThrownBy(() -> userService.updateUser(1L, request))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("年齢は0以上で入力してください");
+
+      then(userRepository).should(never()).save(any());
+    }
   }
 }
