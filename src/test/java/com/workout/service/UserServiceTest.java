@@ -168,4 +168,49 @@ public class UserServiceTest {
       then(userRepository).should(never()).save(any());
     }
   }
+
+  @Nested
+  @DisplayName("changePassword")
+  class ChangePassword {
+
+    @Test
+    @DisplayName("正常系: 現在のパスワードが一致すれば新パスワードにエンコードして保存する")
+    void changePassword_success() {
+      given(userRepository.findById(1L)).willReturn(Optional.of(existingUser));
+      given(passwordEncoder.matches("oldPassword", "encodedPassword")).willReturn(true);
+      given(passwordEncoder.encode("newPassword")).willReturn("encodedNewPassword");
+
+      userService.changePassword(1L, "oldPassword", "newPassword");
+
+      assertThat(existingUser.getPassword()).isEqualTo("encodedNewPassword");
+      verify(userRepository).save(existingUser);
+    }
+
+    @Test
+    @DisplayName("現在のパスワードが一致しない場合はIllegalArgumentExceptionを投げ、保存しない")
+    void changePassword_wrongOldPassword() {
+      given(userRepository.findById(1L)).willReturn(Optional.of(existingUser));
+      given(passwordEncoder.matches("wrongPassword", "encodedPassword")).willReturn(false);
+
+      assertThatThrownBy(() -> userService.changePassword(1L, "wrongPassword", "newPassword"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("現在のパスワードが正しくありません");
+
+      then(passwordEncoder).should(times(1)).matches("wrongPassword", "encodedPassword");
+
+      then(passwordEncoder).should(never()).encode(anyString());
+      then(userRepository).should(never()).save(any());
+    }
+
+    @Test
+    @DisplayName("異常系: 存在しないIDの場合はUserDomainExceptionを投げる")
+    void changePassword_userNotFound() {
+      given(userRepository.findById(99L)).willReturn(Optional.empty());
+
+      assertThatThrownBy(() -> userService.changePassword(99L, "old", "new"))
+        .isInstanceOf(UserDomainException.class);
+
+      then(passwordEncoder).should(never()).matches(anyString(), anyString());
+    }
+  }
 }
