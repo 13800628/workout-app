@@ -20,8 +20,7 @@ import {
 import type { User } from "../hooks/useUserApi";
 import { formatUser, formatUsers } from "../utils/formatUser";
 import { isLoggedIn } from "../hooks/useAuth";
-
-const PAGE_SIZE = 10;
+import { DEFAULT_PAGE_SIZE } from "../config/pagination";
 
 // 子コンポーネント
 
@@ -153,7 +152,7 @@ function PaginationControls({
   onNext,
   isLoading,
 }: PaginationControlsProps) {
-  if (totalPages <= 0) return null;
+  if (totalPages <= 1) return null;
 
   const startItem = totalElements === 0 ? 0 : currentPage * size + 1;
   const endItem = Math.min((currentPage + 1) * size, totalElements);
@@ -291,7 +290,7 @@ function Home() {
   const handleGetAll = async (page: number = currentPage) => {
     setIsLoading(true);
     try {
-      const res = await fetchAllUsers(page, PAGE_SIZE);
+      const res = await fetchAllUsers(page, DEFAULT_PAGE_SIZE);
       if (res.ok) {
         setResult(formatUsers(res.data.content as User[]));
         setCurrentPage(res.data.number);
@@ -423,7 +422,7 @@ function Home() {
        currentPage={currentPage}
        totalPages={totalPages}
        totalElements={totalElements}
-       size={PAGE_SIZE}
+       size={DEFAULT_PAGE_SIZE}
        onPrev={handlePrevPage}
        onNext={handleNextPage}
        isLoading={isLoading}
