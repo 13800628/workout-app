@@ -213,4 +213,30 @@ public class UserServiceTest {
       then(passwordEncoder).should(never()).matches(anyString(), anyString());
     }
   }
+
+  @Nested
+  @DisplayName("deleteUser")
+  class DeleteUser {
+
+    @Test
+    @DisplayName("正常系: 削除件数が1ならば正常終了する")
+    void deleteUser_success() {
+      given(userRepository.deleteDirectlyById(1L)).willReturn(1);
+
+      userService.deleteUser(1L);
+      verify(userRepository, times(1)).deleteDirectlyById(1L);
+    }
+
+    @Test
+    @DisplayName("異常系: 削除件数が0件ならばUseDomainException(404)を投げる")
+    void deleteUser_notFound() {
+      given(userRepository.deleteDirectlyById(99L)).willReturn(0);
+
+      assertThatThrownBy(() -> userService.deleteUser(99L))
+          .isInstanceOf(UserDomainException.class)
+          .hasMessage("ID: 99は存在しません")
+          .extracting(ex -> ((UserDomainException) ex).getStatus())
+          .isEqualTo(HttpStatus.NOT_FOUND);
+    }
+  }
 }
