@@ -1,6 +1,7 @@
 import { authHeaders } from "./useAuth";
 import type { ApiResult, VoidResult, PageResult } from "../types/api";
 import { extractErrorMessage } from "../utils/apiError";
+import { DEFAULT_PAGE_SIZE } from "../config/pagination";
 
 export type User = {
   id: number;
@@ -14,7 +15,7 @@ const BASE_URL = "/api/users";
 // ページネーション対応するように変更
 export async function fetchAllUsers(
   page = 0,
-  size = 10,
+  size: number = DEFAULT_PAGE_SIZE,
 ): Promise<ApiResult<PageResult<User>>> {
   try {
     const res = await fetch(`${BASE_URL}?page=${page}&size=${size}`, {
