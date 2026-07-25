@@ -89,5 +89,18 @@ public class WorkoutServiceTest {
       assertThat(captor.getValue().getUser().getId()).isEqualTo(OWNER_ID);
       verify(userRepository).findById(OWNER_ID);
     }
+
+    @Test
+    @DisplayName("異常系: ユーザーが存在しない場合はUserDomainExceptionを投げ、保存しない")
+    void createWorkout_userNotFound_throwsUserDomainException() {
+      Long nonExixtentUserId = 999L;
+      WorkoutRequest request = new WorkoutRequest("スクワット", 10, 3, 80, nonExixtentUserId);
+      given(userRepository.findById(nonExixtentUserId)).willReturn(Optional.empty());
+
+      assertThatThrownBy(() -> workoutService.createWorkout(request))
+          .isInstanceOf(UserDomainException.class);
+
+      verify(workoutRepository, never()).save(any());
+    }
   }
 }
