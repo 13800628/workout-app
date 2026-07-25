@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
@@ -144,6 +143,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     @DisplayName("異常系: 存在しないIDの場合はUserDomainExceptionを投げ、保存しない")
     void updateUser_notFound() {
       UpdateUserRequest request = new UpdateUserRequest("taro-updated", 26);
@@ -156,6 +156,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     @DisplayName("異常系: 年齢が負の数の場合はIllegalArgumentExceptionを投げる")
     void updateUser_negativeAge() {
       UpdateUserRequest request = new UpdateUserRequest("taro-updated", -1);
@@ -174,6 +175,7 @@ public class UserServiceTest {
   class ChangePassword {
 
     @Test
+    @SuppressWarnings("null")
     @DisplayName("正常系: 現在のパスワードが一致すれば新パスワードにエンコードして保存する")
     void changePassword_success() {
       given(userRepository.findById(1L)).willReturn(Optional.of(existingUser));
@@ -187,6 +189,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     @DisplayName("現在のパスワードが一致しない場合はIllegalArgumentExceptionを投げ、保存しない")
     void changePassword_wrongOldPassword() {
       given(userRepository.findById(1L)).willReturn(Optional.of(existingUser));
