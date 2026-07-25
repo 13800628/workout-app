@@ -103,4 +103,33 @@ public class WorkoutServiceTest {
       verify(workoutRepository, never()).save(any());
     }
   }
+
+  @Nested
+  @DisplayName("getAllWorkoutById")
+  class GetAllWorkoutById {
+
+    @Test
+    @DisplayName("正常系: ユーザーに紐づくWokout一覧を返す")
+    void getAllWorkoutById_returnsList() {
+
+    Workout workout2 = new Workout("デッドリフト", 8, 3, 100, owner);
+    ReflectionTestUtils.setField(workout2, "id", 101L);
+    given(workoutRepository.findByUserId(OWNER_ID)).willReturn(List.of(workout, workout2));
+
+    List<Workout> result = workoutService.getAllWorkoutById(OWNER_ID);
+
+    assertThat(result).hasSize(2).containsExactly(workout, workout2);
+    verify(workoutRepository).findByUserId(OWNER_ID);
+    }
+
+    @Test
+    @DisplayName("Workoutが一件もない場合は空リストを返す")
+    void getAllWorkoutById_returnsEmptyList_whenNoWorkout() {
+      given(workoutRepository.findByUserId(ANOTHER_USER_ID)).willReturn(List.of());
+
+      List<Workout> result = workoutService.getAllWorkoutById(ANOTHER_USER_ID);
+
+      assertThat(result).isEmpty();
+    }
+  }
 }
