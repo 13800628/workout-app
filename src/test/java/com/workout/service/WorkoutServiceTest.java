@@ -134,4 +134,37 @@ public class WorkoutServiceTest {
   }
 
   // 後々のテスト追加
+  @Nested
+  @DisplayName("getWorkoutById")
+  class GetWorkoutById {
+
+    @Test
+    @DisplayName("正常系: 存在するIDならWorkoutを返す")
+    void getWorkoutById_success() {
+      given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
+
+      Workout result = workoutService.getWorkoutById(WORKOUT_ID);
+      assertThat(result).isEqualTo(workout);
+    }
+
+    @Test
+    @DisplayName("異常系: 存在しないIDならWorkoutDomainExceptionを投げる")
+    void getWorkoutById_notFound_throwsWorkoutDomainException() {
+      Long nonExistentId = 999L;
+      given(workoutRepository.findById(nonExistentId)).willReturn(Optional.empty());
+
+      assertThatThrownBy(() -> workoutService.getWorkoutById(nonExistentId))
+        .isInstanceOf(WorkoutDomainException.class)
+        .hasMessageContaining(String.valueOf(nonExistentId));
+    }
+
+    @Test
+    @DisplayName("IDがnullの場合はIllegalArgumentExceptionを投げ、保存しない")
+    void getWorkoutById_nullId_throwsIllegalArgumentException() {
+      assertThatThrownBy(() -> workoutService.getWorkoutById(null))
+        .isInstanceOf(IllegalArgumentException.class);
+      
+        verify(workoutRepository, never()).findById(any());
+    }
+  }
 }
