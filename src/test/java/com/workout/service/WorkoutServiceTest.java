@@ -167,4 +167,42 @@ public class WorkoutServiceTest {
         verify(workoutRepository, never()).findById(any());
     }
   }
+
+  @Nested
+  @DisplayName("deleteWorkout")
+  class DeleteWorkout {
+
+    @Test
+    @DisplayName("正常系: 所有者本人が削除すればdeleteCount=1で例外は投げない")
+    void deleteWorkout_success() {
+      given(workoutRepository.deleteDirectlyByIdAndUserId(WORKOUT_ID, OWNER_ID));
+
+      assertThatCode(() -> workoutService.deleteWorkout(WORKOUT_ID, OWNER_ID));
+
+      verify(workoutRepository).deleteDirectlyByIdAndUserId(WORKOUT_ID, OWNER_ID);
+    }
+
+    @Test
+    @DisplayName("異常系: IDが存在しない場合はWorkoutDomainExceptionを投げる")
+    void deleteWorkout_notFound_throwsWorkoutDomainException() {
+      Long nonExistentId = 999L;
+      given(workoutRepository.deleteDirectlyByIdAndUserId(nonExistentId, OWNER_ID)).willReturn(0);
+
+      assertThatThrownBy(() -> workoutService.deleteWorkout(nonExistentId, OWNER_ID))
+          .isInstanceOf(WorkoutDomainException.class);
+    }
+
+
+    @Test
+    @DisplayName("所有者と異なるuserIdで削除しようとするとdeletedCount=0となり例外")
+    void deleteWorkout_wrongOwner_throwsWorkoutDomainException() {
+      given(workoutRepository.deleteDirectlyByIdAndUserId(WORKOUT_ID, ANOTHER_USER_ID)).willReturn(0);
+
+      assertThatThrownBy(() -> workoutService.deleteWorkout(WORKOUT_ID, ANOTHER_USER_ID))
+        .isInstanceOf(WorkoutDomainException.class);
+
+      verify(workoutRepository).deleteDirectlyByIdAndUserId(WORKOUT_ID, ANOTHER_USER_ID);
+      verify(workoutRepository, never()).deleteDirectlyByIdAndUserId(WORKOUT_ID, OWNER_ID);
+    }
+  }
 }
