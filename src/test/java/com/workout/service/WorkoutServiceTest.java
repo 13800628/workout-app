@@ -206,5 +206,49 @@ public class WorkoutServiceTest {
     }
   }
 
-  // 追加予定
+  @Nested
+  @DisplayName("updateAllDetails")
+  class UpdateAllDetails {
+
+    @Test
+    @DisplayName("正常系: 存在するWorkoutを更新して保存する")
+    void updateAllDetails_success() {
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("懸垂", 12, 4, 0);
+      given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
+      given(workoutRepository.save(any(Workout.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+      Workout result = workoutService.updateAllDetails(WORKOUT_ID, request);
+
+      assertThat(result.getName()).isEqualTo("懸垂");
+      assertThat(result.getReps()).isEqualTo(12);
+      assertThat(result.getSets()).isEqualTo(4);
+      assertThat(result.getWeights()).isEqualTo(0);
+      verify(workoutRepository).save(workout);
+    }
+
+    @Test
+    @DisplayName("異常系: 存在しないIDの場合はWorkoutDomainExceptionを投げ保存しない")
+    void updateAllDetails_notFound_throwsWorkoutDomainException() {
+      Long nonExistentId = 999L;
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("懸垂", 12, 4, 0);
+      given(workoutRepository.findById(nonExistentId)).willReturn(Optional.empty());
+
+      assertThatThrownBy(() -> workoutService.updateAllDetails(nonExistentId, request))
+        .isInstanceOf(WorkoutDomainException.class);
+
+      verify(workoutRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("異常系: 更新値が不正(repsなどがnull)な場合は例外")
+    void updateAllDetails_invalidValues_throwsIllegalArgumentException() {
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("懸垂", -1, 4, 0);
+      given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
+
+      assertThatThrownBy(() -> workoutService.updateAllDetails(WORKOUT_ID, request))
+        .isInstanceOf(IllegalArgumentException.class);
+
+        verify(workoutRepository, never()).save(any());
+    }
+  }
 }
