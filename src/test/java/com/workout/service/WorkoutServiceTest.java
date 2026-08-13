@@ -250,5 +250,19 @@ public class WorkoutServiceTest {
 
         verify(workoutRepository, never()).save(any());
     }
+
+    // これを認可機能を追加して失敗するようにするか真逆のテストに書き換える必要がある。
+    @Test
+    @DisplayName("[要確認]所有者と異なるユーザーからの更新でも成功してしまうのか確認")
+    void updateAllDetails_currentlyAllowsUpdateByNonOwner() {
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("不正な更新", 99, 99, 99);
+      given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
+      given(workoutRepository.save(any(Workout.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+      Workout result = workoutService.updateAllDetails(WORKOUT_ID, request);
+
+      assertThat(result.getName()).isEqualTo("不正な更新");
+      assertThat(result.getUser()).isEqualTo(owner);
+    }
   }
 }
