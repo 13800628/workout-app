@@ -252,6 +252,7 @@ public class WorkoutServiceTest {
     }
 
     // これを認可機能を追加して失敗するようにするか真逆のテストに書き換える必要がある。
+    // まずテストコードの修正をしてからプロダクトコードを修正する
     @Test
     @DisplayName("[要確認]所有者と異なるユーザーからの更新でも成功してしまうのか確認")
     void updateAllDetails_currentlyAllowsUpdateByNonOwner() {
