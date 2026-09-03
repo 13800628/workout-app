@@ -93,8 +93,12 @@ public class WorkoutController {
     @PathVariable Long workoutId, 
     @Valid @RequestBody UpdateWorkoutRequest request,
     Authentication auth) {
+
     validateWorkoutOwner(workoutId, auth);
-    Workout updated = workoutService.updateAllDetails(workoutId, request);
+    CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
+
+    Workout updated = workoutService.updateAllDetails(workoutId, principal.getUserId(), request);
+
     return ResponseEntity.ok(WorkoutResponse.from(updated));
   }
 }

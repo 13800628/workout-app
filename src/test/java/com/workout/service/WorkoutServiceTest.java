@@ -217,7 +217,7 @@ public class WorkoutServiceTest {
       given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
       given(workoutRepository.save(any(Workout.class))).willAnswer(invocation -> invocation.getArgument(0));
 
-      Workout result = workoutService.updateAllDetails(WORKOUT_ID, request);
+      Workout result = workoutService.updateAllDetails(WORKOUT_ID, OWNER_ID, request);
 
       assertThat(result.getName()).isEqualTo("懸垂");
       assertThat(result.getReps()).isEqualTo(12);
@@ -233,7 +233,7 @@ public class WorkoutServiceTest {
       UpdateWorkoutRequest request = new UpdateWorkoutRequest("懸垂", 12, 4, 0);
       given(workoutRepository.findById(nonExistentId)).willReturn(Optional.empty());
 
-      assertThatThrownBy(() -> workoutService.updateAllDetails(nonExistentId, request))
+      assertThatThrownBy(() -> workoutService.updateAllDetails(nonExistentId, OWNER_ID,request))
         .isInstanceOf(WorkoutDomainException.class);
 
       verify(workoutRepository, never()).save(any());
@@ -245,7 +245,7 @@ public class WorkoutServiceTest {
       UpdateWorkoutRequest request = new UpdateWorkoutRequest("懸垂", -1, 4, 0);
       given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
 
-      assertThatThrownBy(() -> workoutService.updateAllDetails(WORKOUT_ID, request))
+      assertThatThrownBy(() -> workoutService.updateAllDetails(WORKOUT_ID, OWNER_ID,request))
         .isInstanceOf(IllegalArgumentException.class);
 
         verify(workoutRepository, never()).save(any());
@@ -260,7 +260,7 @@ public class WorkoutServiceTest {
       given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
       given(workoutRepository.save(any(Workout.class))).willAnswer(invocation -> invocation.getArgument(0));
 
-      Workout result = workoutService.updateAllDetails(WORKOUT_ID, request);
+      Workout result = workoutService.updateAllDetails(WORKOUT_ID, OWNER_ID, request);
 
       assertThat(result.getName()).isEqualTo("不正な更新");
       assertThat(result.getUser()).isEqualTo(owner);
