@@ -59,8 +59,10 @@ public class WorkoutService {
   }
 
   @Transactional
-  public Workout updateAllDetails(Long id, UpdateWorkoutRequest request) {    
+  public Workout updateAllDetails(Long id, Long userId,UpdateWorkoutRequest request) {    
     Workout workout = getWorkoutById(id);
+
+    validateWorkoutOwner(workout, userId);
 
     workout.updateAllWorkoutDetails(
         request.name(),
@@ -70,5 +72,11 @@ public class WorkoutService {
     );
 
     return workoutRepository.save(workout);
+  }
+
+  private void validateWorkoutOwner(Workout workout, Long userId) {
+    if (!workout.getUser().getId().equals(userId)) {
+      throw WorkoutDomainException.notFound("見つかりません" + workout.getId());
+    }
   }
 }
