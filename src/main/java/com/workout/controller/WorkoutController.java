@@ -44,6 +44,7 @@ public class WorkoutController {
     }
   }
 
+  // この確認用の関数はサービス層だけでいいので今後削除する方向でいく
   // Workoutのオーナー確認用
   private void validateWorkoutOwner(Long workoutId, Authentication auth) {
     CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();

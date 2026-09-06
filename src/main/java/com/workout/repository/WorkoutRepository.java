@@ -15,6 +15,7 @@ import com.workout.model.Workout;
 @Repository
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
  
+  // idが種目に対してのものなのか、ユーザーに対してのものなのかが混在することになっているのでリネームの余地を
   @EntityGraph(attributePaths = {"user"})
   List<Workout> findByUserId(Long id);
 
