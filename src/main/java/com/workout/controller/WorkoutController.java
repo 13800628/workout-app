@@ -46,9 +46,9 @@ public class WorkoutController {
 
   // この確認用の関数はサービス層だけでいいので今後削除する方向でいく
   // Workoutのオーナー確認用
-  private void validateWorkoutOwner(Long workoutId, Authentication auth) {
+  private void validateWorkoutOwner(Long exercisedId, Authentication auth) {
     CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
-    Workout workout = workoutService.getWorkoutById(workoutId);
+    Workout workout = workoutService.getWorkoutById(exercisedId);
     if (!workout.getUser().getId().equals(principal.getUserId())) {
       throw new IllegalArgumentException("アクセス権限がありません");
     }
@@ -81,24 +81,24 @@ public class WorkoutController {
 
   @DeleteMapping("/{workoutId}")
   public ResponseEntity<Void> deleteWorkout(
-    @PathVariable Long workoutId,
+    @PathVariable Long exercisedId,
     Authentication auth) {
-    validateWorkoutOwner(workoutId, auth);
+    validateWorkoutOwner(exercisedId, auth);
     CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
-    workoutService.deleteWorkout(workoutId, principal.getUserId());
+    workoutService.deleteWorkout(exercisedId, principal.getUserId());
     return ResponseEntity.noContent().build();
   }
 
   @PutMapping("/{workoutId}/details")
   public ResponseEntity<WorkoutResponse> updateDetails(
-    @PathVariable Long workoutId, 
+    @PathVariable Long exerciseId, 
     @Valid @RequestBody UpdateWorkoutRequest request,
     Authentication auth) {
 
-    validateWorkoutOwner(workoutId, auth);
+    validateWorkoutOwner(exerciseId, auth);
     CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
 
-    Workout updated = workoutService.updateAllDetails(workoutId, principal.getUserId(), request);
+    Workout updated = workoutService.updateAllDetails(exerciseId, principal.getUserId(), request);
 
     return ResponseEntity.ok(WorkoutResponse.from(updated));
   }

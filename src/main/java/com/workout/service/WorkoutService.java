@@ -41,26 +41,26 @@ public class WorkoutService {
   }
 
   @Transactional(readOnly = true)
-  public Workout getWorkoutById(Long id) {
-     if (id == null) {
+  public Workout getWorkoutById(Long exercisedId) {
+     if (exercisedId == null) {
       throw new IllegalArgumentException("IDを指定してください");
      }
-    return workoutRepository.findById(id)
-           .orElseThrow(() -> WorkoutDomainException.notFound("Workoutが見つかりません: " + id));
+    return workoutRepository.findById(exercisedId)
+           .orElseThrow(() -> WorkoutDomainException.notFound("Workoutが見つかりません: " + exercisedId));
   }
   
   @Transactional
-  public void deleteWorkout(Long id, Long userId) {
-    int deletedCount = workoutRepository.deleteDirectlyByIdAndUserId(id, userId);
+  public void deleteWorkout(Long exercisedId, Long userId) {
+    int deletedCount = workoutRepository.deleteDirectlyByIdAndUserId(exercisedId, userId);
 
     if (deletedCount == 0) {
-      throw WorkoutDomainException.notFound("Workout ID: " + id + "は存在しません");
+      throw WorkoutDomainException.notFound("Workout ID: " + exercisedId + "は存在しません");
     }
   }
 
   @Transactional
-  public Workout updateAllDetails(Long id, Long userId,UpdateWorkoutRequest request) {    
-    Workout workout = getWorkoutById(id);
+  public Workout updateAllDetails(Long exercisedId, Long userId,UpdateWorkoutRequest request) {    
+    Workout workout = getWorkoutById(exercisedId);
 
     validateWorkoutOwner(workout, userId);
 
