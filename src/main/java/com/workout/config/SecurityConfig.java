@@ -47,7 +47,6 @@ public class SecurityConfig {
                .requestMatchers("/api/auth/**").permitAll()
                .requestMatchers("/", "/login","/index.html", "/assets/**", "/*.js", "/*.css", "/*.svg").permitAll()
                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/users").permitAll()
-               .requestMatchers("/api/users/**").permitAll()
               .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception
