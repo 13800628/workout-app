@@ -9,7 +9,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.workout.exception.user.UserDomainException;
+
 import org.springframework.lang.NonNull;
 
 import java.io.IOException;
@@ -37,11 +41,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
       if (jwtUtil.validateToken(token)) {
         String username = jwtUtil.extractUsername(token);
-        UserDetails userdetails = userDetailsService.loadUserByUsername(username);
-
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userdetails, null , userdetails.getAuthorities());
-
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        
+        try {
+          UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+          UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+          SecurityContextHolder.getContext().setAuthentication(auth);
+        } catch (UsernameNotFoundException e) {
+          // 認証情報をセットせず後続に委ねる
+          SecurityContextHolder.clearContext();
+        }
       }
     }
     filterChain.doFilter(request, response);
