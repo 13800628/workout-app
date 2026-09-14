@@ -24,4 +24,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword());
     }
+
+    public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
+        com.workout.model.User user = userRepository.findById(id)
+            .orElseThrow(() -> new UsernameNotFoundException("IDが見つかりません: " +id));
+        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword());
+    }
 }

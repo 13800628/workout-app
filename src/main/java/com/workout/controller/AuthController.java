@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.workout.config.CustomUserDetails;
 import com.workout.config.JwtUtil;
 import com.workout.dto.auth.AuthRequest;
 import com.workout.dto.auth.AuthResponse;
@@ -37,7 +38,8 @@ public class AuthController {
         request.password()
         )
     );
-    String token = jwtUtil.generateToken(auth.getName());
+    CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
+    String token = jwtUtil.generateToken(principal.getUserId());
     return ResponseEntity.ok(new AuthResponse(token));
   }
   

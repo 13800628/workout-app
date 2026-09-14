@@ -20,9 +20,9 @@ public class JwtUtil {
     this.key = Keys.hmacShaKeyFor(secret.getBytes());
   }
 
-  public String generateToken(String username) {
+  public String generateToken(Long userId) {
     return Jwts.builder()
-        .subject(username)
+        .subject(String.valueOf(userId))
         .issuedAt(new Date())
         .expiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
         .signWith(key)
@@ -33,10 +33,14 @@ public class JwtUtil {
     return getClaims(token).getSubject();
   }
 
+  public Long extraUserId(String token) {
+    return Long.valueOf(getClaims(token).getSubject());
+  }
+
   public boolean validateToken(String token) {
     try {
       getClaims(token);
-      return true;
+      return true; 
     } catch (Exception e) {
       return false;
     }
