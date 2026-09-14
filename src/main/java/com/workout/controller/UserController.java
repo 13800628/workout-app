@@ -1,5 +1,8 @@
 package com.workout.controller;
 
+
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import com.workout.dto.UserRequest;
 import com.workout.dto.UserResponse;
 import com.workout.model.User;
 import com.workout.service.UserService;
+import com.workout.config.CustomUserDetails;
 import com.workout.dto.ChangePasswordRequest;
 import com.workout.dto.UpdateUserRequest;
 
@@ -31,6 +35,15 @@ public class UserController {
   public UserController(UserService userService) {
     this.userService = userService;
   }
+
+  // 今後はサービス層のみにする(現状はまず動くためにして同じような実装をサービス層に移植する)
+  private void assertSelf(Long targetId, Authentication auth) {
+    CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
+    if (!principal.getUserId().equals(targetId)) {
+      throw new AccessDeniedException("自分以外のユーザー情報は操作できません");
+    }
+  }
+
 
   @PostMapping
   public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRequest request) {
@@ -57,14 +70,16 @@ public class UserController {
   @PutMapping("/{id}")
   public ResponseEntity<UserResponse> updateUser(
     @PathVariable Long id,
-    @Valid @RequestBody UpdateUserRequest request) {
+    @Valid @RequestBody UpdateUserRequest request, Authentication auth) {
+      assertSelf(id, auth);
     User updatedUser = userService.updateUser(id, request);
     return ResponseEntity.ok(UserResponse.from(updatedUser));
   }
 
   // --- D (Delete) - ユーザー削除 ---
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteUser(@PathVariable Long id, Authentication auth) {
+    assertSelf(id, auth);
     userService.deleteUser(id);
     return ResponseEntity.noContent().build();
   }
@@ -73,7 +88,8 @@ public class UserController {
   @PutMapping("/{id}/password")
   public ResponseEntity<Void> changePassword(
       @PathVariable Long id,
-      @Valid @RequestBody ChangePasswordRequest request) {
+      @Valid @RequestBody ChangePasswordRequest request, Authentication auth) {
+        assertSelf(id, auth);
         userService.changePassword(id, request.oldPassword(), request.newPassword());
         return ResponseEntity.noContent().build();
       }
