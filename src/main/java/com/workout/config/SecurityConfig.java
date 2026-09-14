@@ -53,6 +53,9 @@ public class SecurityConfig {
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "認証が必要です");
                 })
+                .accessDeniedHandler((request, response, AccessDeniedException) -> {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "この操作は許可されていません");
+                })
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
