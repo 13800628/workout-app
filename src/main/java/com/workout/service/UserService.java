@@ -2,6 +2,7 @@ package com.workout.service;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,12 +28,15 @@ public class UserService {
 
   @Transactional
   public User registerUser(UserRequest request) {
-    User user = new User(
-      request.username(),
-      request.age(),
-      passwordEncoder.encode(request.password())
-    );
-    return userRepository.save(user);
+    try {
+      User user = new User(
+          request.username(),
+          request.age(),
+          passwordEncoder.encode(request.password()));
+      return userRepository.save(user);
+    } catch (DataIntegrityViolationException e) {
+      throw UserDomainException.conflict("ユーザー名はすでに使用されています" + request.username());
+    }
   }
 
   @Transactional(readOnly = true)
@@ -58,9 +62,13 @@ public class UserService {
 
   @Transactional
   public User updateUser(Long id, UpdateUserRequest request) {
+    try {
     User user = getUserById(id);
     user.updateProfile(request.username(), request.age());
     return userRepository.save(user);
+    } catch (DataIntegrityViolationException e) {
+      throw UserDomainException.conflict("このユーザー名はすでに使用されています" + request.username());
+    }
   }
 
   @Transactional
