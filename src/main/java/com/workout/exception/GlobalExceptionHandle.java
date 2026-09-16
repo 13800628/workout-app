@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -45,6 +47,13 @@ public class GlobalExceptionHandle {
     return ResponseEntity.badRequest()
         .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "JSON形式が正しくありません", List.of()));
   }
+  
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    log.warn("Data Integrity violation; {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(new ErrorResponse(HttpStatus.CONFLICT.value(), "入力内容が既存データと重複しています", List.of()));
+  }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
@@ -62,6 +71,8 @@ public class GlobalExceptionHandle {
   public ResponseEntity<ErrorResponse> handleWorkoutDomainException(WorkoutDomainException ex) {
     return buildErrorResponse(ex);
   }
+
+
 
   private ResponseEntity<ErrorResponse> buildErrorResponse(DomainException ex) {
     ErrorResponse errorResponse = new ErrorResponse(
