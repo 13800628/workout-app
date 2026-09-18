@@ -39,16 +39,6 @@ public class UserService {
     }
   }
 
-  @Transactional(readOnly = true)
-  public Page<User> getAllUsers(int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
-    return userRepository.findAll(pageable);
-  }
-
-  // テスト用、ビルドの整合性のため
-  public List<User> getAllUsers() {
-    return userRepository.findAll();
-  }
 
   @Transactional(readOnly = true)
   public User getUserById(Long id) {
