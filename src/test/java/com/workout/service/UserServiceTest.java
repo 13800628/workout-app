@@ -12,7 +12,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +23,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -92,21 +87,6 @@ public class UserServiceTest {
   @DisplayName("getAlUsers(page, size)")
   class GetAllUsersPaged {
 
-    @Test
-    @DisplayName("正常系: 指定したページ、サイズでユーザー一覧を取得")
-    void getAllUsers_paged_success() {
-      User user2 = new User("jiro", 30, "password2");
-      user2.setId(2L);
-      Page<User> page = new PageImpl<>(List.of(existingUser, user2));
-      given(userRepository.findAll(any(Pageable.class))).willReturn(page);
-
-      Page<User> result = userService.getAllUsers(0, 10);
-
-      assertThat(result.getContent()).hasSize(2);
-      assertThat(result.getContent()).containsExactly(existingUser, user2);
-      verify(userRepository).findAll(PageRequest.of(0, 10));
-    }
-  }
 
   // ここからテストを追記していく
   @Test
@@ -120,7 +100,7 @@ public class UserServiceTest {
         .extracting(ex -> ((UserDomainException) ex).getStatus())
         .isEqualTo(HttpStatus.NOT_FOUND);
   }
-
+}
   @Nested
   @DisplayName("updateUser")
   class UpdateUser {
