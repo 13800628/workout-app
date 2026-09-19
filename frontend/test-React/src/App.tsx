@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Workout from "./pages/Workout";
 import Login from "./pages/Login";
 import { isLoggedIn } from "./hooks/useAuth";
+import Register from "./pages/Register";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   return isLoggedIn() ? <>{children}</> : <Navigate to="/login" />;
@@ -13,7 +14,12 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home />} />  {/* 認証不要 */}
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={
+          <PrivateRoute>
+            <Home />
+          </PrivateRoute>
+        } />
         <Route path="/workout" element={
           <PrivateRoute>
             <Workout />

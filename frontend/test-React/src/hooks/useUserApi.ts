@@ -1,7 +1,7 @@
-import { authHeaders } from "./useAuth";
-import type { ApiResult, VoidResult, PageResult } from "../types/api";
+import { authHeaders, handleUnauthorized } from "./useAuth";
+import type { ApiResult, VoidResult } from "../types/api";
 import { extractErrorMessage } from "../utils/apiError";
-import { DEFAULT_PAGE_SIZE } from "../config/pagination";
+
 
 export type User = {
   id: number;
@@ -12,45 +12,7 @@ export type User = {
 
 const BASE_URL = "/api/users";
 
-// ページネーション対応するように変更
-export async function fetchAllUsers(
-  page = 0,
-  size: number = DEFAULT_PAGE_SIZE,
-): Promise<ApiResult<PageResult<User>>> {
-  try {
-    const res = await fetch(`${BASE_URL}?page=${page}&size=${size}`, {
-      headers: authHeaders(),
-    });
-    if (!res.ok) {
-      const message = await extractErrorMessage(res, `サーバーエラー: ${res.status}`);
-      return { ok: false, message};
-    }
-    const data: PageResult<User> = await res.json();
-    return { ok: true, data };
-  } catch (err) {
-    return { ok: false, message: `通信エラー: ${String(err)}`};
-  }
-}
-
-// ここちょっと検討
-export async function fetchUserById(userId: number): Promise<ApiResult<User>> {
-  try {
-    const res = await fetch(`${BASE_URL}/${userId}`, {
-      headers: authHeaders(),
-    });
-    if (res.status === 404) return { ok: false, message: `ユーザーが見つかりません`};
-    if (!res.ok) {
-      const message = await extractErrorMessage(res, `サーバーエラー: ${res.status}`);
-      return { ok: false, message };
-    }
-
-    const data: User = await res.json();
-    return { ok: true, data};
-  } catch (err) {
-    return { ok: false, message: `通信エラー: ${String(err)}`};
-  }
-}
-
+// 登録は未認証で叩くようにするのでauthHeaderつけない
 export async function registerUser(username: string, 
   age: number, 
   password: string, 
@@ -58,7 +20,7 @@ export async function registerUser(username: string,
   try {
     const res = await fetch(BASE_URL, {
       method: "POST",
-      headers: authHeaders(),
+      headers: { "Content-Type": "application/json"},
       body: JSON.stringify({ username, age, password}),
     });
     if (!res.ok) {
@@ -72,55 +34,81 @@ export async function registerUser(username: string,
   }
 }
 
-export async function updateUser(
-  userId:number, 
-  username: string, 
-  age: number, 
+// 自分だけのデータを取得する関数
+export async function fetchMe(
+  navigate: (path: string) => void
 ): Promise<ApiResult<User>> {
   try {
-    const res = await fetch(`${BASE_URL}/${userId}`, {
+    const res = await fetch(`${BASE_URL}/me`, {
+      headers: authHeaders(),
+    });
+    handleUnauthorized(res.status, navigate);
+    if (!res.ok) {
+      const message = await extractErrorMessage(res, `サーバーエラー: ${res.status}`);
+      return { ok: false, message};
+    }
+    const data: User = await res.json();
+    return { ok: true, data};
+  } catch (err) {
+    return { ok: false, message: `通信エラー: ${String(err)}` };
+  }
+}
+
+// 自分のデータのみ更新
+export async function updateMe(
+  username: string,
+  age: number,
+  navigate: (path: string) => void
+): Promise<ApiResult<User>> {
+  try {
+    const res = await fetch(`${BASE_URL}/me`, {
       method: "PUT",
       headers: authHeaders(),
       body: JSON.stringify({ username, age }),
     });
+    handleUnauthorized(res.status, navigate);
     if (!res.ok) {
       const message = await extractErrorMessage(res, `サーバーエラー: ${res.status}`);
       return { ok: false, message };
     }
     const data: User = await res.json();
-    return { ok: true, data };
+    return { ok: true, data};
   } catch (err) {
-    return { ok: false, message: `通信エラー: ${String(err)}` };
+    return { ok: false, message: `通信エラー: ${String(err)}`};
   }
 }
 
-export async function deleteUser(
-   userId: number,
-  ): Promise<VoidResult> {
+// 自分のみを削除
+export async function deleteMe(
+  navigate: (path: string) => void
+): Promise<VoidResult> {
   try {
-    const res = await fetch(`${BASE_URL}/${userId}`, { 
+    const res = await fetch(`${BASE_URL}/me`, {
       method: "DELETE",
       headers: authHeaders(),
     });
-    if (res.status === 204) return {ok: true };
+    handleUnauthorized(res.status, navigate);
+    if (res.status === 204) return { ok: true };
     const message = await extractErrorMessage(res, `削除失敗: ${res.status}`);
-    return { ok: false, message};
+    return { ok: false, message };
   } catch (err) {
-    return { ok: false, message: `通信エラー: ${String(err)}` };
+    return { ok: false, message: `通信エラー: ${String(err)}`};
   }
 }
 
-export async function changePassword(
-  userId: number,
+// 自分のみ更新
+export async function changeMyPassword(
   oldPassword: string,
   newPassword: string,
-) : Promise<VoidResult> {
+  navigate: (path: string) => void
+): Promise<VoidResult> {
   try {
-    const res = await fetch(`${BASE_URL}/${userId}/password`, {
+    const res = await fetch(`${BASE_URL}/me/password`, {
       method: "PUT",
       headers: authHeaders(),
       body: JSON.stringify({ oldPassword, newPassword }),
     });
+    handleUnauthorized(res.status, navigate);
     if (res.status === 204) return { ok: true };
     const message = await extractErrorMessage(res, `パスワード変更失敗: ${res.status}`);
     return { ok: false, message };

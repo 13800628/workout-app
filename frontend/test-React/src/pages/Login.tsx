@@ -19,6 +19,7 @@ export default function Login() {
         body: JSON.stringify({ username, password }),
       });
 
+      // 詳細なエラー内容での表示文言が必要になれば今後修正
       if (!res.ok) {
         setError("ユーザー名またはパスワードが違います");
         return;
@@ -57,7 +58,7 @@ export default function Login() {
 
       <div className="button-group">
         <button onClick={handleLogin}>ログイン</button>
-        <button onClick={() => navigate("/")}>戻る</button>
+        <button onClick={() => navigate("/register")}>戻る</button>
       </div>
     </div>
   );

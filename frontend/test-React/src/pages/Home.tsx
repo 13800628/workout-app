@@ -7,236 +7,121 @@
  * 
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  fetchAllUsers,
-  fetchUserById,
-  registerUser,
-  updateUser,
-  deleteUser,
-  changePassword,
+  updateMe,
+  deleteMe,
+  fetchMe,
+  changeMyPassword,
 } from "../hooks/useUserApi";
 import type { User } from "../hooks/useUserApi";
-import { formatUser, formatUsers } from "../utils/formatUser";
-import { isLoggedIn } from "../hooks/useAuth";
-import { DEFAULT_PAGE_SIZE } from "../config/pagination";
+import { formatUser } from "../utils/formatUser";
 
 // 子コンポーネント
 
-type UserFormProps = {
+type ProfileFormProps = {
   username: string;
   age: string;
-  userId: string;
-  password: string;
   onChangeUsername: (v: string) => void;
   onChangeAge: (v: string) => void;
-  onChangeUserId: (v: string) => void;
-  onChangePassword: (v: string) => void;
 };
 
-function UserForm({
-  username,
-  age,
-  userId,
-  password,
-  onChangeUsername,
-  onChangeAge,
-  onChangeUserId,
-  onChangePassword,
-}: UserFormProps) {
+function ProfileForm({ username, age, onChangeUsername, onChangeAge 
+}: ProfileFormProps) {
   return (
     <div className="input-form">
       <input
-      placeholder="名前"
-      value={username}
-      onChange={(e) => onChangeUsername(e.target.value)}
+       placeholder="名前"
+       value={username}
+       onChange={(e) => onChangeUsername(e.target.value)}
       />
       <input
-        placeholder="年齢"
-        type="number"
-        value={age}
-        onChange={(e) => onChangeAge(e.target.value)}
-      />
-      <input
-        placeholder="対象ユーザーID"
-        type="number"
-        value={userId}
-        onChange={(e) => onChangeUserId(e.target.value)}
-      />
-      <input
-        placeholder="パスワード"
-        type="password"
-        value={password}
-        onChange={(e) => onChangePassword(e.target.value)}
+       placeholder="年齢"
+       type="number"
+       value={age}
+       onChange={(e) => onChangeAge(e.target.value)}
       />
     </div>
   );
 }
 
-type ActionButtonProps = {
-  onRegister: () => void;
-  onGetAll: () => void;
-  onGetById: () => void;
+type ProfileActionProps = {
   onUpdate: () => void;
   onDelete: () => void;
   onGoToWorkout: () => void;
-  onOpenModal: () => void;
   isLoading: boolean;
+  canGoToWorkout: boolean;
 };
 
-function ActionButtons({
-  onRegister,
-  onGetAll,
-  onGetById,
-  onUpdate,
-  onDelete,
-  onGoToWorkout,
-  onOpenModal,
-  isLoading,
-}: ActionButtonProps) {
+function ProfileActions({ onUpdate, onDelete, onGoToWorkout, isLoading, canGoToWorkout }: ProfileActionProps) {
   return (
     <div className="button-group">
-      <button onClick={onRegister} disabled={isLoading}>
-        {isLoading ? "処理中..." : "登録"}
-      </button>
-      <button onClick={onGetAll} disabled={isLoading}>
-        {isLoading ? "処理中..." : "全部取得"}
-      </button>
-      <button onClick={onGetById} disabled={isLoading}>
-        {isLoading ? "処理中..." : "ID 取得"}
-      </button>
       <button onClick={onUpdate} disabled={isLoading}>
         {isLoading ? "処理中..." : "更新"}
       </button>
       <button onClick={onDelete} disabled={isLoading}>
-        {isLoading ? "処理中..." : "削除"}
+        {isLoading ? "処理中" : "削除"}
       </button>
-      <button onClick={onOpenModal} disabled={isLoading}>
-         {isLoading ? "処理中..." : "パスワード変更"}
-      </button>
-      <button onClick={onGoToWorkout} disabled={isLoading}>
+      <button onClick={onGoToWorkout} disabled={isLoading || !canGoToWorkout}>
         Workoutページへ
       </button>
     </div>
   );
 }
 
-// ここのresultが表示される文字が小さいので今後少し改善
-function ResultPanel({ result }: { result: string }) {
-  return (
-    <div className="result-section">
-      <h3>ユーザー情報</h3>
-      <pre style={{ whiteSpace: "pre-wrap"}}>{result}</pre>
-    </div>
-  )
-}
 
-// ページ送りボタンブロック
-type PaginationControlsProps = {
-  currentPage: number;
-  totalPages: number; 
-  totalElements: number;
-  size: number;
-  onPrev: () => void;
-  onNext: () => void;
+type PasswordFormProps = {
+  oldPassword: string;
+  newPassword: string;
+  onChangeOld: (v: string) => void;
+  onChangeNew: (v: string) => void;
+  onSubmit: () => void;
   isLoading: boolean;
-}
+};
 
-function PaginationControls({
-  currentPage,
-  totalPages,
-  totalElements,
-  size,
-  onPrev,
-  onNext,
-  isLoading,
-}: PaginationControlsProps) {
-  if (totalPages <= 1) return null;
-
-  const startItem = totalElements === 0 ? 0 : currentPage * size + 1;
-  const endItem = Math.min((currentPage + 1) * size, totalElements);
-
+function PasswordForm({ oldPassword, newPassword, onChangeOld, onChangeNew, onSubmit, isLoading }: PasswordFormProps) {
   return (
-    <div className="pagination-controls">
-      <button onClick={onPrev} disabled={isLoading || currentPage === 0}>
-        前へ
-      </button>
-      <span className="pagination-range">
-        {currentPage + 1} / {totalPages} ページ
-      </span>
-      <span>
-        {startItem}~{endItem}件目 / 全{totalElements}件
-      </span>
-      <button onClick={onNext} disabled={isLoading || currentPage + 1 >= totalPages}>
-        次へ
-      </button>
+    <div className="input-form">
+      <input
+       placeholder="現在のパスワード"
+       type="password"
+       value={oldPassword}
+       onChange={(e) => onChangeOld(e.target.value)}
+      />
+      <input
+       placeholder="新しいパスワード"
+       type="password"
+       value={newPassword}
+       onChange={(e) => onChangeNew(e.target.value)}
+      />
+      <div className="button-group">
+        <button onClick={onSubmit} disabled={isLoading}>
+          {isLoading ? "処理中..." : "変更する"}
+        </button>
+      </div>
     </div>
   );
 }
 
-// モーダルコンポーネント
-// エラーメッセージが表示されなかったのでモーダル内で管理する。今後は責務などの問題で切り出す余地ありか。
-type PasswordModalProps = {
-  isOpen: boolean;
-  oldPassword: string;
-  newPassword: string;
-  error: string;
-  onChangeOld: (v: string) => void;
-  onChangeNew: (v: string) => void;
-  onSubmit: () => void;
-  onClose: () => void;
-}; 
+type SelectionProps = {
+  page: number;
+  onPrev: () => void;
+  onNext: () => void;
+};
 
-function PasswordModal({
-  isOpen,
-  oldPassword,
-  newPassword,
-  error,
-  onChangeOld,
-  onChangeNew,
-  onSubmit,
-  onClose,
-} : PasswordModalProps) {
-  if (!isOpen) return null;
-
+function SectionPager({ page, onPrev, onNext }: SelectionProps) {
   return (
-    <div style={{
-      position: "fixed",
-      top: 0, left: 0, right: 0, bottom: 0,
-      backgroundColor: "rgba(0,0,0,0.5)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 1000,
-    }}>
-      <div style={{
-        background: "white",
-        borderRadius: 12,
-        padding: 30,
-        width: 320,
-      }}>
-        <h3>パスワード変更</h3>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <input
-          placeholder="現在のパスワード"
-          type="password"
-          value={oldPassword}
-          onChange={(e) => onChangeOld(e.target.value)}
-          style={{ width: "100%", marginBottom: 10, padding: 8 }}
-        />
-        <input
-          placeholder="新しいパスワード"
-          type="password"
-          value={newPassword}
-          onChange={(e) => onChangeNew(e.target.value)}
-          style={{ width: "100%", marginBottom: 10, padding: 8 }}
-        />
-        <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={onSubmit}>変更する</button>
-          <button onClick={onClose}>キャンセル</button>
-        </div>
-      </div>
+    <div className="pagination-controls">
+      <button onClick={onPrev} disabled={page === 0}>
+        前へ
+      </button>
+      <span className="pagination-range">
+        {page === 0 ? "プロフィール" : "パスワード変更"}
+      </span>
+      <button onClick={onNext} disabled={page === 1}>
+        次へ
+      </button>
     </div>
   );
 }
@@ -244,97 +129,47 @@ function PasswordModal({
 // メインコンポーネント
 
 function Home() {
+  const [page, setPage] = useState(0);
+  const [myId, setMyId] = useState<number | null>(null);
   const [username, setUsername] = useState("");
   const [age, setAge] = useState("");
-  const [userId, setUserId] = useState("");
   const [result, setResult] = useState("");
-  const [password, setPassword] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [modalError, setModalError] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  // ページネーション用
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
 
   const navigate = useNavigate();
-  const userIdNum = Number(userId);
   
-  // =========================================================================
-  // CRUD 操作 各種
-
-
-  // 登録処理
-  const handleRegister = async () => {
-    setIsLoading(true);
-    try {
-      const res = await registerUser(username, Number(age), password);
-      if (res.ok) {
-        setResult(formatUser(res.data));
-        setUsername("");
-        setAge("");
-        setUserId("");
-        setPassword("");
-      } else {
-        setResult(res.message);
+ 
+  useEffect(() => {
+    const loadMe = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetchMe(navigate);
+        if (res.ok) {
+          const user = res.data as User;
+          setMyId(user.id);
+          setUsername(user.username);
+          setAge(String(user.age));
+          setResult(formatUser(user));
+        } else {
+          setResult(res.message);
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
-    } 
-  };
-  
+    };
+    loadMe();
+  }, []);
 
-
-  const handleGetAll = async (page: number = currentPage) => {
-    setIsLoading(true);
-    try {
-      const res = await fetchAllUsers(page, DEFAULT_PAGE_SIZE);
-      if (res.ok) {
-        setResult(formatUsers(res.data.content as User[]));
-        setCurrentPage(res.data.number);
-        setTotalPages(res.data.totalPages);
-        setTotalElements(res.data.totalElements);
-      } else {
-        setResult(res.message);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // ページネーション用(今後まとめておいておく場所検討か)
-  const handlePrevPage = () => {
-    if (currentPage > 0) handleGetAll(currentPage - 1);
-  }
-
-  const handleNextPage = () => {
-    if (currentPage + 1 < totalPages) handleGetAll(currentPage + 1);
-  }
-
-  const handleGetById = async () => {
-    if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
-    setIsLoading(true);
-    try {
-      const res = await fetchUserById(userIdNum);
-      setResult(res.ok ? formatUser(res.data as User): res.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   const handleUpdate = async () => {
-    if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
     setIsLoading(true);
     try {
-      const res = await updateUser(userIdNum, username, Number(age));
+      const res = await updateMe(username, Number(age), navigate);
       if (res.ok) {
         setResult(formatUser(res.data));
-        setUsername("");
-        setAge("");
-        setUserId("");
-        setPassword("");
       } else {
         setResult(res.message);
       }
@@ -344,106 +179,91 @@ function Home() {
   };
 
   const handleDelete = async () => {
-    if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
+    if (!window.confirm("本当にアカウントを削除しますか？")) return;
     setIsLoading(true);
     try {
-      const res = await deleteUser(userIdNum);
-      setResult(res.ok ? "削除完了": res.message);
+      const res = await deleteMe(navigate);
+      if (res.ok) {
+        navigate("/login")
+      } else {
+        setResult(res.message);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
+  // 自分のidを使って自動でWorkoutページへ
   const handleGoToWorkoutPage = () => {
-    if (!userId) {
-      alert("ユーザーIDを入力してください");
-      return;
-    }
-    if (!isLoggedIn()) {
-      navigate(`/login?redirect=/workout?id=${userId}`);
-      return;
-    }
-    navigate(`/workout?id=${userId}`);
+    if (myId === null) return;
+    navigate(`/workout?id=${myId}`);
   };
 
   // パスワードの再設定関数
   const handleChangePassword = async () => {
-    if (!userIdNum) { setResult("ユーザーIDを入力してください"); return; }
     setIsLoading(true);
     try {
-      const res = await changePassword(userIdNum, oldPassword, newPassword);
+      const res = await changeMyPassword(oldPassword, newPassword, navigate);
       if (res.ok) {
       setResult("パスワードを変更しました");
-      setIsModalOpen(false);
       setOldPassword("");
       setNewPassword("");
      } else {
-      setModalError(res.message);
+      setPasswordMessage(res.message);
      }
     } finally {
       setIsLoading(false);
     }
   };
 
-
-
-
   return (
     <div className="home-container">
       <header className="home-header">
-        <h1>ユーザー管理</h1>
-        <p className="safety-note">個人情報は入力しないでください</p>
+        <h1>マイページ</h1>
       </header>
 
-      <UserForm
-      username={username}
-      age={age}
-      userId={userId}
-      password={password}
-      onChangeUsername={setUsername}
-      onChangeAge={setAge}
-      onChangeUserId={setUserId}
-      onChangePassword={setPassword}
+      <SectionPager
+       page={page}
+       onPrev={() => setPage(0)}
+       onNext={() => setPage(1)}
       />
 
-      <h3 className="section-title">操作</h3>
-      <ActionButtons
-        onRegister={handleRegister}
-        onGetAll={() => handleGetAll(0)}
-        onGetById={handleGetById}
-        onUpdate={handleUpdate}
-        onDelete={handleDelete}
-        onGoToWorkout={handleGoToWorkoutPage}
-        onOpenModal={() => setIsModalOpen(true)}
-        isLoading={isLoading}
-      />
-
-      <PaginationControls
-       currentPage={currentPage}
-       totalPages={totalPages}
-       totalElements={totalElements}
-       size={DEFAULT_PAGE_SIZE}
-       onPrev={handlePrevPage}
-       onNext={handleNextPage}
-       isLoading={isLoading}
-      />
-
-      <PasswordModal
-        isOpen={isModalOpen}
-        oldPassword={oldPassword}
-        newPassword={newPassword}
-        error={modalError}
-        onChangeOld={setOldPassword}
-        onChangeNew={setNewPassword}
-        onSubmit={handleChangePassword}
-        onClose={() => {
-          setIsModalOpen(false);
-          setModalError("");
-        }}
-      />
-
-      <ResultPanel result={result} />
-     </div>
+      {page === 0 && (
+        <>
+        <ProfileForm
+         username={username}
+         age={age}
+         onChangeUsername={setUsername}
+         onChangeAge={setAge}
+        />
+        <ProfileActions
+         onUpdate={handleUpdate}
+         onDelete={handleDelete}
+         onGoToWorkout={handleGoToWorkoutPage}
+         isLoading={isLoading}
+         canGoToWorkout={myId !== null}
+        />
+        <div className="result-section">
+          <h3>ユーザー情報</h3>
+          <pre style={{ whiteSpace: "pre-wrap" }}>{result}</pre>
+        </div>
+        </>
+      )}
+      
+      {page === 1 && (
+        <>
+         <PasswordForm
+          oldPassword={oldPassword}
+          newPassword={newPassword}
+          onChangeOld={setOldPassword}
+          onChangeNew={setNewPassword}
+          onSubmit={handleChangePassword}
+          isLoading={isLoading}
+        />
+        {passwordMessage && <p>{passwordMessage}</p>}
+       </>
+      )}
+    </div>
   );
 }
 export default Home;
