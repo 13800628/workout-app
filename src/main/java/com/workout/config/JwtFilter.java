@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.core.userdetails.UserDetails;     
 
-import com.workout.exception.user.UserDomainException;
 import com.workout.service.CustomUserDetailsService;
 
 import org.springframework.lang.NonNull;
