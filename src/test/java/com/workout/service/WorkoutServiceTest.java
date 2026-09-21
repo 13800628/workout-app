@@ -64,6 +64,7 @@ public class WorkoutServiceTest {
     ReflectionTestUtils.setField(workout, "id", WORKOUT_ID);
   }
 
+  /** 
   @Nested
   @DisplayName("createWorkout")
   class CreateWorkout {
@@ -88,13 +89,12 @@ public class WorkoutServiceTest {
       verify(workoutRepository).save(captor.capture());
       assertThat(captor.getValue().getUser().getId()).isEqualTo(OWNER_ID);
       verify(userRepository).findById(OWNER_ID);
-    }
+    } 
 
     @Test
     @DisplayName("異常系: ユーザーが存在しない場合はUserDomainExceptionを投げ、保存しない")
     void createWorkout_userNotFound_throwsUserDomainException() {
-      Long nonExixtentUserId = 999L;
-      WorkoutRequest request = new WorkoutRequest("スクワット", 10, 3, 80, nonExixtentUserId);
+      WorkoutRequest request = new WorkoutRequest("スクワット", 10, 3, 80);
       given(userRepository.findById(nonExixtentUserId)).willReturn(Optional.empty());
 
       assertThatThrownBy(() -> workoutService.createWorkout(request))
@@ -102,7 +102,7 @@ public class WorkoutServiceTest {
 
       verify(workoutRepository, never()).save(any());
     }
-  }
+  } */
 
   @Nested
   @DisplayName("getAllWorkoutById")

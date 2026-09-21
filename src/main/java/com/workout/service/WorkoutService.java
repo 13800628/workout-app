@@ -27,8 +27,8 @@ public class WorkoutService {
   }
 
   @Transactional
-  public Workout createWorkout(WorkoutRequest request) {
-    User user = userRepository.findById(request.userId())
+  public Workout createWorkout(Long userId, WorkoutRequest request) {
+    User user = userRepository.findById(userId)
             .orElseThrow(() -> UserDomainException.notFound("ユーザーが見つかりません"));
 
     return workoutRepository.save(new Workout(

@@ -36,70 +36,44 @@ public class WorkoutController {
     this.workoutService = workoutService;
   }
 
-  // ユーザーIDの比較のための関数
-  private void validateOwner(Long userId, Authentication auth) {
+  private Long currentUserId(Authentication auth) {
     CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
-    if (!principal.getUserId().equals(userId)) {
-      throw new IllegalArgumentException("アクセス権限がありません");
-    }
+    return principal.getUserId();
   }
 
-  // この確認用の関数はサービス層だけでいいので今後削除する方向でいく
-  // Workoutのオーナー確認用
-  private void validateWorkoutOwner(Long exercisedId, Authentication auth) {
-    CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
-    Workout workout = workoutService.getWorkoutById(exercisedId);
-    if (!workout.getUser().getId().equals(principal.getUserId())) {
-      throw new IllegalArgumentException("アクセス権限がありません");
-    }
-  }
-
-
-  // HTTPステータスが見えてるから関数に切り出しか？
   // Create - 作成
-  @PostMapping("/create")
+  @PostMapping
   public ResponseEntity<WorkoutResponse> createWorkout(
     @Valid @RequestBody WorkoutRequest request,
     Authentication auth) {
-    validateOwner(request.userId(), auth);
-    Workout workout = workoutService.createWorkout(request);
+    Workout workout = workoutService.createWorkout(currentUserId(auth), request);
     return ResponseEntity.status(HttpStatus.CREATED).body(WorkoutResponse.from(workout));
   }
 
-  // ここはUserIdを使ってGETするのでここだけエンドポイントが違う
-  @GetMapping("/user/{userId}")
-  public ResponseEntity<List<WorkoutResponse>> getAllWorkoutsById(
-    @PathVariable Long userId,
+  @GetMapping("/me")
+  public ResponseEntity<List<WorkoutResponse>> getMyWorkouts(
     Authentication auth) {
-    validateOwner(userId, auth);
-    List<WorkoutResponse> workouts = workoutService.getAllWorkoutById(userId)
+    List<WorkoutResponse> workouts = workoutService.getAllWorkoutById(currentUserId(auth))
      .stream()
      .map(WorkoutResponse::from)
      .toList();
     return ResponseEntity.ok(workouts);
   }
 
-  @DeleteMapping("/{workoutId}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteWorkout(
-    @PathVariable Long exercisedId,
+    @PathVariable Long id,
     Authentication auth) {
-    validateWorkoutOwner(exercisedId, auth);
-    CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
-    workoutService.deleteWorkout(exercisedId, principal.getUserId());
+    workoutService.deleteWorkout(id, currentUserId(auth));
     return ResponseEntity.noContent().build();
   }
 
-  @PutMapping("/{workoutId}/details")
+  @PutMapping("/{id}")
   public ResponseEntity<WorkoutResponse> updateDetails(
-    @PathVariable Long exerciseId, 
+    @PathVariable Long id,
     @Valid @RequestBody UpdateWorkoutRequest request,
     Authentication auth) {
-
-    validateWorkoutOwner(exerciseId, auth);
-    CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
-
-    Workout updated = workoutService.updateAllDetails(exerciseId, principal.getUserId(), request);
-
+    Workout updated = workoutService.updateAllDetails(id, currentUserId(auth), request);
     return ResponseEntity.ok(WorkoutResponse.from(updated));
   }
 }

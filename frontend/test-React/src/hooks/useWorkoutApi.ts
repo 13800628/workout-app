@@ -15,12 +15,11 @@ export type Workout = {
 
 const BASE_URL = "/api/workouts";
 
-export async function fetchWorkoutByUserId(
-  userId: number,
+export async function fetchMyWorkouts(
   navigate: (path: string) => void
 ): Promise<ApiResult<Workout[]>>  {
   try {
-    const response = await fetch(`${BASE_URL}/user/${userId}`, {
+    const response = await fetch(`${BASE_URL}/me`, {
       headers: authHeaders(),
     });
     handleUnauthorized(response.status, navigate);
@@ -36,7 +35,6 @@ export async function fetchWorkoutByUserId(
 }
 
 export async function createWorkout(
-  userId: number,
   name: string,
   reps: number,
   sets: number,
@@ -44,10 +42,10 @@ export async function createWorkout(
   navigate: (path: string) => void
 ): Promise<ApiResult<Workout>> {
   try {
-    const response = await fetch(`${BASE_URL}/create`, {
+    const response = await fetch(BASE_URL, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ userId, name, reps, sets, weights }),
+      body: JSON.stringify({ name, reps, sets, weights }),
     });
     handleUnauthorized(response.status, navigate);
     if (!response.ok) {
@@ -70,7 +68,7 @@ export async function updateWorkout(
   navigate: (path: string) => void
 ): Promise<ApiResult<Workout>> {
   try {
-    const response = await fetch(`${BASE_URL}/${id}/details`, {
+    const response = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
       headers: authHeaders(),
       body: JSON.stringify({ name, reps, sets, weights }),

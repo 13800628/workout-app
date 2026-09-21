@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useSearchParams , useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  fetchWorkoutByUserId,
+  fetchMyWorkouts,
   createWorkout,
   updateWorkout,
   deleteWorkout,
@@ -12,8 +12,6 @@ import { WorkoutForm } from "../components/workout/WorkoutForm";
 import { WorkoutItem } from "../components/workout/WorkoutItem";
 import { WorkoutCalculator } from "../components/workout/WorkoutCalculator";
 
-
-
 // メインコンポーネント
 
 export default function Workout() {
@@ -21,6 +19,8 @@ export default function Workout() {
   const [error, setError] = useState("");
   const [targetId, setTargetId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
 
   const [formData, setFormData] = useState({
     name: "",
@@ -28,12 +28,7 @@ export default function Workout() {
     sets: "",
     weights: "",
   });
-
-  const [searchParams] = useSearchParams();
-  const idParam = searchParams.get("id");
-  const userId = idParam ? Number(idParam) : null;
-  const navigate = useNavigate();
-
+  
     
     // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
     const handleChange = (field: string, value: string) => {
@@ -53,19 +48,20 @@ export default function Workout() {
       return true;
     };
     
-    // データ習得の共通関数
+    // データ習得の共通関数(自分のみ)
     const fetchWorkoutsAllData = async () => {
-      if (userId === null) {
-        setError("ユーザーIDが指定されていません");
-        return;
-      }
-      const response = await fetchWorkoutByUserId(userId, navigate);
+      const response = await fetchMyWorkouts(navigate);
       if (response.ok) {
         setWorkouts(response.data as Workout[]);
       } else {
         setError(response.message);
       }
-    }
+    };
+
+    // 画面表示時に自動で自分のWorkoutを取得
+    useEffect(() => {
+      fetchWorkoutsAllData();
+    },[]);
   
 
   const handleGetAll = async () => {
@@ -79,14 +75,9 @@ export default function Workout() {
 
   const handleCreate = async () => {
     if (!validate()) return;
-    if (userId === null) {
-      setError("ユーザーIDが指定されていません");
-      return;
-    }
     setIsLoading(true);
     try {
       const response = await createWorkout(
-      userId, 
       formData.name,
       Number(formData.reps),
       Number(formData.sets),
@@ -156,8 +147,7 @@ export default function Workout() {
   const handleLogout = () => {
     removeToken();
     navigate("/login")
-  }
-
+  };
   
     return (
       <div className="home-container">
@@ -167,7 +157,6 @@ export default function Workout() {
         </header>
         
         {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
-        {!userId && <p>ユーザーIDが指定されていません</p>}
 
         <WorkoutForm
           formData={formData}
