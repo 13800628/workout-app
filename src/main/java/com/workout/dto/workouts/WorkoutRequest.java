@@ -20,8 +20,5 @@ public record WorkoutRequest(
   
   @NotNull(message = "重量は必須です")
   @Min(0)
-  Integer weights,
-
-  @NotNull(message = "ユーザーIDは必須です")
-  Long userId
+  Integer weights
 ) {}

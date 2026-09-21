@@ -196,7 +196,7 @@ function Home() {
   // 自分のidを使って自動でWorkoutページへ
   const handleGoToWorkoutPage = () => {
     if (myId === null) return;
-    navigate(`/workout?id=${myId}`);
+    navigate(`/workout`);
   };
 
   // パスワードの再設定関数
@@ -241,7 +241,7 @@ function Home() {
          onDelete={handleDelete}
          onGoToWorkout={handleGoToWorkoutPage}
          isLoading={isLoading}
-         canGoToWorkout={myId !== null}
+         canGoToWorkout={true}
         />
         <div className="result-section">
           <h3>ユーザー情報</h3>
