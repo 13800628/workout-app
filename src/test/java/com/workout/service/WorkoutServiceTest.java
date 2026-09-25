@@ -29,6 +29,7 @@ import com.workout.repository.UserRepository;
 import com.workout.repository.WorkoutRepository;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("null")
 @DisplayName("WorkoutService ユニットテスト")
 /**
  * WorkoutServiceTest
@@ -64,7 +65,7 @@ public class WorkoutServiceTest {
     ReflectionTestUtils.setField(workout, "id", WORKOUT_ID);
   }
 
-  /** 
+  
   @Nested
   @DisplayName("createWorkout")
   class CreateWorkout {
@@ -73,11 +74,11 @@ public class WorkoutServiceTest {
     @SuppressWarnings("null")
     @DisplayName("正常系: ユーザーが存在すればWorkoutを作成して保存する")
     void createWorkout_success() {
-      WorkoutRequest request = new WorkoutRequest("スクワット", 10, 3, 80, OWNER_ID);
+      WorkoutRequest request = new WorkoutRequest("スクワット", 10, 3, 80);
       given(userRepository.findById(OWNER_ID)).willReturn(Optional.of(owner));
       given(workoutRepository.save(any(Workout.class))).willAnswer(invocation -> invocation.getArgument(0));
 
-      Workout result = workoutService.createWorkout(request);
+      Workout result = workoutService.createWorkout(OWNER_ID, request);
 
       assertThat(result.getName()).isEqualTo("スクワット");
       assertThat(result.getReps()).isEqualTo(10);
@@ -94,15 +95,16 @@ public class WorkoutServiceTest {
     @Test
     @DisplayName("異常系: ユーザーが存在しない場合はUserDomainExceptionを投げ、保存しない")
     void createWorkout_userNotFound_throwsUserDomainException() {
+      Long nonExixtentUserId = 999l;
       WorkoutRequest request = new WorkoutRequest("スクワット", 10, 3, 80);
       given(userRepository.findById(nonExixtentUserId)).willReturn(Optional.empty());
 
-      assertThatThrownBy(() -> workoutService.createWorkout(request))
+      assertThatThrownBy(() -> workoutService.createWorkout(nonExixtentUserId, request))
           .isInstanceOf(UserDomainException.class);
 
       verify(workoutRepository, never()).save(any());
     }
-  } */
+  } 
 
   @Nested
   @DisplayName("getAllWorkoutById")
@@ -133,7 +135,6 @@ public class WorkoutServiceTest {
     }
   }
 
-  // 後々のテスト追加
   @Nested
   @DisplayName("getWorkoutById")
   class GetWorkoutById {
@@ -251,19 +252,53 @@ public class WorkoutServiceTest {
         verify(workoutRepository, never()).save(any());
     }
 
-    // これを認可機能を追加して失敗するようにするか真逆のテストに書き換える必要がある。
-    // まずテストコードの修正をしてからプロダクトコードを修正する
     @Test
-    @DisplayName("[要確認]所有者と異なるユーザーからの更新でも成功してしまうのか確認")
-    void updateAllDetails_currentlyAllowsUpdateByNonOwner() {
-      UpdateWorkoutRequest request = new UpdateWorkoutRequest("不正な更新", 99, 99, 99);
+    @DisplayName("境界値: setsが負の場合は例外")
+    void updateAllDetails_negativeSets_throwsIllegalArgumentException() {
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("懸垂", 10, -1, 0);
+      given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
+
+      assertThatThrownBy(() -> workoutService.updateAllDetails(WORKOUT_ID, OWNER_ID, request))
+        .isInstanceOf(IllegalArgumentException.class);
+
+        verify(workoutRepository, never()).save(any());
+    }
+
+    @Test 
+    @DisplayName("境界値: weightsが-1ちょうどの場合は現行実行では許容")
+    void updateAllDetails_weightsMinusOne_isAllowed() {
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("懸垂", 10, 3, -1);
       given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
       given(workoutRepository.save(any(Workout.class))).willAnswer(invocation -> invocation.getArgument(0));
 
       Workout result = workoutService.updateAllDetails(WORKOUT_ID, OWNER_ID, request);
 
-      assertThat(result.getName()).isEqualTo("不正な更新");
-      assertThat(result.getUser()).isEqualTo(owner);
+      assertThat(result.getWeights()).isEqualTo(-1);
+      verify(workoutRepository).save(any(Workout.class));
+    }
+
+    @Test 
+    @DisplayName("境界値: weightsが-2の場合は例外")
+    void updateAllDetails_weightsMinusTwo_throwsIllegalArgumentException() {
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("懸垂", 10, 3, -2);
+      given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
+
+      assertThatThrownBy(() -> workoutService.updateAllDetails(WORKOUT_ID, OWNER_ID, request))
+        .isInstanceOf(IllegalArgumentException.class);
+
+      verify(workoutRepository, never()).save(any());
+    }
+
+    @Test 
+    @DisplayName("異常系: 所有者と異なるユーザーが更新しようとするときにWorkoutDomainExceptionを投げる")
+    void updateAllDetails_nonOwner_throwsWorkoutDomainException() {
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("不正な更新", 99, 99, 99);
+      given(workoutRepository.findById(WORKOUT_ID)).willReturn(Optional.of(workout));
+
+      assertThatThrownBy(() -> workoutService.updateAllDetails(WORKOUT_ID, ANOTHER_USER_ID, request))
+        .isInstanceOf(WorkoutDomainException.class);
+
+      verify(workoutRepository, never()).save(any());
     }
   }
 }
