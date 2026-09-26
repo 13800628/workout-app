@@ -42,6 +42,7 @@ public class SecurityConfig {
         http
             // 1. CORS設定：React(5173)からのアクセスを完全に許可
             .cors(Customizer.withDefaults())
+            // Eclipse JDTのnullアノテーション解析における既知のご検知なので無視
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                .requestMatchers("/api/auth/**").permitAll()
