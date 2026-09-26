@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -80,6 +79,7 @@ public class GlobalExceptionHandle {
       ex.getMessage(),
       Collections.emptyList() 
     );
+    // 誤検知なので無視
     return new ResponseEntity<>(errorResponse, ex.getStatus());
   }
 }

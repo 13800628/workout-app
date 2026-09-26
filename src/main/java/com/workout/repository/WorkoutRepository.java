@@ -7,12 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.workout.model.Workout;
 
-@Repository
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
  
   // idが種目に対してのものなのか、ユーザーに対してのものなのかが混在することになっているのでリネームの余地を

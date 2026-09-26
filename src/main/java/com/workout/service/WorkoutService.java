@@ -28,6 +28,7 @@ public class WorkoutService {
 
   @Transactional
   public Workout createWorkout(Long userId, WorkoutRequest request) {
+    // 同じく誤検知
     User user = userRepository.findById(userId)
             .orElseThrow(() -> UserDomainException.notFound("ユーザーが見つかりません"));
 
