@@ -20,3 +20,5 @@ dist/
 # Environment variables
 .env
 MEMO.md
+
+./metals

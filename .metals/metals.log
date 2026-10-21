@@ -639,3 +639,12 @@
 2026.10.21 19:36:14 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/dto/UserRequest.java. Using fallback presentation compiler.
 2026.10.21 19:36:14 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java. Using fallback presentation compiler.
 2026.10.21 19:36:14 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java. Using fallback presentation compiler.
+2026.10.21 19:37:44 WARN  no build target for: /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java
+2026.10.21 19:37:44 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java. Using fallback presentation compiler.
+2026.10.21 19:37:44 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java. Using fallback presentation compiler.
+2026.10.21 19:37:44 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java. Using fallback presentation compiler.
+2026.10.21 19:37:44 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java. Using fallback presentation compiler.
+2026.10.21 19:37:44 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/dto/UserRequest.java. Using fallback presentation compiler.
+2026.10.21 19:37:44 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java. Using fallback presentation compiler.
+2026.10.21 19:37:46 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java. Using fallback presentation compiler.
+2026.10.21 19:37:47 INFO  no build target found for /Users/isayamayuto/Desktop/WorkoutApp/src/main/java/com/workout/service/UserService.java. Using fallback presentation compiler.
