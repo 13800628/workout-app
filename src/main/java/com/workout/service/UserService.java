@@ -23,6 +23,8 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
+  // もしこういうtry-catchの書き方が他に増えていくなら、共通処理として切り出すことも検討
+  // だが今切り出したとしてもメソッドごとに局所的な処理すぎて浅いモジュールになる可能性があるので今は形として記憶しておく
   @Transactional
   public User registerUser(UserRequest request) {
     try {
