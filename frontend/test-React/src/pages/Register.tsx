@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../hooks/useUserApi";
 
-
 export default function Register() {
   const [username, setUsername] = useState("");
   const [age, setAge] = useState("");
@@ -35,19 +34,19 @@ export default function Register() {
 
       <div className="input-form">
         <input
-         placeholder="名前"
-         value={username}
-         onChange={(e) => setUsername(e.target.value)}
+          placeholder="名前"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <input
-         placeholder="年齢"
-         value={age}
-         onChange={(e) => setAge(e.target.value)}
+          placeholder="年齢"
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
         />
         <input
-         placeholder="パスワード"
-         value={password}
-         onChange={(e) => setPassword(e.target.value)}
+          placeholder="パスワード"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         {error && <p style={{ color: "red" }}>{error}</p>}

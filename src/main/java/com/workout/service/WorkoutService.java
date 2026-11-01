@@ -75,6 +75,7 @@ public class WorkoutService {
     return workoutRepository.save(workout);
   }
 
+  // 使われている箇所が少ない。
   private void validateWorkoutOwner(Workout workout, Long userId) {
     if (!workout.getUser().getId().equals(userId)) {
       throw WorkoutDomainException.notFound("見つかりません" + workout.getId());

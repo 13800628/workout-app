@@ -4,7 +4,7 @@
  * idでif分岐で、trueならfetchして表示、falseなら何もしない
  * fetchのURLはuserとは別のものになる
  * buttonの実装(handleFetchByIdなど)も同様に追加
- * 
+ *
  */
 
 import { useEffect, useState } from "react";
@@ -27,20 +27,24 @@ type ProfileFormProps = {
   onChangeAge: (v: string) => void;
 };
 
-function ProfileForm({ username, age, onChangeUsername, onChangeAge 
+function ProfileForm({
+  username,
+  age,
+  onChangeUsername,
+  onChangeAge,
 }: ProfileFormProps) {
   return (
     <div className="input-form">
       <input
-       placeholder="名前"
-       value={username}
-       onChange={(e) => onChangeUsername(e.target.value)}
+        placeholder="名前"
+        value={username}
+        onChange={(e) => onChangeUsername(e.target.value)}
       />
       <input
-       placeholder="年齢"
-       type="number"
-       value={age}
-       onChange={(e) => onChangeAge(e.target.value)}
+        placeholder="年齢"
+        type="number"
+        value={age}
+        onChange={(e) => onChangeAge(e.target.value)}
       />
     </div>
   );
@@ -54,14 +58,20 @@ type ProfileActionProps = {
   canGoToWorkout: boolean;
 };
 
-function ProfileActions({ onUpdate, onDelete, onGoToWorkout, isLoading, canGoToWorkout }: ProfileActionProps) {
+function ProfileActions({
+  onUpdate,
+  onDelete,
+  onGoToWorkout,
+  isLoading,
+  canGoToWorkout,
+}: ProfileActionProps) {
   return (
     <div className="button-group">
       <button onClick={onUpdate} disabled={isLoading}>
         {isLoading ? "処理中..." : "更新"}
       </button>
       <button onClick={onDelete} disabled={isLoading}>
-        {isLoading ? "処理中" : "削除"}
+        {isLoading ? "処理中" : "アカウントを削除"}
       </button>
       <button onClick={onGoToWorkout} disabled={isLoading || !canGoToWorkout}>
         Workoutページへ
@@ -69,7 +79,6 @@ function ProfileActions({ onUpdate, onDelete, onGoToWorkout, isLoading, canGoToW
     </div>
   );
 }
-
 
 type PasswordFormProps = {
   oldPassword: string;
@@ -80,20 +89,27 @@ type PasswordFormProps = {
   isLoading: boolean;
 };
 
-function PasswordForm({ oldPassword, newPassword, onChangeOld, onChangeNew, onSubmit, isLoading }: PasswordFormProps) {
+function PasswordForm({
+  oldPassword,
+  newPassword,
+  onChangeOld,
+  onChangeNew,
+  onSubmit,
+  isLoading,
+}: PasswordFormProps) {
   return (
     <div className="input-form">
       <input
-       placeholder="現在のパスワード"
-       type="password"
-       value={oldPassword}
-       onChange={(e) => onChangeOld(e.target.value)}
+        placeholder="現在のパスワード"
+        type="password"
+        value={oldPassword}
+        onChange={(e) => onChangeOld(e.target.value)}
       />
       <input
-       placeholder="新しいパスワード"
-       type="password"
-       value={newPassword}
-       onChange={(e) => onChangeNew(e.target.value)}
+        placeholder="新しいパスワード"
+        type="password"
+        value={newPassword}
+        onChange={(e) => onChangeNew(e.target.value)}
       />
       <div className="button-group">
         <button onClick={onSubmit} disabled={isLoading}>
@@ -114,13 +130,13 @@ function SectionPager({ page, onPrev, onNext }: SelectionProps) {
   return (
     <div className="pagination-controls">
       <button onClick={onPrev} disabled={page === 0}>
-        前へ
+        ユーザー情報更新へ
       </button>
       <span className="pagination-range">
         {page === 0 ? "プロフィール" : "パスワード変更"}
       </span>
       <button onClick={onNext} disabled={page === 1}>
-        次へ
+        パスワード変更へ
       </button>
     </div>
   );
@@ -140,8 +156,7 @@ function Home() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  
- 
+
   useEffect(() => {
     const loadMe = async () => {
       setIsLoading(true);
@@ -163,7 +178,6 @@ function Home() {
     loadMe();
   }, []);
 
-
   const handleUpdate = async () => {
     setIsLoading(true);
     try {
@@ -184,7 +198,7 @@ function Home() {
     try {
       const res = await deleteMe(navigate);
       if (res.ok) {
-        navigate("/login")
+        navigate("/login");
       } else {
         setResult(res.message);
       }
@@ -205,12 +219,12 @@ function Home() {
     try {
       const res = await changeMyPassword(oldPassword, newPassword, navigate);
       if (res.ok) {
-      setResult("パスワードを変更しました");
-      setOldPassword("");
-      setNewPassword("");
-     } else {
-      setPasswordMessage(res.message);
-     }
+        setResult("パスワードを変更しました");
+        setOldPassword("");
+        setNewPassword("");
+      } else {
+        setPasswordMessage(res.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -221,47 +235,48 @@ function Home() {
       <header className="home-header">
         <h1>マイページ</h1>
       </header>
+      <p>ユーザー情報の更新</p>
 
       <SectionPager
-       page={page}
-       onPrev={() => setPage(0)}
-       onNext={() => setPage(1)}
+        page={page}
+        onPrev={() => setPage(0)}
+        onNext={() => setPage(1)}
       />
 
       {page === 0 && (
         <>
-        <ProfileForm
-         username={username}
-         age={age}
-         onChangeUsername={setUsername}
-         onChangeAge={setAge}
-        />
-        <ProfileActions
-         onUpdate={handleUpdate}
-         onDelete={handleDelete}
-         onGoToWorkout={handleGoToWorkoutPage}
-         isLoading={isLoading}
-         canGoToWorkout={true}
-        />
-        <div className="result-section">
-          <h3>ユーザー情報</h3>
-          <pre style={{ whiteSpace: "pre-wrap" }}>{result}</pre>
-        </div>
+          <ProfileForm
+            username={username}
+            age={age}
+            onChangeUsername={setUsername}
+            onChangeAge={setAge}
+          />
+          <ProfileActions
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+            onGoToWorkout={handleGoToWorkoutPage}
+            isLoading={isLoading}
+            canGoToWorkout={true}
+          />
+          <div className="result-section">
+            <h3>ユーザー情報</h3>
+            <pre style={{ whiteSpace: "pre-wrap" }}>{result}</pre>
+          </div>
         </>
       )}
-      
+
       {page === 1 && (
         <>
-         <PasswordForm
-          oldPassword={oldPassword}
-          newPassword={newPassword}
-          onChangeOld={setOldPassword}
-          onChangeNew={setNewPassword}
-          onSubmit={handleChangePassword}
-          isLoading={isLoading}
-        />
-        {passwordMessage && <p>{passwordMessage}</p>}
-       </>
+          <PasswordForm
+            oldPassword={oldPassword}
+            newPassword={newPassword}
+            onChangeOld={setOldPassword}
+            onChangeNew={setNewPassword}
+            onSubmit={handleChangePassword}
+            isLoading={isLoading}
+          />
+          {passwordMessage && <p>{passwordMessage}</p>}
+        </>
       )}
     </div>
   );

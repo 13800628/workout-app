@@ -58,7 +58,7 @@ export default function Login() {
 
       <div className="button-group">
         <button onClick={handleLogin}>ログイン</button>
-        <button onClick={() => navigate("/register")}>戻る</button>
+        <button onClick={() => navigate("/register")}>ユーザー新規登録</button>
       </div>
     </div>
   );
