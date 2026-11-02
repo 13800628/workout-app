@@ -129,14 +129,22 @@ type SelectionProps = {
 function SectionPager({ page, onPrev, onNext }: SelectionProps) {
   return (
     <div className="pagination-controls">
-      <button onClick={onPrev} disabled={page === 0}>
-        ユーザー情報更新へ
+      <button
+        onClick={onPrev}
+        disabled={page === 0}
+        aria-current={page === 0 ? "page" : undefined}
+      >
+        {page === 0 ? "✔︎ユーザー更新" : "ユーザー情報更新へ"}
       </button>
-      <span className="pagination-range">
+      <span className="pagenation-range">
         {page === 0 ? "プロフィール" : "パスワード変更"}
       </span>
-      <button onClick={onNext} disabled={page === 1}>
-        パスワード変更へ
+      <button
+        onClick={onNext}
+        disabled={page === 1}
+        aria-current={page === 1 ? "page" : undefined}
+      >
+        {page === 1 ? "✔︎パスワード変更" : "パスワード変更へ"}
       </button>
     </div>
   );

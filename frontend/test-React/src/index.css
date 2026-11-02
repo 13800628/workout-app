@@ -72,15 +72,27 @@ button:active {
   transform: translateY(2px); /* 押した時に少し沈む演出 */
 }
 
+button[aria-current="page"] {
+  background-color: #8b5cf6;
+  color: white;
+  box-shadow: none;
+  cursor: default;
+  opacity: 1;
+}
+
+button[aria-current="page"]:active {
+  transform: none;
+}
+
 /* 最後の「Workoutページへ」ボタンだけ横いっぱいに */
-button:last-child {
+.button > button:last-child {
   grid-column: span 2; 
   background-color: navy; /* 目立たせるために色を変える */
   color: white;
 }
 
 @media (min-width: 600px) {
-  button:last-child {
+  .button-group > button:last-child {
     grid-column: span 3;
   }
 }
@@ -99,4 +111,10 @@ button:last-child {
   white-space: pre !important;    /* スペースと改行を完全に維持 */
   font-family: 'Courier New', Courier, monospace; /* 等幅フォントでズレを防止 */
   overflow-x: auto;
+}
+
+.pagenation-range {
+  font-size: 20px;
+  font-weight: bold;
+  color: navy;
 }
