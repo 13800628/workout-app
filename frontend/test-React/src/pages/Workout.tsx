@@ -21,48 +21,49 @@ export default function Workout() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-
   const [formData, setFormData] = useState({
     name: "",
     reps: "",
     sets: "",
     weights: "",
   });
-  
-    
-    // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
-    const handleChange = (field: string, value: string) => {
-      setFormData((prev) => ({ ...prev, [field]: value }));
-    };
 
-    const validate = (): boolean => {
-      if (!formData.name.trim()) {
-        setError("種目名を入力してください");
-        return false;
-      }
-      if (Number(formData.reps) < 0 || Number(formData.sets) < 0 || Number(formData.weights) < 0) {
-        setError("数値にマイナスを入力することはできません");
-        return false;
-      }
-      setError("");
-      return true;
-    };
-    
-    // データ習得の共通関数(自分のみ)
-    const fetchWorkoutsAllData = async () => {
-      const response = await fetchMyWorkouts(navigate);
-      if (response.ok) {
-        setWorkouts(response.data as Workout[]);
-      } else {
-        setError(response.message);
-      }
-    };
+  // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-    // 画面表示時に自動で自分のWorkoutを取得
-    useEffect(() => {
-      fetchWorkoutsAllData();
-    },[]);
-  
+  const validate = (): boolean => {
+    if (!formData.name.trim()) {
+      setError("種目名を入力してください");
+      return false;
+    }
+    if (
+      Number(formData.reps) < 0 ||
+      Number(formData.sets) < 0 ||
+      Number(formData.weights) < 0
+    ) {
+      setError("数値にマイナスを入力することはできません");
+      return false;
+    }
+    setError("");
+    return true;
+  };
+
+  // データ習得の共通関数(自分のみ)
+  const fetchWorkoutsAllData = async () => {
+    const response = await fetchMyWorkouts(navigate);
+    if (response.ok) {
+      setWorkouts(response.data as Workout[]);
+    } else {
+      setError(response.message);
+    }
+  };
+
+  // 画面表示時に自動で自分のWorkoutを取得
+  useEffect(() => {
+    fetchWorkoutsAllData();
+  }, []);
 
   const handleGetAll = async () => {
     setIsLoading(true);
@@ -78,18 +79,18 @@ export default function Workout() {
     setIsLoading(true);
     try {
       const response = await createWorkout(
-      formData.name,
-      Number(formData.reps),
-      Number(formData.sets),
-      Number(formData.weights),
-      navigate
-     );
-     if (response.ok) {
-      await fetchWorkoutsAllData();
-      setFormData({ name: "", reps: "", sets: "", weights: "" });
-     } else {
-      setError(response.message);
-     }
+        formData.name,
+        Number(formData.reps),
+        Number(formData.sets),
+        Number(formData.weights),
+        navigate,
+      );
+      if (response.ok) {
+        await fetchWorkoutsAllData();
+        setFormData({ name: "", reps: "", sets: "", weights: "" });
+      } else {
+        setError(response.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -100,20 +101,20 @@ export default function Workout() {
     setIsLoading(true);
     try {
       const response = await updateWorkout(
-      id,
-      formData.name,
-      Number(formData.reps),
-      Number(formData.sets),
-      Number(formData.weights),
-      navigate
-     );
-     if (response.ok) {
-      setTargetId(null);
-      await fetchWorkoutsAllData();
-      setFormData({ name: "", reps: "", sets: "", weights: "" });
-     } else {
-      setError(response.message);
-     }
+        id,
+        formData.name,
+        Number(formData.reps),
+        Number(formData.sets),
+        Number(formData.weights),
+        navigate,
+      );
+      if (response.ok) {
+        setTargetId(null);
+        await fetchWorkoutsAllData();
+        setFormData({ name: "", reps: "", sets: "", weights: "" });
+      } else {
+        setError(response.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -133,7 +134,7 @@ export default function Workout() {
       setIsLoading(false);
     }
   };
-      
+
   const handleEditStart = (item: Workout) => {
     setTargetId(item.id);
     setFormData({
@@ -146,26 +147,17 @@ export default function Workout() {
 
   const handleLogout = () => {
     removeToken();
-    navigate("/login")
+    navigate("/login");
   };
-  
-    return (
-      <div className="home-container">
-        <header className="home-header">
-          <h1>Workout Details</h1>
-          <button onClick={handleLogout}>ログアウト</button>
-        </header>
-        
-        {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
 
-        <WorkoutForm
-          formData={formData}
-          onChange={handleChange}
-          onRegister={handleCreate}
-          onGetAll={handleGetAll}
-          isLoading={isLoading}
-        />
+  return (
+    <div className="home-container">
+      <header className="home-header">
+        <h1>Workout Details</h1>
+        <button onClick={handleLogout}>ログアウト</button>
+      </header>
 
+      <div className="workout-scroll">
         <h3 className="section-title">記録一覧</h3>
         {workouts.map((item) => (
           <WorkoutItem
@@ -176,9 +168,23 @@ export default function Workout() {
             onEditSubmit={handleUpdate}
             onDelete={handleDelete}
             isLoading={isLoading}
-            />
+          />
         ))}
-        <WorkoutCalculator workouts={workouts}/>
+        <WorkoutCalculator workouts={workouts} />
       </div>
-    );
-  }
+
+      {/* 固定領域 */}
+      <div className="workout-form-area">
+        {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
+
+        <WorkoutForm
+          formData={formData}
+          onChange={handleChange}
+          onRegister={handleCreate}
+          onGetAll={handleGetAll}
+          isLoading={isLoading}
+        />
+      </div>
+    </div>
+  );
+}
