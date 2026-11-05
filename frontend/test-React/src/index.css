@@ -64,6 +64,38 @@ button {
   box-sizing: border-box;
 }
 
+/* ===== Workoutページ: ヘッダー・フォーム固定 / 一覧のみスクロール ===== */
+.workout-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;  /* ページ全体はスクロールさせない */
+}
+
+.workout-page .home-header {
+  flex-shrink: 0;
+}
+
+.workout-scroll {
+  flex: 1;
+}
+
+.workout-form-area {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background-color: #f9f9f9;
+  border-top: 1px solid #ddd;
+  padding-top: 8px;
+
+}
+
+.workout-error {
+  color: red;
+  font-weight: bold;
+  font-size: 16px;          /* p のグローバル指定(23px)を上書き */
+  margin: 0 0 8px;
+}
+
 .home-header {
   margin-bottom: 20px;
 }
