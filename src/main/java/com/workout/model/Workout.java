@@ -1,41 +1,38 @@
 package com.workout.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "workouts")
-public class Workout extends BaseEntity{
+public class Workout extends BaseEntity {
 
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false)
-  private Integer reps;
-
-  @Column(nullable = false)
-  private Integer sets;
-  
-  @Column(nullable = false)
-  private Integer weights;
-
+  @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OrderBy("setOrder ASC")
+  private List<WorkoutSet> sets = new ArrayList<>();
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
+  public Workout() {
+  }
 
-  
-  public Workout() {}
-
-  public Workout(String name, Integer reps, Integer sets, Integer weights, User user) {
+  public Workout(String name, User user) {
     this.name = name;
-    this.reps = reps;
-    this.sets = sets;
-    this.weights = weights;
     this.user = user;
   }
 
@@ -47,28 +44,8 @@ public class Workout extends BaseEntity{
     this.name = name;
   }
 
-  public Integer getReps() {
-    return reps;
-  }
-
-  public void setReps(Integer reps) {
-    this.reps = reps;
-  }
-
-  public Integer getSets() {
-    return sets;
-  }
-
-  public void setSets(Integer sets) {
-    this.sets = sets;
-  }
-
-  public Integer getWeights() {
-    return weights;
-  }
-
-  public void setWeights(Integer weights) {
-    this.weights = weights;
+  public List<WorkoutSet> getSets() {
+    return Collections.unmodifiableList(sets);
   }
 
   public User getUser() {
@@ -79,18 +56,24 @@ public class Workout extends BaseEntity{
     this.user = user;
   }
 
-  public void updateAllWorkoutDetails(String name, Integer reps, Integer sets, Integer weights) {
+  public void replaceSets(List<WorkoutSet> newSets) {
+    if (newSets == null) {
+      throw new IllegalArgumentException("セットを指定してください");
+    }
+    this.sets.clear();
+    int order = 1;
+    for (WorkoutSet s : newSets) {
+      s.attachTo(this, order++);
+      this.sets.add(s);
+    }
+  }
 
-    if (name == null || reps == null || sets == null || weights == null) {
+  public void updateAllWorkoutDetails(String name, List<WorkoutSet> newSets) {
+
+    if (name == null || newSets == null) {
       throw new IllegalArgumentException("全ての項目を入力してください");
     }
-
-    if (reps < 0) throw new IllegalArgumentException("回数は0回以上にしてください");
-    if (sets < 0) throw new IllegalArgumentException("セット数は0回以上にしてください");
-    if (weights < -1) throw new IllegalArgumentException("重量にマイナスは入力できません");
     this.name = name;
-    this.reps = reps;
-    this.sets = sets;
-    this.weights = weights;
+    replaceSets(newSets);
   }
 }

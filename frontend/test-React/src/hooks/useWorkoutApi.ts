@@ -5,11 +5,20 @@ import { extractErrorMessage } from "../utils/apiError";
 export type Workout = {
   id: number;
   name: string;
-  reps: number;
-  sets: number;
-  weights: number;
+  sets: WorkoutSet[];
   createdAt: string;
   updatedAt: string;
+};
+
+export type WorkoutSet = {
+  setOrder: number;
+  reps: number;
+  weights: number;
+};
+
+export type WorkoutSetInput = {
+  reps: number;
+  weights: number;
 };
 
 
@@ -36,16 +45,14 @@ export async function fetchMyWorkouts(
 
 export async function createWorkout(
   name: string,
-  reps: number,
-  sets: number,
-  weights: number,
+  sets: WorkoutSetInput[],
   navigate: (path: string) => void
 ): Promise<ApiResult<Workout>> {
   try {
     const response = await fetch(BASE_URL, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ name, reps, sets, weights }),
+      body: JSON.stringify({ name, sets }),
     });
     handleUnauthorized(response.status, navigate);
     if (!response.ok) {
@@ -62,16 +69,14 @@ export async function createWorkout(
 export async function updateWorkout(
   id: number,
   name: string,
-  reps: number,
-  sets: number,
-  weights: number,
+  sets: WorkoutSetInput[],
   navigate: (path: string) => void
 ): Promise<ApiResult<Workout>> {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
       headers: authHeaders(),
-      body: JSON.stringify({ name, reps, sets, weights }),
+      body: JSON.stringify({ name, sets }),
     });
     handleUnauthorized(response.status, navigate);
     if (!response.ok) {

@@ -32,27 +32,35 @@ import com.workout.exception.workout.WorkoutDomainException;
 import com.workout.model.User;
 import com.workout.model.Workout;
 import com.workout.service.WorkoutService;
+import com.workout.dto.workouts.WorkoutSetRequest;
+import com.workout.model.WorkoutSet;
 
-@ExtendWith (MockitoExtension.class)
-@DisplayName ("WorkoutControllerのテスト")
-public  class WorkoutControllerTest {
+@ExtendWith(MockitoExtension.class)
+@DisplayName("WorkoutControllerのテスト")
+public class WorkoutControllerTest {
 
-  @Mock 
+  @Mock
   private WorkoutService workoutService;
 
-  @Mock 
+  @Mock
   private Authentication authentication;
 
-  @Mock 
+  @Mock
   private CustomUserDetails customUserDetails;
 
-  @InjectMocks 
+  @InjectMocks
   private WorkoutController workoutController;
 
   private User owner;
   private Workout existingWorkout;
 
-  @BeforeEach 
+  private static Workout workoutOf(String name, User user, WorkoutSet... sets) {
+    Workout w = new Workout(name, user);
+    w.replaceSets(List.of(sets));
+    return w;
+  }
+
+  @BeforeEach
   void setUp() {
     given(authentication.getPrincipal()).willReturn(customUserDetails);
     given(customUserDetails.getUserId()).willReturn(1L);
@@ -60,64 +68,67 @@ public  class WorkoutControllerTest {
     owner = new User("taro", 25, "encodedPassword");
     owner.setId(1L);
 
-    existingWorkout = new Workout("ベンチプレス", 10, 3, 60, owner);
+    existingWorkout = workoutOf("ベンチプレス", owner, new WorkoutSet(10, 55), new WorkoutSet(10, 55));
     existingWorkout.setId(100L);
   }
 
-  @Nested 
-  @DisplayName ("createWorkout")
+  @Nested
+  @DisplayName("createWorkout")
   class CreateWorkout {
 
-    @Test 
-    @DisplayName ("正常系: 認証済みuserIdでserviceを呼び204")
+    @Test
+    @DisplayName("正常系: 認証済みuserIdでserviceを呼び204")
     void createWorkout_success() {
-      WorkoutRequest request = new WorkoutRequest("ベンチプレス", 10, 3, 60);
+      WorkoutRequest request = new WorkoutRequest("ベンチプレス",
+          List.of(new WorkoutSetRequest(10, 60), new WorkoutSetRequest(15, 55)));
       given(workoutService.createWorkout(1L, request)).willReturn(existingWorkout);
 
       ResponseEntity<WorkoutResponse> response = workoutController.createWorkout(request, authentication);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
       assertThat(response.getBody()).isEqualTo(WorkoutResponse.from(existingWorkout));
+      assertThat(response.getBody().sets()).hasSize(2);
       verify(workoutService).createWorkout(1L, request);
     }
 
-    @Test 
-    @DisplayName ("異常系: 紐づくUserが存在しない場合、UserDomainException")
+    @Test
+    @DisplayName("異常系: 紐づくUserが存在しない場合、UserDomainException")
     void createWorkout_userNotFound() {
-      WorkoutRequest request = new WorkoutRequest("ベンチプレス", 10, 3, 60);
+      WorkoutRequest request = new WorkoutRequest("ベンチプレス",
+          List.of(new WorkoutSetRequest(10, 60), new WorkoutSetRequest(15, 55)));
       given(workoutService.createWorkout(1L, request))
-       .willThrow(UserDomainException.notFound("ユーザーが見つかりません"));
+          .willThrow(UserDomainException.notFound("ユーザーが見つかりません"));
 
       assertThatThrownBy(() -> workoutController.createWorkout(request, authentication))
-        .isInstanceOf(UserDomainException.class)
-        .extracting(ex -> ((UserDomainException) ex).getStatus())
-        .isEqualTo(HttpStatus.NOT_FOUND);
+          .isInstanceOf(UserDomainException.class)
+          .extracting(ex -> ((UserDomainException) ex).getStatus())
+          .isEqualTo(HttpStatus.NOT_FOUND);
     }
   }
 
-  @Nested 
-  @DisplayName ("getMyWorkouts")
+  @Nested
+  @DisplayName("getMyWorkouts")
   class GetWorkouts {
 
-    @Test 
-    @DisplayName ("正常系: 認証済みuserIdに紐づくワークアウト一覧を200で返す")
+    @Test
+    @DisplayName("正常系: 認証済みuserIdに紐づくワークアウト一覧を200で返す")
     void getMyWorkouts_success() {
-      Workout secondWorkout = new Workout("スクワット", 8, 4, 80, owner);
+      Workout secondWorkout = workoutOf("スクワット", owner, new WorkoutSet(8, 80));
       secondWorkout.setId(101L);
 
       given(workoutService.getAllWorkoutById(1L))
-       .willReturn(List.of(existingWorkout, secondWorkout));
+          .willReturn(List.of(existingWorkout, secondWorkout));
 
       ResponseEntity<List<WorkoutResponse>> response = workoutController.getMyWorkouts(authentication);
 
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
       assertThat(response.getBody())
-       .containsExactly(WorkoutResponse.from(existingWorkout), WorkoutResponse.from(secondWorkout));
+          .containsExactly(WorkoutResponse.from(existingWorkout), WorkoutResponse.from(secondWorkout));
       verify(workoutService).getAllWorkoutById(1L);
     }
 
-    @Test 
-    @DisplayName ("正常系: ワークアウトが存在しない場合は空リストを返す")
+    @Test
+    @DisplayName("正常系: ワークアウトが存在しない場合は空リストを返す")
     void getMyWorkouts_empty() {
       given(workoutService.getAllWorkoutById(1L)).willReturn(List.of());
 
@@ -128,26 +139,28 @@ public  class WorkoutControllerTest {
       verify(workoutService).getAllWorkoutById(1L);
     }
 
-    @Test 
-    @DisplayName ("異常系: Servicehが例外を投げた場合そのまま")
+    @Test
+    @DisplayName("異常系: Servicehが例外を投げた場合そのまま")
     void getMyWorkouts_serviceThrows() {
       given(workoutService.getAllWorkoutById(1L))
-       .willThrow(UserDomainException.notFound("ユーザーが見つかりません: 1"));
+          .willThrow(UserDomainException.notFound("ユーザーが見つかりません: 1"));
 
       assertThatThrownBy(() -> workoutController.getMyWorkouts(authentication))
-       .isInstanceOf(UserDomainException.class);
+          .isInstanceOf(UserDomainException.class);
     }
   }
 
-  @Nested 
-  @DisplayName ("updateDetails")
+  @Nested
+  @DisplayName("updateDetails")
   class UpdateDetails {
 
-    @Test 
-    @DisplayName ("正常系: workoutIdと認証済みuserIdでserviceを呼ぶ")
+    @Test
+    @DisplayName("正常系: workoutIdと認証済みuserIdでserviceを呼ぶ")
     void updateDetails_success() {
-      UpdateWorkoutRequest request =  new UpdateWorkoutRequest("ベンチプレス2", 12, 4, 6);
-      Workout updatedWorkout = new Workout("ベンチプレス2", 12, 4, 6, owner);
+      // updateDetails_success
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("ベンチプレス2",
+          List.of(new WorkoutSetRequest(12, 6), new WorkoutSetRequest(10, 6)));
+      Workout updatedWorkout = workoutOf("ベンチプレス2", owner, new WorkoutSet(12, 6), new WorkoutSet(10, 6));
       updatedWorkout.setId(100L);
 
       given(workoutService.updateAllDetails(100L, 1L, request)).willReturn(updatedWorkout);
@@ -159,52 +172,56 @@ public  class WorkoutControllerTest {
       verify(workoutService).updateAllDetails(100L, 1L, request);
     }
 
-    @Test 
-    @DisplayName ("異常系(BOLA対策): 所有者が一致しない場合、WorkoutDomainException")
+    @Test
+    @DisplayName("異常系(BOLA対策): 所有者が一致しない場合、WorkoutDomainException")
     void updateDetails_notOwner() {
-      UpdateWorkoutRequest request = new UpdateWorkoutRequest("改ざん", 1, 1, 1);
+      // updateDetails_notOwner
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("改ざん",
+          List.of(new WorkoutSetRequest(1, 1)));
       given(workoutService.updateAllDetails(999L, 1L, request))
-       .willThrow(WorkoutDomainException.notFound("ワークアウトが見つかりません: 999"));
+          .willThrow(WorkoutDomainException.notFound("ワークアウトが見つかりません: 999"));
 
       assertThatThrownBy(() -> workoutController.updateDetails(999L, request, authentication))
-       .isInstanceOf(WorkoutDomainException.class)
-       .extracting(ex -> ((WorkoutDomainException) ex).getStatus())
-       .isEqualTo(HttpStatus.NOT_FOUND);
+          .isInstanceOf(WorkoutDomainException.class)
+          .extracting(ex -> ((WorkoutDomainException) ex).getStatus())
+          .isEqualTo(HttpStatus.NOT_FOUND);
 
       verify(workoutService).updateAllDetails(999L, 1L, request);
     }
 
-    @Test 
-    @DisplayName ("異常系: 存在しないWorkoutIdの場合、WorkoutDomainException")
+    @Test
+    @DisplayName("異常系: 存在しないWorkoutIdの場合、WorkoutDomainException")
     void updateDetails_notFound() {
-      UpdateWorkoutRequest request = new UpdateWorkoutRequest("ベンチプレス2", 12, 4, 6);
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("ベンチプレス2",
+          List.of(new WorkoutSetRequest(12, 6)));
       given(workoutService.updateAllDetails(999L, 1L, request))
-       .willThrow(WorkoutDomainException.notFound("ワークアウトが見つかりません: 999"));
-      
+          .willThrow(WorkoutDomainException.notFound("ワークアウトが見つかりません: 999"));
+
       assertThatThrownBy(() -> workoutController.updateDetails(999L, request, authentication))
-       .isInstanceOf(WorkoutDomainException.class)
-       .hasMessage("ワークアウトが見つかりません: 999");
+          .isInstanceOf(WorkoutDomainException.class)
+          .hasMessage("ワークアウトが見つかりません: 999");
     }
 
-    @Test 
-    @DisplayName ("異常系: 入力値不正の場合、IllegalArgumentException")
+    @Test
+    @DisplayName("異常系: 入力値不正の場合、IllegalArgumentException")
     void updateDetails_invalidInput() {
-      UpdateWorkoutRequest request = new UpdateWorkoutRequest("ベンチプレス", -1, 4, 6);
+      UpdateWorkoutRequest request = new UpdateWorkoutRequest("ベンチプレス",
+          List.of(new WorkoutSetRequest(-1, 6)));
       given(workoutService.updateAllDetails(100L, 1L, request))
-       .willThrow(new IllegalArgumentException("回数は0以上にしてください"));
+          .willThrow(new IllegalArgumentException("回数は0以上にしてください"));
 
       assertThatThrownBy(() -> workoutController.updateDetails(100L, request, authentication))
-       .isInstanceOf(IllegalArgumentException.class)
-       .hasMessage("回数は0以上にしてください");
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessage("回数は0以上にしてください");
     }
   }
 
-  @Nested 
-  @DisplayName ("deleteWorkout")
+  @Nested
+  @DisplayName("deleteWorkout")
   class DeleteWorkout {
 
-    @Test 
-    @DisplayName ("正常系: workoutIdと認証済みuserIdでServiceを呼ぶ")
+    @Test
+    @DisplayName("正常系: workoutIdと認証済みuserIdでServiceを呼ぶ")
     void deleteWorkout_success() {
       ResponseEntity<Void> response = workoutController.deleteWorkout(100L, authentication);
 
@@ -213,20 +230,20 @@ public  class WorkoutControllerTest {
       verify(workoutService, times(1)).deleteWorkout(100L, 1L);
     }
 
-    @Test 
-    @DisplayName ("異常系(BOLA対策): 所有者が一致しないか存在しない場合、WorkoutDomainException")
+    @Test
+    @DisplayName("異常系(BOLA対策): 所有者が一致しないか存在しない場合、WorkoutDomainException")
     void deleteWorkout_notOwnerOrNotFound() {
       willThrow(WorkoutDomainException.notFound("ワークアウトが見つかりません: 999"))
-      .given(workoutService)
-      .deleteWorkout(999L, 1L);
+          .given(workoutService)
+          .deleteWorkout(999L, 1L);
 
-    assertThatThrownBy(() -> workoutController.deleteWorkout(999L, authentication))
-     .isInstanceOf(WorkoutDomainException.class)
-     .hasMessage("ワークアウトが見つかりません: 999")
-     .extracting(ex -> ((WorkoutDomainException) ex).getStatus())
-     .isEqualTo(HttpStatus.NOT_FOUND);
+      assertThatThrownBy(() -> workoutController.deleteWorkout(999L, authentication))
+          .isInstanceOf(WorkoutDomainException.class)
+          .hasMessage("ワークアウトが見つかりません: 999")
+          .extracting(ex -> ((WorkoutDomainException) ex).getStatus())
+          .isEqualTo(HttpStatus.NOT_FOUND);
 
-    verify(workoutService).deleteWorkout(999L, 1L);
+      verify(workoutService).deleteWorkout(999L, 1L);
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.workout.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.workout.model.Workout;
 
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
- 
+
   // idが種目に対してのものなのか、ユーザーに対してのものなのかが混在することになっているのでリネームの余地を
-  @EntityGraph(attributePaths = {"user"})
+  @EntityGraph(attributePaths = { "user", "sets" })
   List<Workout> findByUserId(Long id);
+
+  Optional<Workout> findByIdAndUserId(Long idm, Long userId);
 
   @Modifying
   @Transactional
