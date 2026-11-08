@@ -6,11 +6,27 @@ import {
   updateWorkout,
   deleteWorkout,
 } from "../hooks/useWorkoutApi";
-import type { Workout } from "../hooks/useWorkoutApi";
+import type { Workout, WorkoutSetInput } from "../hooks/useWorkoutApi";
 import { removeToken } from "../hooks/useAuth";
-import { WorkoutForm } from "../components/workout/WorkoutForm";
+import {
+  WorkoutForm,
+  type WorkoutFormData,
+  type WorkoutSetFormData,
+} from "../components/workout/WorkoutForm";
 import { WorkoutItem } from "../components/workout/WorkoutItem";
 import { WorkoutCalculator } from "../components/workout/WorkoutCalculator";
+
+const createEmptySet = (): WorkoutSetFormData => ({ reps: "", weights: "" });
+const createEmptyForm = (): WorkoutFormData => ({
+  name: "",
+  sets: [createEmptySet()],
+});
+
+const toSetInputs = (form: WorkoutFormData): WorkoutSetInput[] =>
+  form.sets.map((s) => ({
+    reps: Number(s.reps),
+    weights: Number(s.weights),
+  }));
 
 // メインコンポーネント
 
@@ -21,16 +37,38 @@ export default function Workout() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    reps: "",
-    sets: "",
-    weights: "",
-  });
+  const [formData, setFormData] = useState<WorkoutFormData>(createEmptyForm);
 
   // createWorkoutの実装ができているので、tsx側でcreateWorkoutを呼び出す処理を実装
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleNameChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, name: value }));
+  };
+
+  const handleSetChange = (
+    index: number,
+    field: keyof WorkoutSetFormData,
+    value: string,
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      sets: prev.sets.map((s, i) =>
+        i === index ? { ...s, [field]: value } : s,
+      ),
+    }));
+  };
+
+  const handleAddSet = () => {
+    setFormData((prev) => ({
+      ...prev,
+      sets: [...prev.sets, createEmptySet()],
+    }));
+  };
+
+  const handleRemoveSet = (index: number) => {
+    setFormData((prev) => {
+      if (prev.sets.length <= 1) return prev;
+      return { ...prev, sets: prev.sets.filter((_, i) => i !== index) };
+    });
   };
 
   const validate = (): boolean => {
@@ -39,9 +77,7 @@ export default function Workout() {
       return false;
     }
     if (
-      Number(formData.reps) < 0 ||
-      Number(formData.sets) < 0 ||
-      Number(formData.weights) < 0
+      formData.sets.some((s) => Number(s.reps) < 0 || Number(s.weights) < 0)
     ) {
       setError("数値にマイナスを入力することはできません");
       return false;
@@ -80,14 +116,12 @@ export default function Workout() {
     try {
       const response = await createWorkout(
         formData.name,
-        Number(formData.reps),
-        Number(formData.sets),
-        Number(formData.weights),
+        toSetInputs(formData),
         navigate,
       );
       if (response.ok) {
         await fetchWorkoutsAllData();
-        setFormData({ name: "", reps: "", sets: "", weights: "" });
+        setFormData(createEmptyForm());
       } else {
         setError(response.message);
       }
@@ -103,15 +137,13 @@ export default function Workout() {
       const response = await updateWorkout(
         id,
         formData.name,
-        Number(formData.reps),
-        Number(formData.sets),
-        Number(formData.weights),
+        toSetInputs(formData),
         navigate,
       );
       if (response.ok) {
         setTargetId(null);
         await fetchWorkoutsAllData();
-        setFormData({ name: "", reps: "", sets: "", weights: "" });
+        setFormData(createEmptyForm());
       } else {
         setError(response.message);
       }
@@ -137,11 +169,13 @@ export default function Workout() {
 
   const handleEditStart = (item: Workout) => {
     setTargetId(item.id);
+    const sets = item.sets.map((s) => ({
+      reps: String(s.reps),
+      weights: String(s.weights),
+    }));
     setFormData({
       name: item.name,
-      reps: String(item.reps),
-      sets: String(item.sets),
-      weights: String(item.weights),
+      sets: sets.length > 0 ? sets : [createEmptySet()],
     });
   };
 
@@ -179,7 +213,10 @@ export default function Workout() {
 
         <WorkoutForm
           formData={formData}
-          onChange={handleChange}
+          onNameChange={handleNameChange}
+          onSetChange={handleSetChange}
+          onAddSet={handleAddSet}
+          onRemoveSet={handleRemoveSet}
           onRegister={handleCreate}
           onGetAll={handleGetAll}
           isLoading={isLoading}

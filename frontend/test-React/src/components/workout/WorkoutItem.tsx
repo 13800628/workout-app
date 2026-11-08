@@ -11,7 +11,14 @@ type WorkoutItemProps = {
 
 // 表示用のコンポーネント
 // 修正の余地ありか
-export function WorkoutItem({ item, isEditing, onEditStart, onEditSubmit, onDelete, isLoading }: WorkoutItemProps) {
+export function WorkoutItem({
+  item,
+  isEditing,
+  onEditStart,
+  onEditSubmit,
+  onDelete,
+  isLoading,
+}: WorkoutItemProps) {
   const formattedDate = new Date(item.createdAt).toLocaleDateString("ja-JP", {
     year: "numeric",
     month: "2-digit",
@@ -33,9 +40,11 @@ export function WorkoutItem({ item, isEditing, onEditStart, onEditSubmit, onDele
       )}
       <p>ID: {item.id}</p>
       <p>種目名: {item.name}</p>
-      <p>回数: {item.reps}</p>
-      <p>セット数: {item.sets}</p>
-      <p>重さ: {item.weights}</p>
+      {item.sets.map((set) => (
+        <p key={set.setOrder}>
+          {set.setOrder}セット目: {set.weights}kg {set.reps}回
+        </p>
+      ))}
       <p>記録日時: {formattedDate}</p>
       <button onClick={() => onDelete(item.id)} disabled={isLoading}>
         {isLoading ? "処理中..." : "削除"}

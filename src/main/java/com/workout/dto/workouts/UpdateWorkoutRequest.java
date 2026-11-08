@@ -1,22 +1,13 @@
 package com.workout.dto.workouts;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import java.util.List;
 
 public record UpdateWorkoutRequest(
-  @NotBlank(message = "種目名は必須です")
-  String name,
+    @NotBlank(message = "種目名は必須です") String name,
 
-  @NotNull(message = "回数は必須です")
-  @Min(0)
-  Integer reps,
-
-  @NotNull(message = "セット数は必須です")
-  @Min(0)
-  Integer sets,
-  
-  @NotNull(message = "重量は必須です")
-  @Min(0)
-  Integer weights
-) {}
+    @NotEmpty(message = "セットを1つ以上入力してください") @Size(max = 50, message = "セットは50件までです") @Valid List<WorkoutSetRequest> sets) {
+}

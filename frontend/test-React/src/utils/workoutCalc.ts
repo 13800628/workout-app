@@ -7,7 +7,13 @@ export type WorkoutStatus = {
 
 // 今後必要な機能が増えればここに追加
 export function calcStats(workout: Workout): WorkoutStatus {
-  const totalVolume = workout.weights * workout.reps * workout.sets;
-  const oneRM = Math.round(workout.weights * (1 + workout.reps / 30));
+  const totalVolume = workout.sets.reduce(
+    (sum, s) => sum + s.weights * s.reps,
+    0,
+  );
+  const oneRM = workout.sets.reduce(
+    (max, s) => Math.max(max, Math.round(s.weights * (1 + s.reps / 30))),
+    0,
+  );
   return { totalVolume, oneRM };
 }
