@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+target/
+node_modules/
+frontend/test-React/node_modules/
+frontend/test-React/dist/
+.idea/
+.vscode/
+.DS_Store
+MEMO.md

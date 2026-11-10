@@ -2,7 +2,6 @@
 /target/
 *.class
 .mvn/wrapper/maven-wrapper.jar
-application.properties
 
 # Node / React
 node_modules/
@@ -15,10 +14,9 @@ dist/
 # IDE / OS
 .DS_Store
 .vscode/
-.idea/.env
+.idea/
 
 # Environment variables
 .env
 MEMO.md
-
-./metals
+.metals/
