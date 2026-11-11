@@ -20,6 +20,7 @@ export function WorkoutItem({
   isLoading,
 }: WorkoutItemProps) {
   const formattedDate = new Date(item.createdAt).toLocaleDateString("ja-JP", {
+    timeZone: "Asia/Tokyo",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
