@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+// model層のファイルが嵩張ってきたので今後の修正必要か
 @Entity
 @Table(name = "workout_sets")
 public class WorkoutSet extends BaseEntity {
