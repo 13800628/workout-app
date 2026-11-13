@@ -44,14 +44,17 @@ public class WorkoutService {
     return workoutRepository.findByUserId(id);
   }
 
-  @Transactional(readOnly = true)
-  public Workout getWorkoutById(Long exercisedId) {
-    if (exercisedId == null) {
-      throw new IllegalArgumentException("IDを指定してください");
-    }
-    return workoutRepository.findById(exercisedId)
-        .orElseThrow(() -> WorkoutDomainException.notFound("Workoutが見つかりません: " + exercisedId));
-  }
+  /*
+   * @Transactional(readOnly = true)
+   * public Workout getWorkoutById(Long exercisedId) {
+   * if (exercisedId == null) {
+   * throw new IllegalArgumentException("IDを指定してください");
+   * }
+   * return workoutRepository.findById(exercisedId)
+   * .orElseThrow(() -> WorkoutDomainException.notFound("Workoutが見つかりません: " +
+   * exercisedId));
+   * }
+   */
 
   @Transactional
   public void deleteWorkout(Long exercisedId, Long userId) {
@@ -69,7 +72,6 @@ public class WorkoutService {
     return workoutRepository.save(workout);
   }
 
-  // 使われている箇所が少ない。
   private Workout findOwnedWorkout(Long exercisedId, Long userId) {
     return workoutRepository.findByIdAndUserId(exercisedId, userId)
         .orElseThrow(() -> WorkoutDomainException.notFound("Workout ID " + exercisedId + "は存在していません"));
