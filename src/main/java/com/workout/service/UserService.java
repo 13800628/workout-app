@@ -1,7 +1,5 @@
 package com.workout.service;
 
-
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,13 +36,12 @@ public class UserService {
     }
   }
 
-
   @Transactional(readOnly = true)
   public User getUserById(Long id) {
     if (id == null) {
       throw new IllegalArgumentException("IDを指定してください");
     }
-    
+
     return userRepository.findById(id)
         .orElseThrow(() -> UserDomainException.notFound("IDが見つかりません: " + id));
   }
@@ -52,9 +49,9 @@ public class UserService {
   @Transactional
   public User updateUser(Long id, UpdateUserRequest request) {
     try {
-    User user = getUserById(id);
-    user.updateProfile(request.username(), request.age());
-    return userRepository.save(user);
+      User user = getUserById(id);
+      user.updateProfile(request.username(), request.age());
+      return userRepository.save(user);
     } catch (DataIntegrityViolationException e) {
       throw UserDomainException.conflict("このユーザー名はすでに使用されています" + request.username());
     }
@@ -62,11 +59,9 @@ public class UserService {
 
   @Transactional
   public void deleteUser(Long id) {
-    int deletedCount = userRepository.deleteDirectlyById(id);
-
-    if (deletedCount == 0) {
-      throw UserDomainException.notFound("ID: " + id + "は存在しません");
-    }
+    User user = userRepository.findById(id)
+        .orElseThrow(() -> UserDomainException.notFound("ID: " + id + "は存在しません"));
+    userRepository.delete(user);
   }
 
   // password
@@ -85,6 +80,6 @@ public class UserService {
   @Transactional(readOnly = true)
   public User getUserByUsername(String username) {
     return userRepository.findByUsername(username)
-            .orElseThrow(() -> UserDomainException.notFound("ユーザーが見つかりません: " + username));
+        .orElseThrow(() -> UserDomainException.notFound("ユーザーが見つかりません: " + username));
   }
 }

@@ -1,9 +1,13 @@
 package com.workout.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 
 @Entity
 @Table(name = "users")
@@ -18,7 +22,11 @@ public class User extends BaseEntity {
   @Column(nullable = false)
   private String password;
 
-  public User() {}
+  @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+  private List<Workout> workouts = new ArrayList<>();
+
+  public User() {
+  }
 
   public User(String username, Integer age, String password) {
     this.username = username;
@@ -26,9 +34,8 @@ public class User extends BaseEntity {
     this.password = password;
   }
 
-
   // 基本的なgetterとsetter
-  
+
   public String getUsername() {
     return username;
   }
@@ -36,7 +43,6 @@ public class User extends BaseEntity {
   public void setUsername(String username) {
     this.username = username;
   }
-
 
   public Integer getAge() {
     return age;
@@ -54,13 +60,13 @@ public class User extends BaseEntity {
     this.password = password;
   }
 
-
   // プロフィール専用での更新(重要度が高くなるなら切り出しも検討か)
   public void updateProfile(String username, Integer age) {
-    if (username == null) throw new IllegalArgumentException("ユーザー名を入力してください");
-    if (age < 0) throw new IllegalArgumentException("年齢は0以上で入力してください");
+    if (username == null)
+      throw new IllegalArgumentException("ユーザー名を入力してください");
+    if (age < 0)
+      throw new IllegalArgumentException("年齢は0以上で入力してください");
     this.username = username;
     this.age = age;
   }
-} 
-
+}
